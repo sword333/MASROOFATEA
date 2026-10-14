@@ -466,19 +466,23 @@
             }
         }
 
-        async function pushToDrive() {
-            document.getElementById('sync-indicator').innerHTML = '<i class="fas fa-cloud-upload-alt fa-pulse"></i> جاري الحفظ...';
-            try {
-                await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    body: JSON.stringify(appData)
-                });
-                document.getElementById('sync-indicator').innerHTML = '<i class="fas fa-check-circle" style="color: var(--success)"></i> تم الحفظ';
-            } catch (error) {
-                console.error("Error saving data:", error);
-                document.getElementById('sync-indicator').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger)"></i> فشل الحفظ';
-            }
-        }
+       async function pushToDrive() {
+    document.getElementById('sync-indicator').innerHTML = '<i class="fas fa-cloud-upload-alt fa-pulse"></i> جاري الحفظ...';
+    try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            redirect: 'follow', // ضروري جداً لأن جوجل تقوم بإعادة توجيه الطلب
+            headers: {
+                "Content-Type": "text/plain;charset=utf-8", // منع المتصفح من حظر الطلب (CORS)
+            },
+            body: JSON.stringify(appData)
+        });
+        document.getElementById('sync-indicator').innerHTML = '<i class="fas fa-check-circle" style="color: var(--success)"></i> تم الحفظ';
+    } catch (error) {
+        console.error("Error saving data:", error);
+        document.getElementById('sync-indicator').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger)"></i> فشل الحفظ';
+    }
+}
 
         // 3. Formatter & Helpers
         const formatCurrency = (num) => Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ر.س';
