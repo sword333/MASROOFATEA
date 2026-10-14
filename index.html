@@ -445,15 +445,32 @@
         async function fetchFromDrive() {
             document.getElementById('sync-indicator').innerHTML = '<i class="fas fa-sync fa-spin"></i> جاري جلب البيانات...';
             try {
-                const response = await fetch(GOOGLE_SCRIPT_URL);
-                const data = await response.json();
+                // إضافة redirect: 'follow' ضروري جداً لتخطي حماية جوجل عند الاسترجاع
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'GET',
+                    redirect: 'follow'
+                });
                 
-                // التأكد من أن البيانات المسترجعة صالحة، وإلا نستخدم القالب الفارغ
+                // قراءة البيانات كنص أولاً لتفادي أخطاء الترجمة (Parsing)
+                const textData = await response.text(); 
+                const data = JSON.parse(textData);
+                
+                // التأكد من أن البيانات المسترجعة صالحة
                 if (data && data.shareholders) {
                     appData = data;
                 } else {
                     appData = JSON.parse(JSON.stringify(emptyState));
                 }
+                
+                renderUI();
+                document.getElementById('sync-indicator').innerHTML = '<i class="fas fa-check-circle" style="color: var(--success)"></i> متصل بـ Drive';
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                document.getElementById('sync-indicator').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger)"></i> خطأ في استرجاع البيانات';
+                appData = JSON.parse(JSON.stringify(emptyState));
+                renderUI();
+            }
+        }
                 
                 renderUI();
                 document.getElementById('sync-indicator').innerHTML = '<i class="fas fa-check-circle" style="color: var(--success)"></i> متصل بـ Drive';
