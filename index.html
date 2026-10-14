@@ -231,7 +231,10 @@
     <div class="container">
         <div class="header">
             <h2><i class="fas fa-chart-line"></i> نظام إدارة المصروفات والالتزامات</h2>
-            <span class="badge success" id="session-indicator" style="font-size: 14px; padding: 8px 15px;">الجلسة الحالية</span>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <span id="sync-indicator" style="font-size: 13px; color: var(--primary);"><i class="fas fa-cloud"></i> جاري الاتصال...</span>
+                <span class="badge success" id="session-indicator" style="font-size: 14px; padding: 8px 15px;">الجلسة الحالية</span>
+            </div>
         </div>
 
         <!-- Dashboard -->
@@ -425,6 +428,9 @@
     </div>
 
     <script>
+        // ⚠️ ضع رابط تطبيق الويب الخاص بـ Google Apps Script هنا ⚠️
+        const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbx48ZKfBSuOnxfLXhLuVrnTGPYGeX07sYpNU-rO5lQV9HZjIEfWHcMeYLvXLiAbtqfz/exec";
+
         // 1. Initial State (Empty Template)
         const emptyState = {
             sessionDate: new Date().toISOString().split('T')[0],
@@ -435,18 +441,43 @@
 
         let appData = {};
 
-        // 2. Local Storage Management (Persistence)
-        function loadData() {
-            const savedData = localStorage.getItem('masroofat_appData');
-            if (savedData) {
-                appData = JSON.parse(savedData);
-            } else {
-                appData = JSON.parse(JSON.stringify(emptyState)); // Load Empty state initially
+        // 2. Google Drive Sync Management (بدلاً من الحفظ المحلي)
+        async function fetchFromDrive() {
+            document.getElementById('sync-indicator').innerHTML = '<i class="fas fa-sync fa-spin"></i> جاري جلب البيانات...';
+            try {
+                const response = await fetch(GOOGLE_SCRIPT_URL);
+                const data = await response.json();
+                
+                // التأكد من أن البيانات المسترجعة صالحة، وإلا نستخدم القالب الفارغ
+                if (data && data.shareholders) {
+                    appData = data;
+                } else {
+                    appData = JSON.parse(JSON.stringify(emptyState));
+                }
+                
+                renderUI();
+                document.getElementById('sync-indicator').innerHTML = '<i class="fas fa-check-circle" style="color: var(--success)"></i> متصل بـ Drive';
+            } catch (error) {
+                console.error("Error fetching data:", error);
+                document.getElementById('sync-indicator').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger)"></i> خطأ في الاتصال';
+                // في حالة فشل الاتصال، نستخدم القالب الفارغ لتجنب تعطل التطبيق
+                appData = JSON.parse(JSON.stringify(emptyState));
+                renderUI();
             }
         }
 
-        function saveData() {
-            localStorage.setItem('masroofat_appData', JSON.stringify(appData));
+        async function pushToDrive() {
+            document.getElementById('sync-indicator').innerHTML = '<i class="fas fa-cloud-upload-alt fa-pulse"></i> جاري الحفظ...';
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(appData)
+                });
+                document.getElementById('sync-indicator').innerHTML = '<i class="fas fa-check-circle" style="color: var(--success)"></i> تم الحفظ';
+            } catch (error) {
+                console.error("Error saving data:", error);
+                document.getElementById('sync-indicator').innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger)"></i> فشل الحفظ';
+            }
         }
 
         // 3. Formatter & Helpers
@@ -467,11 +498,9 @@
 
         // 5. Core Render Engine
         function renderUI() {
-            // Check Date Filters for Expenses
             const fromDate = document.getElementById('filter-from').value;
             const toDate = document.getElementById('filter-to').value;
 
-            // Render Shareholders
             const shBody = document.getElementById('shareholders-body');
             let totalSubs = 0;
             shBody.innerHTML = appData.shareholders.map((s, index) => {
@@ -488,7 +517,6 @@
                 </tr>`;
             }).join('');
 
-            // Render Expenses (with Filters)
             const exBody = document.getElementById('expenses-body');
             let totalExp = 0;
             let filteredExpenses = appData.expenses;
@@ -497,7 +525,6 @@
             if (toDate) filteredExpenses = filteredExpenses.filter(e => e.date <= toDate);
 
             exBody.innerHTML = filteredExpenses.map((e, index) => {
-                // Find actual index in original array for deletion
                 const actualIndex = appData.expenses.findIndex(x => x.id === e.id);
                 totalExp += Number(e.amount);
                 return `<tr>
@@ -511,7 +538,6 @@
                 </tr>`;
             }).join('');
 
-            // Render Debts
             const dbBody = document.getElementById('debts-body');
             let totalRemainingDebts = 0;
             dbBody.innerHTML = appData.debts.map((d, index) => {
@@ -528,19 +554,15 @@
                 </tr>`;
             }).join('');
 
-            // Update Dashboard
             document.getElementById('total-subscriptions').innerText = formatCurrency(totalSubs);
             document.getElementById('total-expenses').innerText = formatCurrency(totalExp);
             document.getElementById('net-balance').innerText = formatCurrency(totalSubs - totalExp);
             document.getElementById('total-debts').innerText = formatCurrency(totalRemainingDebts);
             
-            // Session Date display
             document.getElementById('session-indicator').innerText = "تاريخ البدء: " + (appData.sessionDate || "غير محدد");
-            
-            saveData(); // Save state after every render
         }
 
-        // 6. Data Mechanics (Add/Delete)
+        // 6. Data Mechanics (Add/Delete) - تفعيل الحفظ السحابي هنا
         function addShareholder(e) {
             e.preventDefault();
             const id = 'SH-' + Date.now().toString().slice(-4);
@@ -549,7 +571,9 @@
                 quota: parseFloat(document.getElementById('sh-quota').value),
                 paid: parseFloat(document.getElementById('sh-paid').value)
             });
-            closeModal('modal-shareholder'); e.target.reset(); renderUI();
+            closeModal('modal-shareholder'); e.target.reset(); 
+            renderUI();
+            pushToDrive(); // إرسال للسحابة
         }
 
         function addExpense(e) {
@@ -561,7 +585,9 @@
                 amount: parseFloat(document.getElementById('ex-amount').value), payer: document.getElementById('ex-payer').value,
                 method: document.getElementById('ex-method').value
             });
-            closeModal('modal-expense'); e.target.reset(); renderUI();
+            closeModal('modal-expense'); e.target.reset(); 
+            renderUI();
+            pushToDrive(); // إرسال للسحابة
         }
 
         function addDebt(e) {
@@ -572,13 +598,16 @@
                 date: document.getElementById('db-date').value, total: parseFloat(document.getElementById('db-total').value),
                 paid: parseFloat(document.getElementById('db-paid').value)
             });
-            closeModal('modal-debt'); e.target.reset(); renderUI();
+            closeModal('modal-debt'); e.target.reset(); 
+            renderUI();
+            pushToDrive(); // إرسال للسحابة
         }
 
         function deleteRecord(collection, index) {
             if(confirm('هل أنت متأكد من حذف هذا السجل نهائياً؟')) {
                 appData[collection].splice(index, 1);
                 renderUI();
+                pushToDrive(); // إرسال للسحابة
             }
         }
 
@@ -603,6 +632,7 @@
                     if(importedData.shareholders && importedData.expenses && importedData.debts) {
                         appData = importedData;
                         renderUI();
+                        pushToDrive(); // إرسال للسحابة بعد الاستعادة
                         alert('تم استعادة النسخة الاحتياطية بنجاح!');
                     } else {
                         alert('ملف النسخة الاحتياطية غير متوافق.');
@@ -612,14 +642,15 @@
                 }
             };
             reader.readAsText(file);
-            event.target.value = ''; // Reset input
+            event.target.value = ''; 
         }
 
         function createNewSession() {
-            if(confirm('تحذير خطير: سيتم مسح جميع المساهمين والمصروفات والديون للبدء بدورة جديدة. هل أنت متأكد أنك قمت بأخذ نسخة احتياطية؟')) {
+            if(confirm('تحذير خطير: سيتم مسح جميع البيانات للبدء بدورة جديدة. هل أنت متأكد أنك قمت بأخذ نسخة احتياطية؟')) {
                 appData = JSON.parse(JSON.stringify(emptyState));
-                appData.sessionDate = new Date().toISOString().split('T')[0]; // Set new session start date
-                clearFilters(); // This triggers renderUI
+                appData.sessionDate = new Date().toISOString().split('T')[0]; 
+                clearFilters(); 
+                pushToDrive(); // إرسال للسحابة لتصفير القاعدة
                 alert('تم تصفير النظام وبدء دورة مالية جديدة.');
             }
         }
@@ -634,9 +665,8 @@
         function openModal(id) { document.getElementById(id).classList.add('active'); }
         function closeModal(id) { document.getElementById(id).classList.remove('active'); }
 
-        // Start App
-        loadData();
-        renderUI();
+        // تشغيل التطبيق بالاعتماد على السحابة
+        fetchFromDrive();
     </script>
 </body>
 </html>
