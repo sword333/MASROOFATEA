@@ -231,6 +231,7 @@
         <span class="close-modal" onclick="closeModal('modal-expense')">&times;</span>
         <h3>إضافة مصروف جديد</h3>
         <form id="form-expense" onsubmit="addExpense(event)">
+            <input type="hidden" id="ex-edit-index" value="-1">
             <div class="form-group"><label>التاريخ</label><input type="date" id="ex-date" required></div>
             
             <div class="form-group">
@@ -287,6 +288,7 @@
             <span class="close-modal" onclick="closeModal('modal-debt')">&times;</span>
             <h3>إضافة دين / التزام</h3>
             <form onsubmit="addDebt(event)">
+                <input type="hidden" id="db-edit-index" value="-1">
                 <div class="form-group"><label>اسم الدائن / الجهة</label><input type="text" id="db-creditor" required></div>
                 <div class="form-group"><label>تاريخ الدين</label><input type="date" id="db-date" required></div>
                 <div class="form-group"><label>إجمالي مبلغ الدين</label><input type="number" id="db-total" step="0.01" required></div>
@@ -461,7 +463,10 @@ function addNewServiceType() {
                     <td>${formatCurrency(e.amount)}</td>
                     <td>${e.payer}</td>
                     <td>${e.method}</td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteRecord('expenses', ${actualIndex})"><i class="fas fa-trash"></i></button></td>
+                    <td>
+    <button class="btn btn-sm" style="background: var(--warning);" onclick="editExpense(${actualIndex})" title="تعديل"><i class="fas fa-edit"></i></button>
+    <button class="btn btn-danger btn-sm" onclick="deleteRecord('expenses', ${actualIndex})" title="حذف"><i class="fas fa-trash"></i></button>
+</td>
                 </tr>`;
             }).join('');
 
@@ -476,7 +481,10 @@ function addNewServiceType() {
                     <td>${formatCurrency(d.paid)}</td>
                     <td>${formatCurrency(remaining)}</td>
                     <td>${getStatusBadge(remaining, d.total)}</td>
-                    <td><button class="btn btn-danger btn-sm" onclick="deleteRecord('debts', ${index})"><i class="fas fa-trash"></i></button></td>
+                    <td>
+    <button class="btn btn-sm" style="background: var(--warning);" onclick="editDebt(${index})" title="تعديل"><i class="fas fa-edit"></i></button>
+    <button class="btn btn-danger btn-sm" onclick="deleteRecord('debts', ${index})" title="حذف"><i class="fas fa-trash"></i></button>
+</td>
                 </tr>`;
             }).join('');
 
@@ -505,7 +513,19 @@ function addNewServiceType() {
             document.getElementById(tabId).classList.add('active');
             event.currentTarget.classList.add('active');
         };
-        window.openModal = function(id) { document.getElementById(id).classList.add('active'); };
+        window.closeModal = function(id) {
+    const modal = document.getElementById(id);
+    modal.classList.remove('active');
+    
+    // تفريغ الحقول وإلغاء وضع التعديل عند إغلاق النافذة
+    const form = modal.querySelector('form');
+    if (form) form.reset();
+    
+    if (document.getElementById('sh-edit-index')) document.getElementById('sh-edit-index').value = "-1";
+    if (document.getElementById('ex-edit-index')) document.getElementById('ex-edit-index').value = "-1";
+    if (document.getElementById('db-edit-index')) document.getElementById('db-edit-index').value = "-1";
+    if (typeof handleCategoryChange === 'function') handleCategoryChange();
+};
         window.closeModal = function(id) { document.getElementById(id).classList.remove('active'); };
 
         // فتح نافذة المساهم في وضع التعديل
@@ -550,44 +570,108 @@ function addShareholder(e) {
     // إذا كنت تستخدم جوجل درايف استدعِ pushToDrive() هنا
 }
 
-function addExpense(e) {
+// 1. فتح نافذة المصروفات وتعبئة البيانات للتعديل
+window.editExpense = function(index) {
+    const e = appData.expenses[index];
+    document.getElementById('ex-edit-index').value = index;
+    document.getElementById('ex-date').value = e.date;
+    document.getElementById('ex-category').value = e.category;
+    
+    // إظهار الحقل المناسب حسب التصنيف
+    if (typeof handleCategoryChange === 'function') handleCategoryChange();
+
+    // استرجاع النص الصافي للبيان حسب نوع التصنيف
+    if (e.category === 'طعام ومقاضي' && document.getElementById('ex-food-item')) {
+        document.getElementById('ex-food-item').value = e.statement.replace('طعام: ', '');
+    } else if (e.category === 'فواتير وخدمات' && document.getElementById('ex-service-type')) {
+        document.getElementById('ex-service-type').value = e.statement.replace('فاتورة / خدمة: ', '');
+    } else {
+        document.getElementById('ex-statement').value = e.statement;
+    }
+
+    document.getElementById('ex-amount').value = e.amount;
+    document.getElementById('ex-payer').value = e.payer;
+    document.getElementById('ex-method').value = e.method;
+    
+    openModal('modal-expense');
+};
+
+// 2. حفظ المصروف (إضافة جديد أو تحديث حالي)
+window.addExpense = function(e) {
     e.preventDefault();
-    const id = 'EXP-' + Date.now().toString().slice(-4);
+    const editIndex = parseInt(document.getElementById('ex-edit-index').value);
     const category = document.getElementById('ex-category').value;
     
-    // تحديد البيان تلقائياً بناءً على التصنيف المختار
     let statement = '';
-    if (category === 'طعام ومقاضي') {
+    if (category === 'طعام ومقاضي' && document.getElementById('ex-food-item')) {
         statement = 'طعام: ' + (document.getElementById('ex-food-item').value || 'غير محدد');
-    } else if (category === 'فواتير وخدمات') {
+    } else if (category === 'فواتير وخدمات' && document.getElementById('ex-service-type')) {
         statement = 'فاتورة / خدمة: ' + document.getElementById('ex-service-type').value;
     } else {
         statement = document.getElementById('ex-statement').value || category;
     }
 
-    appData.expenses.push({
-        id: id,
+    const expenseObj = {
+        id: (editIndex > -1) ? appData.expenses[editIndex].id : 'EXP-' + Date.now().toString().slice(-4),
         date: document.getElementById('ex-date').value,
         statement: statement,
         category: category,
         amount: parseFloat(document.getElementById('ex-amount').value),
         payer: document.getElementById('ex-payer').value,
         method: document.getElementById('ex-method').value
-    });
+    };
+
+    if (editIndex > -1) {
+        appData.expenses[editIndex] = expenseObj; // تحديث السجل الحالي
+        document.getElementById('ex-edit-index').value = "-1";
+    } else {
+        appData.expenses.push(expenseObj); // إضافة سجل جديد
+    }
 
     closeModal('modal-expense');
     e.target.reset();
-    handleCategoryChange(); // إعادة ضبط الحقول الظاهرة
+    if (typeof handleCategoryChange === 'function') handleCategoryChange();
     renderUI();
-    // إذا كنت تستخدم جوجل درايف استدعِ pushToDrive() هنا
-}
+    if (typeof pushToDrive === 'function') pushToDrive();
+};
 
-        window.addDebt = function(e) {
-            e.preventDefault();
-            appData.debts.push({ id: 'DBT-' + Date.now().toString().slice(-4), creditor: document.getElementById('db-creditor').value, date: document.getElementById('db-date').value, total: parseFloat(document.getElementById('db-total').value), paid: parseFloat(document.getElementById('db-paid').value) });
-            closeModal('modal-debt'); e.target.reset(); renderUI(); pushToDrive();
-        };
+// 3. فتح نافذة الديون وتعبئة البيانات للتعديل
+window.editDebt = function(index) {
+    const d = appData.debts[index];
+    document.getElementById('db-edit-index').value = index;
+    document.getElementById('db-creditor').value = d.creditor;
+    document.getElementById('db-date').value = d.date;
+    document.getElementById('db-total').value = d.total;
+    document.getElementById('db-paid').value = d.paid;
+    
+    openModal('modal-debt');
+};
 
+// 4. حفظ الدين (إضافة جديد أو تحديث حالي)
+window.addDebt = function(e) {
+    e.preventDefault();
+    const editIndex = parseInt(document.getElementById('db-edit-index').value);
+
+    const debtObj = {
+        id: (editIndex > -1) ? appData.debts[editIndex].id : 'DBT-' + Date.now().toString().slice(-4),
+        creditor: document.getElementById('db-creditor').value,
+        date: document.getElementById('db-date').value,
+        total: parseFloat(document.getElementById('db-total').value),
+        paid: parseFloat(document.getElementById('db-paid').value)
+    };
+
+    if (editIndex > -1) {
+        appData.debts[editIndex] = debtObj; // تحديث الدين الحالي
+        document.getElementById('db-edit-index').value = "-1";
+    } else {
+        appData.debts.push(debtObj); // إضافة دين جديد
+    }
+
+    closeModal('modal-debt');
+    e.target.reset();
+    renderUI();
+    if (typeof pushToDrive === 'function') pushToDrive();
+};
         window.deleteRecord = function(collection, index) {
             if(confirm('هل أنت متأكد من حذف هذا السجل نهائياً؟')) { appData[collection].splice(index, 1); renderUI(); pushToDrive(); }
         };
