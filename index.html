@@ -200,94 +200,103 @@
         </div>
     </div>
 
-    <!-- Modals -->
+    <!-- Footer: حقوق التصميم -->
+        <footer style="text-align: center; margin-top: 40px; padding: 15px; color: #858796; font-size: 14px; border-top: 1px solid var(--border);">
+            تم التصميم والتطوير بواسطة: <span style="color: var(--primary); font-weight: bold;">سيف عامر المعمري</span> &copy; <script>document.write(new Date().getFullYear())</script>
+        </footer>
+    </div> <!-- إغلاق container -->
+
+    <!-- Modals (النوافذ المنبثقة المحدثة بالكامل) -->
+    <!-- 1. نافذة المساهم -->
     <div id="modal-shareholder" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" onclick="closeModal('modal-shareholder')">&times;</span>
-        <h3 id="sh-modal-title">إضافة / تعديل مساهم</h3>
-        <form id="form-shareholder" onsubmit="addShareholder(event)">
-            <!-- حقل مخفي لمعرفة ما إذا كنا نعدل مساهماً حالياً أو نضيف جديداً -->
-            <input type="hidden" id="sh-edit-index" value="-1">
-            
-            <div class="form-group" style="background: #f1f5ff; padding: 10px; border-radius: 5px;">
-                <label>اختيار من القائمة الدائمة (اختياري)</label>
-                <div style="display: flex; gap: 5px;">
-                    <select id="sh-saved-list" onchange="fillSavedContributor()">
-                        <option value="">-- اختر مساهماً محفوظاً أو اكتب اسماً جديداً بالأسفل --</option>
-                    </select>
-                    <button type="button" class="btn btn-danger btn-sm" onclick="deletePermanentContributor()" title="حذف من القائمة الدائمة"><i class="fas fa-user-times"></i></button>
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('modal-shareholder')">&times;</span>
+            <h3 id="sh-modal-title">إضافة / تعديل مساهم</h3>
+            <form id="form-shareholder" onsubmit="addShareholder(event)">
+                <input type="hidden" id="sh-edit-index" value="-1">
+                
+                <div class="form-group" style="background: #f1f5ff; padding: 10px; border-radius: 5px; border: 1px solid #d0dfff;">
+                    <label>اختيار من القائمة الدائمة المحفوظة (اختياري)</label>
+                    <div style="display: flex; gap: 5px;">
+                        <select id="sh-saved-list" onchange="fillSavedContributor()">
+                            <option value="">-- اختر مساهماً محفوظاً أو اكتب اسماً جديداً --</option>
+                        </select>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="deletePermanentContributor()" title="حذف من القائمة الدائمة"><i class="fas fa-user-times"></i></button>
+                    </div>
                 </div>
-            </div>
 
-            <div class="form-group"><label>اسم المساهم</label><input type="text" id="sh-name" required></div>
-            <div class="form-group"><label>الحصة المقررة</label><input type="number" id="sh-quota" step="0.01" required></div>
-            <div class="form-group"><label>المبلغ المدفوع</label><input type="number" id="sh-paid" step="0.01" required></div>
-            <button type="submit" class="btn">حفظ</button>
-        </form>
+                <div class="form-group"><label>اسم المساهم</label><input type="text" id="sh-name" required></div>
+                <div class="form-group"><label>الحصة المقررة</label><input type="number" id="sh-quota" step="0.01" required></div>
+                <div class="form-group"><label>المبلغ المدفوع</label><input type="number" id="sh-paid" step="0.01" required></div>
+                <button type="submit" class="btn">حفظ ومزامنة</button>
+            </form>
+        </div>
     </div>
-</div>
+
+    <!-- 2. نافذة المصروفات الذكية -->
     <div id="modal-expense" class="modal">
-    <div class="modal-content">
-        <span class="close-modal" onclick="closeModal('modal-expense')">&times;</span>
-        <h3>إضافة مصروف جديد</h3>
-        <form id="form-expense" onsubmit="addExpense(event)">
-            <input type="hidden" id="ex-edit-index" value="-1">
-            <div class="form-group"><label>التاريخ</label><input type="date" id="ex-date" required></div>
-            
-            <div class="form-group">
-                <label>التصنيف</label>
-                <select id="ex-category" onchange="handleCategoryChange()">
-                    <option value="طعام ومقاضي">طعام ومقاضي</option>
-                    <option value="فواتير وخدمات">فواتير وخدمات</option>
-                    <option value="صيانة">صيانة</option>
-                    <option value="مستلزمات">مستلزمات</option>
-                    <option value="أخرى">أخرى (إضافة بيان مخصص)</option>
-                </select>
-            </div>
-
-            <!-- حقل خاص يظهر فقط عند اختيار "طعام ومقاضي" -->
-            <div class="form-group" id="food-group">
-                <label>ما هو الصنف / الطعام؟</label>
-                <input type="text" id="ex-food-item" placeholder="مثال: وجبة عشاء، خضروات، قهوة...">
-            </div>
-
-            <!-- حقل خاص يظهر فقط عند اختيار "فواتير وخدمات" -->
-            <div class="form-group" id="service-group" style="display: none;">
-                <label>نوع الخدمة</label>
-                <div style="display: flex; gap: 5px;">
-                    <select id="ex-service-type"></select>
-                    <button type="button" class="btn btn-sm" onclick="addNewServiceType()" title="إضافة خدمة جديدة للقائمة"><i class="fas fa-plus"></i></button>
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('modal-expense')">&times;</span>
+            <h3 id="ex-modal-title">إضافة / تعديل مصروف</h3>
+            <form id="form-expense" onsubmit="addExpense(event)">
+                <input type="hidden" id="ex-edit-index" value="-1">
+                
+                <div class="form-group"><label>التاريخ</label><input type="date" id="ex-date" required></div>
+                
+                <div class="form-group">
+                    <label>التصنيف</label>
+                    <select id="ex-category" onchange="handleCategoryChange()">
+                        <option value="طعام ومقاضي">طعام ومقاضي</option>
+                        <option value="فواتير وخدمات">فواتير وخدمات</option>
+                        <option value="صيانة">صيانة</option>
+                        <option value="مستلزمات">مستلزمات</option>
+                        <option value="أخرى">أخرى (بيان مخصص)</option>
+                    </select>
                 </div>
-            </div>
 
-            <!-- حقل البيان العام (يظهر في التصنيفات الأخرى) -->
-            <div class="form-group" id="statement-group" style="display: none;">
-                <label>بيان المصروف</label>
-                <input type="text" id="ex-statement" placeholder="اكتب تفاصيل المصروف...">
-            </div>
+                <!-- يظهر عند اختيار طعام -->
+                <div class="form-group" id="food-group">
+                    <label>ما هو الصنف / الطعام؟</label>
+                    <input type="text" id="ex-food-item" placeholder="مثال: عشاء، فواكه، قهوة، مقاضي...">
+                </div>
 
-            <div class="form-group"><label>المبلغ</label><input type="number" id="ex-amount" step="0.01" required></div>
-            
-            <!-- تحويل الدافع إلى قائمة منسدلة مرتبطة بالمساهمين -->
-            <div class="form-group">
-                <label>الدافع (اختر المساهم)</label>
-                <select id="ex-payer" required></select>
-            </div>
+                <!-- يظهر عند اختيار خدمات -->
+                <div class="form-group" id="service-group" style="display: none;">
+                    <label>اختر الخدمة</label>
+                    <div style="display: flex; gap: 5px;">
+                        <select id="ex-service-type"></select>
+                        <button type="button" class="btn btn-sm" onclick="addNewServiceType()" title="إضافة خدمة جديدة للقائمة"><i class="fas fa-plus"></i> إضافة</button>
+                    </div>
+                </div>
 
-            <div class="form-group">
-                <label>طريقة الدفع</label>
-                <select id="ex-method"><option>تحويل بنكي</option><option>نقدي</option><option>بطاقة مدى / ائتمان</option></select>
-            </div>
-            <button type="submit" class="btn">حفظ</button>
-        </form>
+                <!-- يظهر عند اختيار تصنيفات أخرى -->
+                <div class="form-group" id="statement-group" style="display: none;">
+                    <label>بيان المصروف</label>
+                    <input type="text" id="ex-statement" placeholder="اكتب تفاصيل المصروف...">
+                </div>
+
+                <div class="form-group"><label>المبلغ</label><input type="number" id="ex-amount" step="0.01" required></div>
+                
+                <div class="form-group">
+                    <label>الدافع (اختر المساهم)</label>
+                    <select id="ex-payer" required></select>
+                </div>
+
+                <div class="form-group">
+                    <label>طريقة الدفع</label>
+                    <select id="ex-method"><option>تحويل بنكي</option><option>نقدي</option><option>بطاقة مدى / ائتمان</option></select>
+                </div>
+                <button type="submit" class="btn">حفظ ومزامنة</button>
+            </form>
+        </div>
     </div>
-</div>
 
+    <!-- 3. نافذة الديون -->
     <div id="modal-debt" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('modal-debt')">&times;</span>
-            <h3>إضافة دين / التزام</h3>
-            <form onsubmit="addDebt(event)">
+            <h3 id="db-modal-title">إضافة / تعديل دين</h3>
+            <form id="form-debt" onsubmit="addDebt(event)">
                 <input type="hidden" id="db-edit-index" value="-1">
                 <div class="form-group"><label>اسم الدائن / الجهة</label><input type="text" id="db-creditor" required></div>
                 <div class="form-group"><label>تاريخ الدين</label><input type="date" id="db-date" required></div>
@@ -299,45 +308,60 @@
     </div>
 
     <script>
-        // ⚠️ ضع رابط تطبيق الويب الخاص بـ Google Apps Script بين علامتي التنصيص أسفله ⚠️
+        // ⚠️ ضع رابط Google Apps Script الخاص بك هنا بين علامتي التنصيص ⚠️
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxqPfoP2oqDPE4eT4aayRiU9OhEhaCXRtONUCHHK00cs7xDaFT1vKc2OVJOLqfaI2Vj/exec";
 
         const emptyState = {
-    sessionDate: new Date().toISOString().split('T')[0],
-    permanentContributors: [], // قائمة المساهمين الدائمة (لا تُمسح مع الجلسة الجديدة)
-    serviceTypes: ['كهرباء', 'مياه', 'إنترنت', 'غاز', 'بلدية'], // قائمة الخدمات القابلة للزيادة
-    shareholders: [],
-    expenses: [],
-    debts: []
-};
-        let appData = { shareholders: [], expenses: [], debts: [] };
+            sessionDate: new Date().toISOString().split('T')[0],
+            permanentContributors: [],
+            serviceTypes: ['كهرباء', 'مياه', 'إنترنت', 'غاز', 'بلدية'],
+            shareholders: [],
+            expenses: [],
+            debts: []
+        };
 
+        let appData = JSON.parse(JSON.stringify(emptyState));
+
+        // 1. إدارة الاتصال بـ Google Drive + الحفظ المحلي الاحتياطي
         async function fetchFromDrive() {
             const indicator = document.getElementById('sync-indicator');
-            indicator.innerHTML = '<i class="fas fa-sync fa-spin"></i> جاري جلب البيانات...';
+            // تحميل محلي مبدئي سريع
+            const localSaved = localStorage.getItem('masroofat_appData');
+            if (localSaved) {
+                try { appData = JSON.parse(localSaved); renderUI(); } catch(e) {}
+            }
+
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("ضع_الرابط")) {
+                if (indicator) indicator.innerHTML = '<i class="fas fa-hdd"></i> وضع الحفظ المحلي';
+                renderUI();
+                return;
+            }
+
+            if (indicator) indicator.innerHTML = '<i class="fas fa-sync fa-spin"></i> جاري جلب البيانات...';
             try {
                 const response = await fetch(GOOGLE_SCRIPT_URL, { redirect: 'follow' });
                 const textData = await response.text();
                 const data = JSON.parse(textData);
-                
                 if (data && data.shareholders) {
                     appData = data;
-                } else {
-                    appData = JSON.parse(JSON.stringify(emptyState));
+                    if (!appData.permanentContributors) appData.permanentContributors = [];
+                    if (!appData.serviceTypes) appData.serviceTypes = ['كهرباء', 'مياه', 'إنترنت', 'غاز', 'بلدية'];
                 }
                 renderUI();
-                indicator.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success)"></i> متصل بـ Drive';
+                if (indicator) indicator.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success)"></i> متصل بـ Drive';
             } catch (error) {
                 console.error("Fetch error:", error);
-                indicator.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger)"></i> فشل جلب البيانات (تأكد من الرابط)';
-                appData = JSON.parse(JSON.stringify(emptyState));
+                if (indicator) indicator.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--warning)"></i> يعمل محلياً (تعذر الاتصال بـ Drive)';
                 renderUI();
             }
         }
 
         async function pushToDrive() {
+            localStorage.setItem('masroofat_appData', JSON.stringify(appData));
             const indicator = document.getElementById('sync-indicator');
-            indicator.innerHTML = '<i class="fas fa-cloud-upload-alt fa-pulse"></i> جاري الحفظ...';
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("ضع_الرابط")) return;
+
+            if (indicator) indicator.innerHTML = '<i class="fas fa-cloud-upload-alt fa-pulse"></i> جاري الحفظ...';
             try {
                 await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
@@ -345,94 +369,58 @@
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify(appData)
                 });
-                indicator.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success)"></i> تم الحفظ بنجاح';
+                if (indicator) indicator.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success)"></i> تم الحفظ في Drive';
             } catch (error) {
                 console.error("Save error:", error);
-                indicator.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger)"></i> فشل الحفظ';
+                if (indicator) indicator.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger)"></i> حُفظ محلياً (فشل Drive)';
             }
         }
 
-        const formatCurrency = (num) => Number(num).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ر.س';
+        const formatCurrency = (num) => Number(num || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ر.س';
         const getStatusBadge = (remaining, total) => {
             if (remaining <= 0) return '<span class="badge success">مكتمل بالكامل</span>';
             if (remaining >= total) return '<span class="badge danger">غير مسدد</span>';
             return '<span class="badge warning">مسدد جزئياً</span>';
         };
-// تحديث القوائم المنسدلة للمساهمين والخدمات
-function updateDropdowns() {
-    // ضمان وجود المصفوفات في حال كانت البيانات قديمة
-    if (!appData.permanentContributors) appData.permanentContributors = [];
-    if (!appData.serviceTypes) appData.serviceTypes = ['كهرباء', 'مياه', 'إنترنت', 'غاز'];
 
-    // 1. تحديث قائمة المساهمين المحفوظين في نافذة المساهم
-    const savedSelect = document.getElementById('sh-saved-list');
-    savedSelect.innerHTML = '<option value="">-- اختر مساهماً محفوظاً أو اكتب اسماً جديداً --</option>' +
-        appData.permanentContributors.map((c, idx) => `<option value="${idx}">${c.name} (الحصة: ${c.quota})</option>`).join('');
+        // 2. تحديث القوائم المنسدلة (المساهمين الدائمين + الخدمات)
+        function updateDropdowns() {
+            if (!appData.permanentContributors) appData.permanentContributors = [];
+            if (!appData.serviceTypes) appData.serviceTypes = ['كهرباء', 'مياه', 'إنترنت', 'غاز', 'بلدية'];
 
-    // 2. تحديث قائمة "الدافع" في نافذة المصروفات (تجمع بين المساهمين الحاليين والدائمين)
-    const payerSelect = document.getElementById('ex-payer');
-    const allNames = [...new Set([
-        ...appData.shareholders.map(s => s.name),
-        ...appData.permanentContributors.map(c => c.name)
-    ])];
-    payerSelect.innerHTML = allNames.length 
-        ? allNames.map(name => `<option value="${name}">${name}</option>`).join('')
-        : '<option value="عام">لا يوجد مساهمين (عام)</option>';
+            const savedSelect = document.getElementById('sh-saved-list');
+            if (savedSelect) {
+                savedSelect.innerHTML = '<option value="">-- اختر مساهماً محفوظاً أو اكتب اسماً جديداً --</option>' +
+                    appData.permanentContributors.map((c, idx) => `<option value="${idx}">${c.name} (الحصة: ${c.quota})</option>`).join('');
+            }
 
-    // 3. تحديث قائمة الخدمات
-    const serviceSelect = document.getElementById('ex-service-type');
-    serviceSelect.innerHTML = appData.serviceTypes.map(srv => `<option value="${srv}">${srv}</option>`).join('');
-}
+            const payerSelect = document.getElementById('ex-payer');
+            if (payerSelect) {
+                const allNames = [...new Set([
+                    ...appData.shareholders.map(s => s.name),
+                    ...appData.permanentContributors.map(c => c.name)
+                ])];
+                payerSelect.innerHTML = allNames.length
+                    ? allNames.map(name => `<option value="${name}">${name}</option>`).join('')
+                    : '<option value="عام">عام (لا يوجد مساهمين بعد)</option>';
+            }
 
-// التعبئة التلقائية عند اختيار مساهم من القائمة الدائمة
-function fillSavedContributor() {
-    const idx = document.getElementById('sh-saved-list').value;
-    if (idx !== "") {
-        const contributor = appData.permanentContributors[idx];
-        document.getElementById('sh-name').value = contributor.name;
-        document.getElementById('sh-quota').value = contributor.quota;
-        document.getElementById('sh-paid').value = 0; // يبدأ بصفر في الجلسة الجديدة
-    }
-}
+            const serviceSelect = document.getElementById('ex-service-type');
+            if (serviceSelect) {
+                serviceSelect.innerHTML = appData.serviceTypes.map(srv => `<option value="${srv}">${srv}</option>`).join('');
+            }
+        }
 
-// حذف مساهم من القائمة الدائمة
-function deletePermanentContributor() {
-    const idx = document.getElementById('sh-saved-list').value;
-    if (idx === "") return alert("يرجى اختيار مساهم من القائمة العلوية أولاً لحذفه.");
-    if (confirm("هل تريد حذف هذا المساهم من القائمة الدائمة نهائياً؟")) {
-        appData.permanentContributors.splice(idx, 1);
-        updateDropdowns();
-        saveData(); // أو pushToDrive() إذا كنت تستخدم النسخة السحابية
-    }
-}
-
-// إظهار وإخفاء حقول الطعام والخدمات حسب التصنيف المختار
-function handleCategoryChange() {
-    const category = document.getElementById('ex-category').value;
-    document.getElementById('food-group').style.display = (category === 'طعام ومقاضي') ? 'block' : 'none';
-    document.getElementById('service-group').style.display = (category === 'فواتير وخدمات') ? 'block' : 'none';
-    document.getElementById('statement-group').style.display = (category !== 'طعام ومقاضي' && category !== 'فواتير وخدمات') ? 'block' : 'none';
-}
-
-// إضافة خدمة جديدة لقائمة الخدمات (مثل: هاتف، صيانة مصعد...)
-function addNewServiceType() {
-    const newService = prompt("أدخل اسم الخدمة الجديدة (مثال: اشتراك القنوات، غاز):");
-    if (newService && newService.trim() !== "") {
-        appData.serviceTypes.push(newService.trim());
-        updateDropdowns();
-        document.getElementById('ex-service-type').value = newService.trim();
-        saveData(); // أو pushToDrive()
-    }
-}
+        // 3. عرض الجداول واللوحة العلوية
         function renderUI() {
-            const fromDate = document.getElementById('filter-from').value;
-            const toDate = document.getElementById('filter-to').value;
+            const fromDate = document.getElementById('filter-from') ? document.getElementById('filter-from').value : '';
+            const toDate = document.getElementById('filter-to') ? document.getElementById('filter-to').value : '';
 
             let totalSubs = 0, totalExp = 0, totalRemainingDebts = 0;
 
-            // 1. جدول المساهمين (تمت إضافة زر التعديل الأصفر بجانب زر الحذف هنا)
+            // جدول المساهمين
             document.getElementById('shareholders-body').innerHTML = appData.shareholders.map((s, index) => {
-                const remaining = s.quota - s.paid; 
+                const remaining = s.quota - s.paid;
                 totalSubs += Number(s.paid);
                 return `<tr>
                     <td>${s.id}</td>
@@ -442,19 +430,18 @@ function addNewServiceType() {
                     <td dir="ltr">${formatCurrency(remaining)}</td>
                     <td>${getStatusBadge(remaining, s.quota)}</td>
                     <td>
-                        <button class="btn btn-sm" style="background: var(--warning);" onclick="editShareholder(${index})" title="تعديل"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteRecord('shareholders', ${index})" title="حذف"><i class="fas fa-trash"></i></button>
+                        <button type="button" class="btn btn-sm" style="background: var(--warning);" onclick="editShareholder(${index})" title="تعديل"><i class="fas fa-edit"></i></button>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="deleteRecord('shareholders', ${index})" title="حذف"><i class="fas fa-trash"></i></button>
                     </td>
                 </tr>`;
             }).join('');
 
-            // 2. جدول المصروفات
-            let filteredExpenses = appData.expenses;
-            if (fromDate) filteredExpenses = filteredExpenses.filter(e => e.date >= fromDate);
-            if (toDate) filteredExpenses = filteredExpenses.filter(e => e.date <= toDate);
+            // جدول المصروفات (مع حفظ الرقم الأصلي للسجل لضمان عمل التعديل والحذف دائماً)
+            let mappedExpenses = appData.expenses.map((e, idx) => ({ ...e, _origIndex: idx }));
+            if (fromDate) mappedExpenses = mappedExpenses.filter(e => e.date >= fromDate);
+            if (toDate) mappedExpenses = mappedExpenses.filter(e => e.date <= toDate);
 
-            document.getElementById('expenses-body').innerHTML = filteredExpenses.map((e) => {
-                const actualIndex = appData.expenses.findIndex(x => x.id === e.id);
+            document.getElementById('expenses-body').innerHTML = mappedExpenses.map((e) => {
                 totalExp += Number(e.amount);
                 return `<tr>
                     <td>${e.date}</td>
@@ -464,15 +451,15 @@ function addNewServiceType() {
                     <td>${e.payer}</td>
                     <td>${e.method}</td>
                     <td>
-    <button class="btn btn-sm" style="background: var(--warning);" onclick="editExpense(${actualIndex})" title="تعديل"><i class="fas fa-edit"></i></button>
-    <button class="btn btn-danger btn-sm" onclick="deleteRecord('expenses', ${actualIndex})" title="حذف"><i class="fas fa-trash"></i></button>
-</td>
+                        <button type="button" class="btn btn-sm" style="background: var(--warning);" onclick="editExpense(${e._origIndex})" title="تعديل"><i class="fas fa-edit"></i></button>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="deleteRecord('expenses', ${e._origIndex})" title="حذف"><i class="fas fa-trash"></i></button>
+                    </td>
                 </tr>`;
             }).join('');
 
-            // 3. جدول الديون
+            // جدول الديون
             document.getElementById('debts-body').innerHTML = appData.debts.map((d, index) => {
-                const remaining = d.total - d.paid; 
+                const remaining = d.total - d.paid;
                 totalRemainingDebts += Number(remaining);
                 return `<tr>
                     <td>${d.creditor}</td>
@@ -482,246 +469,289 @@ function addNewServiceType() {
                     <td>${formatCurrency(remaining)}</td>
                     <td>${getStatusBadge(remaining, d.total)}</td>
                     <td>
-    <button class="btn btn-sm" style="background: var(--warning);" onclick="editDebt(${index})" title="تعديل"><i class="fas fa-edit"></i></button>
-    <button class="btn btn-danger btn-sm" onclick="deleteRecord('debts', ${index})" title="حذف"><i class="fas fa-trash"></i></button>
-</td>
+                        <button type="button" class="btn btn-sm" style="background: var(--warning);" onclick="editDebt(${index})" title="تعديل"><i class="fas fa-edit"></i></button>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="deleteRecord('debts', ${index})" title="حذف"><i class="fas fa-trash"></i></button>
+                    </td>
                 </tr>`;
             }).join('');
 
-            // 4. تحديث الأرقام في لوحة المعلومات العلوية
             document.getElementById('total-subscriptions').innerText = formatCurrency(totalSubs);
             document.getElementById('total-expenses').innerText = formatCurrency(totalExp);
             document.getElementById('net-balance').innerText = formatCurrency(totalSubs - totalExp);
             document.getElementById('total-debts').innerText = formatCurrency(totalRemainingDebts);
             document.getElementById('session-indicator').innerText = "تاريخ البدء: " + (appData.sessionDate || "غير محدد");
 
-            // <--- هنا تم وضع استدعاء دالة تحديث القوائم المنسدلة في نهاية renderUI --->
-            if (typeof updateDropdowns === 'function') {
+            updateDropdowns();
+            localStorage.setItem('masroofat_appData', JSON.stringify(appData));
+        }
+
+        // 4. دوال التحكم في المساهمين الدائمين والخدمات
+        window.fillSavedContributor = function() {
+            const idx = document.getElementById('sh-saved-list').value;
+            if (idx !== "") {
+                const c = appData.permanentContributors[idx];
+                document.getElementById('sh-name').value = c.name;
+                document.getElementById('sh-quota').value = c.quota;
+                document.getElementById('sh-paid').value = 0;
+            }
+        };
+
+        window.deletePermanentContributor = function() {
+            const idx = document.getElementById('sh-saved-list').value;
+            if (idx === "") return alert("يرجى اختيار مساهم من القائمة العلوية أولاً لحذفه.");
+            if (confirm("هل أنت متأكد من حذف هذا المساهم من القائمة الدائمة نهائياً؟")) {
+                appData.permanentContributors.splice(idx, 1);
                 updateDropdowns();
+                pushToDrive();
+            }
+        };
+
+        window.handleCategoryChange = function() {
+            const category = document.getElementById('ex-category').value;
+            document.getElementById('food-group').style.display = (category === 'طعام ومقاضي') ? 'block' : 'none';
+            document.getElementById('service-group').style.display = (category === 'فواتير وخدمات') ? 'block' : 'none';
+            document.getElementById('statement-group').style.display = (category !== 'طعام ومقاضي' && category !== 'فواتير وخدمات') ? 'block' : 'none';
+        };
+
+        window.addNewServiceType = function() {
+            const newService = prompt("أدخل اسم الخدمة الجديدة (مثال: هاتف، صيانة مصعد، غاز):");
+            if (newService && newService.trim() !== "") {
+                appData.serviceTypes.push(newService.trim());
+                updateDropdowns();
+                document.getElementById('ex-service-type').value = newService.trim();
+                pushToDrive();
+            }
+        };
+
+        // 5. دوال الإضافة والتعديل والحذف (Shareholders, Expenses, Debts)
+        window.editShareholder = function(index) {
+            const s = appData.shareholders[index];
+            document.getElementById('sh-edit-index').value = index;
+            document.getElementById('sh-name').value = s.name;
+            document.getElementById('sh-quota').value = s.quota;
+            document.getElementById('sh-paid').value = s.paid;
+            openModal('modal-shareholder');
+        };
+
+        window.addShareholder = function(e) {
+            e.preventDefault();
+            const name = document.getElementById('sh-name').value.trim();
+            const quota = parseFloat(document.getElementById('sh-quota').value);
+            const paid = parseFloat(document.getElementById('sh-paid').value);
+            const editIndex = parseInt(document.getElementById('sh-edit-index').value);
+
+            const existingPermIndex = appData.permanentContributors.findIndex(c => c.name === name);
+            if (existingPermIndex > -1) {
+                appData.permanentContributors[existingPermIndex].quota = quota;
+            } else {
+                appData.permanentContributors.push({ name, quota });
             }
 
-            // حفظ محلي احتياطي إذا كانت الدالة موجودة
-            if (typeof saveData === 'function') {
-                saveData();
+            if (editIndex > -1) {
+                appData.shareholders[editIndex].name = name;
+                appData.shareholders[editIndex].quota = quota;
+                appData.shareholders[editIndex].paid = paid;
+            } else {
+                appData.shareholders.push({ id: 'SH-' + Date.now().toString().slice(-4), name, quota, paid });
             }
-        }
-        function clearFilters() { document.getElementById('filter-from').value = ''; document.getElementById('filter-to').value = ''; renderUI(); }
+
+            closeModal('modal-shareholder');
+            renderUI();
+            pushToDrive();
+        };
+
+        window.editExpense = function(index) {
+            const e = appData.expenses[index];
+            if (!e) return;
+            document.getElementById('ex-edit-index').value = index;
+            document.getElementById('ex-date').value = e.date;
+            document.getElementById('ex-category').value = e.category;
+            handleCategoryChange();
+
+            if (e.category === 'طعام ومقاضي') {
+                document.getElementById('ex-food-item').value = (e.statement || '').replace('طعام: ', '');
+            } else if (e.category === 'فواتير وخدمات') {
+                const srvName = (e.statement || '').replace('فاتورة / خدمة: ', '');
+                if (!appData.serviceTypes.includes(srvName) && srvName) {
+                    appData.serviceTypes.push(srvName);
+                    updateDropdowns();
+                }
+                document.getElementById('ex-service-type').value = srvName;
+            } else {
+                document.getElementById('ex-statement').value = e.statement || '';
+            }
+
+            document.getElementById('ex-amount').value = e.amount;
+            document.getElementById('ex-payer').value = e.payer;
+            document.getElementById('ex-method').value = e.method;
+            openModal('modal-expense');
+        };
+
+        window.addExpense = function(e) {
+            e.preventDefault();
+            const editIndex = parseInt(document.getElementById('ex-edit-index').value);
+            const category = document.getElementById('ex-category').value;
+
+            let statement = '';
+            if (category === 'طعام ومقاضي') {
+                statement = 'طعام: ' + (document.getElementById('ex-food-item').value.trim() || 'غير محدد');
+            } else if (category === 'فواتير وخدمات') {
+                statement = 'فاتورة / خدمة: ' + document.getElementById('ex-service-type').value;
+            } else {
+                statement = document.getElementById('ex-statement').value.trim() || category;
+            }
+
+            const expenseObj = {
+                id: (editIndex > -1 && appData.expenses[editIndex]) ? appData.expenses[editIndex].id : 'EXP-' + Date.now().toString().slice(-4),
+                date: document.getElementById('ex-date').value,
+                statement: statement,
+                category: category,
+                amount: parseFloat(document.getElementById('ex-amount').value),
+                payer: document.getElementById('ex-payer').value,
+                method: document.getElementById('ex-method').value
+            };
+
+            if (editIndex > -1) {
+                appData.expenses[editIndex] = expenseObj;
+            } else {
+                appData.expenses.push(expenseObj);
+            }
+
+            closeModal('modal-expense');
+            renderUI();
+            pushToDrive();
+        };
+
+        window.editDebt = function(index) {
+            const d = appData.debts[index];
+            if (!d) return;
+            document.getElementById('db-edit-index').value = index;
+            document.getElementById('db-creditor').value = d.creditor;
+            document.getElementById('db-date').value = d.date;
+            document.getElementById('db-total').value = d.total;
+            document.getElementById('db-paid').value = d.paid;
+            openModal('modal-debt');
+        };
+
+        window.addDebt = function(e) {
+            e.preventDefault();
+            const editIndex = parseInt(document.getElementById('db-edit-index').value);
+            const debtObj = {
+                id: (editIndex > -1 && appData.debts[editIndex]) ? appData.debts[editIndex].id : 'DBT-' + Date.now().toString().slice(-4),
+                creditor: document.getElementById('db-creditor').value,
+                date: document.getElementById('db-date').value,
+                total: parseFloat(document.getElementById('db-total').value),
+                paid: parseFloat(document.getElementById('db-paid').value)
+            };
+
+            if (editIndex > -1) {
+                appData.debts[editIndex] = debtObj;
+            } else {
+                appData.debts.push(debtObj);
+            }
+
+            closeModal('modal-debt');
+            renderUI();
+            pushToDrive();
+        };
+
+        window.deleteRecord = function(collection, index) {
+            if (confirm('هل أنت متأكد من حذف هذا السجل نهائياً؟')) {
+                appData[collection].splice(index, 1);
+                renderUI();
+                pushToDrive();
+            }
+        };
+
+        // 6. إدارة الجلسات والفلاتر والنوافذ
+        window.clearFilters = function() {
+            document.getElementById('filter-from').value = '';
+            document.getElementById('filter-to').value = '';
+            renderUI();
+        };
 
         window.openTab = function(tabId, event) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.getElementById(tabId).classList.add('active');
-            event.currentTarget.classList.add('active');
+            if (event && event.currentTarget) event.currentTarget.classList.add('active');
         };
+
+        window.openModal = function(id) {
+            updateDropdowns();
+            document.getElementById(id).classList.add('active');
+        };
+
         window.closeModal = function(id) {
-    const modal = document.getElementById(id);
-    modal.classList.remove('active');
-    
-    // تفريغ الحقول وإلغاء وضع التعديل عند إغلاق النافذة
-    const form = modal.querySelector('form');
-    if (form) form.reset();
-    
-    if (document.getElementById('sh-edit-index')) document.getElementById('sh-edit-index').value = "-1";
-    if (document.getElementById('ex-edit-index')) document.getElementById('ex-edit-index').value = "-1";
-    if (document.getElementById('db-edit-index')) document.getElementById('db-edit-index').value = "-1";
-    if (typeof handleCategoryChange === 'function') handleCategoryChange();
-};
-        window.closeModal = function(id) { document.getElementById(id).classList.remove('active'); };
-
-        // فتح نافذة المساهم في وضع التعديل
-function editShareholder(index) {
-    const s = appData.shareholders[index];
-    document.getElementById('sh-edit-index').value = index;
-    document.getElementById('sh-name').value = s.name;
-    document.getElementById('sh-quota').value = s.quota;
-    document.getElementById('sh-paid').value = s.paid;
-    openModal('modal-shareholder');
-}
-
-function addShareholder(e) {
-    e.preventDefault();
-    const name = document.getElementById('sh-name').value.trim();
-    const quota = parseFloat(document.getElementById('sh-quota').value);
-    const paid = parseFloat(document.getElementById('sh-paid').value);
-    const editIndex = parseInt(document.getElementById('sh-edit-index').value);
-
-    // 1. الحفظ أو التحديث في القائمة الدائمة تلقائياً
-    const existingPermIndex = appData.permanentContributors.findIndex(c => c.name === name);
-    if (existingPermIndex > -1) {
-        appData.permanentContributors[existingPermIndex].quota = quota;
-    } else {
-        appData.permanentContributors.push({ name: name, quota: quota });
-    }
-
-    // 2. الإضافة أو التعديل في الجلسة الحالية
-    if (editIndex > -1) {
-        appData.shareholders[editIndex].name = name;
-        appData.shareholders[editIndex].quota = quota;
-        appData.shareholders[editIndex].paid = paid;
-        document.getElementById('sh-edit-index').value = "-1"; // إعادة ضبط وضع التعديل
-    } else {
-        const id = 'SH-' + Date.now().toString().slice(-4);
-        appData.shareholders.push({ id, name, quota, paid });
-    }
-
-    closeModal('modal-shareholder');
-    e.target.reset();
-    renderUI();
-    // إذا كنت تستخدم جوجل درايف استدعِ pushToDrive() هنا
-}
-
-// 1. فتح نافذة المصروفات وتعبئة البيانات للتعديل
-window.editExpense = function(index) {
-    const e = appData.expenses[index];
-    document.getElementById('ex-edit-index').value = index;
-    document.getElementById('ex-date').value = e.date;
-    document.getElementById('ex-category').value = e.category;
-    
-    // إظهار الحقل المناسب حسب التصنيف
-    if (typeof handleCategoryChange === 'function') handleCategoryChange();
-
-    // استرجاع النص الصافي للبيان حسب نوع التصنيف
-    if (e.category === 'طعام ومقاضي' && document.getElementById('ex-food-item')) {
-        document.getElementById('ex-food-item').value = e.statement.replace('طعام: ', '');
-    } else if (e.category === 'فواتير وخدمات' && document.getElementById('ex-service-type')) {
-        document.getElementById('ex-service-type').value = e.statement.replace('فاتورة / خدمة: ', '');
-    } else {
-        document.getElementById('ex-statement').value = e.statement;
-    }
-
-    document.getElementById('ex-amount').value = e.amount;
-    document.getElementById('ex-payer').value = e.payer;
-    document.getElementById('ex-method').value = e.method;
-    
-    openModal('modal-expense');
-};
-
-// 2. حفظ المصروف (إضافة جديد أو تحديث حالي)
-window.addExpense = function(e) {
-    e.preventDefault();
-    const editIndex = parseInt(document.getElementById('ex-edit-index').value);
-    const category = document.getElementById('ex-category').value;
-    
-    let statement = '';
-    if (category === 'طعام ومقاضي' && document.getElementById('ex-food-item')) {
-        statement = 'طعام: ' + (document.getElementById('ex-food-item').value || 'غير محدد');
-    } else if (category === 'فواتير وخدمات' && document.getElementById('ex-service-type')) {
-        statement = 'فاتورة / خدمة: ' + document.getElementById('ex-service-type').value;
-    } else {
-        statement = document.getElementById('ex-statement').value || category;
-    }
-
-    const expenseObj = {
-        id: (editIndex > -1) ? appData.expenses[editIndex].id : 'EXP-' + Date.now().toString().slice(-4),
-        date: document.getElementById('ex-date').value,
-        statement: statement,
-        category: category,
-        amount: parseFloat(document.getElementById('ex-amount').value),
-        payer: document.getElementById('ex-payer').value,
-        method: document.getElementById('ex-method').value
-    };
-
-    if (editIndex > -1) {
-        appData.expenses[editIndex] = expenseObj; // تحديث السجل الحالي
-        document.getElementById('ex-edit-index').value = "-1";
-    } else {
-        appData.expenses.push(expenseObj); // إضافة سجل جديد
-    }
-
-    closeModal('modal-expense');
-    e.target.reset();
-    if (typeof handleCategoryChange === 'function') handleCategoryChange();
-    renderUI();
-    if (typeof pushToDrive === 'function') pushToDrive();
-};
-
-// 3. فتح نافذة الديون وتعبئة البيانات للتعديل
-window.editDebt = function(index) {
-    const d = appData.debts[index];
-    document.getElementById('db-edit-index').value = index;
-    document.getElementById('db-creditor').value = d.creditor;
-    document.getElementById('db-date').value = d.date;
-    document.getElementById('db-total').value = d.total;
-    document.getElementById('db-paid').value = d.paid;
-    
-    openModal('modal-debt');
-};
-
-// 4. حفظ الدين (إضافة جديد أو تحديث حالي)
-window.addDebt = function(e) {
-    e.preventDefault();
-    const editIndex = parseInt(document.getElementById('db-edit-index').value);
-
-    const debtObj = {
-        id: (editIndex > -1) ? appData.debts[editIndex].id : 'DBT-' + Date.now().toString().slice(-4),
-        creditor: document.getElementById('db-creditor').value,
-        date: document.getElementById('db-date').value,
-        total: parseFloat(document.getElementById('db-total').value),
-        paid: parseFloat(document.getElementById('db-paid').value)
-    };
-
-    if (editIndex > -1) {
-        appData.debts[editIndex] = debtObj; // تحديث الدين الحالي
-        document.getElementById('db-edit-index').value = "-1";
-    } else {
-        appData.debts.push(debtObj); // إضافة دين جديد
-    }
-
-    closeModal('modal-debt');
-    e.target.reset();
-    renderUI();
-    if (typeof pushToDrive === 'function') pushToDrive();
-};
-        window.deleteRecord = function(collection, index) {
-            if(confirm('هل أنت متأكد من حذف هذا السجل نهائياً؟')) { appData[collection].splice(index, 1); renderUI(); pushToDrive(); }
+            const modal = document.getElementById(id);
+            modal.classList.remove('active');
+            const form = modal.querySelector('form');
+            if (form) form.reset();
+            document.getElementById('sh-edit-index').value = "-1";
+            document.getElementById('ex-edit-index').value = "-1";
+            document.getElementById('db-edit-index').value = "-1";
+            handleCategoryChange();
         };
 
         window.exportBackup = function() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
             const downloadNode = document.createElement('a');
-            downloadNode.setAttribute("href", dataStr); downloadNode.setAttribute("download", "backup_" + new Date().toISOString().split('T')[0] + ".json");
-            document.body.appendChild(downloadNode); downloadNode.click(); downloadNode.remove();
+            downloadNode.setAttribute("href", dataStr);
+            downloadNode.setAttribute("download", "masroofat_backup_" + new Date().toISOString().split('T')[0] + ".json");
+            document.body.appendChild(downloadNode);
+            downloadNode.click();
+            downloadNode.remove();
         };
 
         window.importBackup = function(event) {
-            const file = event.target.files[0]; if (!file) return;
+            const file = event.target.files[0];
+            if (!file) return;
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
                     const importedData = JSON.parse(e.target.result);
-                    if(importedData.shareholders && importedData.expenses) { appData = importedData; renderUI(); pushToDrive(); alert('تم الاستعادة بنجاح!'); } 
-                    else { alert('ملف النسخة الاحتياطية غير متوافق.'); }
-                } catch (err) { alert('حدث خطأ أثناء قراءة الملف.'); }
+                    if (importedData.shareholders && importedData.expenses) {
+                        appData = importedData;
+                        renderUI();
+                        pushToDrive();
+                        alert('تم استعادة النسخة الاحتياطية بنجاح!');
+                    } else {
+                        alert('ملف النسخة الاحتياطية غير متوافق.');
+                    }
+                } catch (err) {
+                    alert('حدث خطأ أثناء قراءة الملف.');
+                }
             };
-            reader.readAsText(file); event.target.value = ''; 
+            reader.readAsText(file);
+            event.target.value = '';
         };
 
-        function createNewSession() {
-    if(confirm('تحذير: سيتم تصفير المصروفات والديون لبدء دورة جديدة. (سيتم الاحتفاظ بقائمة المساهمين الدائمة). هل أنت متأكد؟')) {
-        const savedContributors = appData.permanentContributors || [];
-        const savedServices = appData.serviceTypes || ['كهرباء', 'مياه', 'إنترنت', 'غاز'];
-        
-        appData = JSON.parse(JSON.stringify(emptyState));
-        appData.sessionDate = new Date().toISOString().split('T')[0];
-        appData.permanentContributors = savedContributors;
-        appData.serviceTypes = savedServices;
+        window.createNewSession = function() {
+            if (confirm('تحذير: سيتم تصفير المصروفات والديون لبدء دورة جديدة (مع الاحتفاظ بقائمة المساهمين الدائمة). هل أنت متأكد؟')) {
+                const savedContributors = appData.permanentContributors || [];
+                const savedServices = appData.serviceTypes || ['كهرباء', 'مياه', 'إنترنت', 'غاز', 'بلدية'];
 
-        // سؤال المستخدم إذا كان يرغب بإدراج جميع المساهمين الدائمين في الجلسة الجديدة تلقائياً
-        if (savedContributors.length > 0 && confirm('هل تريد إدراج المساهمين المحفوظين تلقائياً في هذه الجلسة الجديدة (مع تصفير المبالغ المدفوعة)؟')) {
-            appData.shareholders = savedContributors.map((c, i) => ({
-                id: 'SH-00' + (i + 1),
-                name: c.name,
-                quota: c.quota,
-                paid: 0
-            }));
-        }
+                appData = JSON.parse(JSON.stringify(emptyState));
+                appData.sessionDate = new Date().toISOString().split('T')[0];
+                appData.permanentContributors = savedContributors;
+                appData.serviceTypes = savedServices;
 
-        clearFilters();
-        alert('تم بدء دورة مالية جديدة بنجاح.');
-    }
-}
+                if (savedContributors.length > 0 && confirm('هل تريد إدراج المساهمين المحفوظين تلقائياً في هذه الجلسة الجديدة (مع تصفير المبالغ المدفوعة)؟')) {
+                    appData.shareholders = savedContributors.map((c, i) => ({
+                        id: 'SH-00' + (i + 1),
+                        name: c.name,
+                        quota: c.quota,
+                        paid: 0
+                    }));
+                }
 
-        // Start Fetching Data
+                clearFilters();
+                pushToDrive();
+                alert('تم بدء دورة مالية جديدة بنجاح.');
+            }
+        };
+
+        // تشغيل التطبيق
         fetchFromDrive();
     </script>
 </body>
