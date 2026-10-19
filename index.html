@@ -97,11 +97,71 @@
     color: var(--primary);
     font-weight: bold;
 }
+        /* شاشة القفل */
+#app-lock-screen {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+#app-lock-screen.unlocked {
+    display: none;
+}
+.lock-box {
+    background: #fff;
+    padding: 30px 25px;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    text-align: center;
+    width: 100%;
+    max-width: 360px;
+}
+.lock-box i.lock-icon {
+    font-size: 45px;
+    color: var(--primary);
+    margin-bottom: 15px;
+}
+.pin-input {
+    width: 100%;
+    padding: 12px;
+    font-size: 22px;
+    text-align: center;
+    letter-spacing: 8px;
+    border: 2px solid var(--border);
+    border-radius: 8px;
+    margin: 15px 0;
+    font-weight: bold;
+    outline: none;
+}
+.pin-input:focus {
+    border-color: var(--primary);
+}
     </style>
 </head>
 <body>
+    <!-- شاشة قفل التطبيق -->
+    <div id="app-lock-screen">
+        <div class="lock-box">
+            <i class="fas fa-shield-alt lock-icon"></i>
+            <h3 style="margin: 0 0 5px; color: #333;">النظام محمي</h3>
+            <p style="margin: 0; font-size: 13px; color: #858796;">أدخل رمز المرور (PIN) للدخول</p>
+            <form onsubmit="unlockApp(event)">
+                <input type="password" id="pin-input" class="pin-input" placeholder="••••" inputmode="numeric" required autofocus>
+                <p id="lock-error" style="color: var(--danger); font-size: 13px; margin: 0 0 10px; display: none;">رمز المرور غير صحيح!</p>
+                <button type="submit" class="btn" style="width: 100%; justify-content: center; padding: 12px;">
+                    <i class="fas fa-unlock"></i> فتح النظام
+                </button>
+            </form>
+        </div>
+    </div>
     <div class="container">
         <div class="header">
+            <button class="btn btn-sm" style="background: var(--dark);" onclick="changeAppPin()" title="تغيير رمز المرور"><i class="fas fa-key"></i> تغيير الرمز</button>
+<button class="btn btn-danger btn-sm" onclick="lockAppNow()" title="قفل التطبيق الآن"><i class="fas fa-lock"></i> قفل</button>
             <h2><i class="fas fa-chart-line"></i> مصروفــــــاتي</h2>
             <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                 <span id="sync-indicator" style="font-size: 13px; font-weight: bold; color: var(--primary);"><i class="fas fa-cloud"></i> جاري الاتصال...</span>
@@ -750,7 +810,67 @@
                 alert('تم بدء دورة مالية جديدة بنجاح.');
             }
         };
+// ==========================================
+        // نظام حماية وقفل التطبيق (PIN Lock System)
+        // الرمز الافتراضي عند التشغيل لأول مرة هو: 1234
+        // ==========================================
+        
+        function checkLockState() {
+            const isUnlocked = sessionStorage.getItem('masroofat_unlocked');
+            const lockScreen = document.getElementById('app-lock-screen');
+            if (isUnlocked === 'true') {
+                lockScreen.classList.add('unlocked');
+            } else {
+                lockScreen.classList.remove('unlocked');
+            }
+        }
 
+        window.unlockApp = function(e) {
+            e.preventDefault();
+            const enteredPin = document.getElementById('pin-input').value;
+            // يقرأ الرمز المحفوظ في Google Drive، أو المحلي، أو يستخدم 1234 كافتراضي
+            const savedPin = (appData && appData.appPin) || localStorage.getItem('masroofat_pin') || "1234";
+
+            if (enteredPin === savedPin) {
+                sessionStorage.setItem('masroofat_unlocked', 'true');
+                document.getElementById('app-lock-screen').classList.add('unlocked');
+                document.getElementById('pin-input').value = '';
+                document.getElementById('lock-error').style.display = 'none';
+            } else {
+                document.getElementById('lock-error').style.display = 'block';
+                document.getElementById('pin-input').value = '';
+                document.getElementById('pin-input').focus();
+            }
+        };
+
+        window.lockAppNow = function() {
+            sessionStorage.removeItem('masroofat_unlocked');
+            document.getElementById('app-lock-screen').classList.remove('unlocked');
+            document.getElementById('pin-input').focus();
+        };
+
+        window.changeAppPin = function() {
+            const currentSavedPin = (appData && appData.appPin) || localStorage.getItem('masroofat_pin') || "1234";
+            const oldPin = prompt("أدخل رمز المرور الحالي:");
+            if (oldPin === null) return;
+
+            if (oldPin !== currentSavedPin) {
+                return alert("رمز المرور الحالي غير صحيح!");
+            }
+
+            const newPin = prompt("أدخل رمز المرور الجديد (أرقام أو حروف):");
+            if (newPin && newPin.trim().length >= 3) {
+                appData.appPin = newPin.trim();
+                localStorage.setItem('masroofat_pin', newPin.trim());
+                pushToDrive(); // يحفظ الرمز الجديد في Google Drive ليتحدث في كل أجهزتك
+                alert("تم تغيير رمز المرور ومزامنته بنجاح!");
+            } else if (newPin !== null) {
+                alert("يجب أن يتكون الرمز من 3 خانات على الأقل.");
+            }
+        };
+
+        // تفعيل فحص القفل فور فتح الصفحة
+        checkLockState();
         // تشغيل التطبيق
         fetchFromDrive();
     </script>
