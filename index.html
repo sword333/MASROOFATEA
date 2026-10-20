@@ -140,6 +140,8 @@
 .pin-input:focus {
     border-color: var(--primary);
 }
+        #modal-shareholder, #modal-expense, #modal-debt { display: none; }
+#modal-shareholder.active, #modal-expense.active, #modal-debt.active { display: flex !important; }
     </style>
 </head>
 <body>
@@ -282,7 +284,7 @@
     </div> <!-- إغلاق container -->
 
     <!-- Modals (النوافذ المنبثقة المحدثة بالكامل) -->
-    <!-- 1. نافذة إضافة مساهم للجلسة (خاصة بصفحة المساهمين فقط) -->
+    <!-- 1. نافذة إضافة مساهم (مخفية ولا تظهر إلا عند الضغط على الزر) -->
     <div id="modal-shareholder" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('modal-shareholder')">&times;</span>
@@ -308,7 +310,7 @@
         </div>
     </div>
 
-    <!-- 2. نافذة إضافة مصروف (هنا يظهر اختيار مساهم واحد أو عدة مساهمين مع حصصهم) -->
+    <!-- 2. نافذة إضافة مصروف -->
     <div id="modal-expense" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('modal-expense')">&times;</span>
@@ -349,7 +351,6 @@
 
                 <div class="form-group"><label>المبلغ الإجمالي للمصروف</label><input type="number" id="ex-amount" step="0.01" required></div>
                 
-                <!-- قسم اختيار الدافع (مساهم واحد أو عدة مساهمين) داخل نافذة المصروفات -->
                 <div class="form-group" style="background: #f8f9fc; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                         <label style="margin: 0;">من قام بالدفع؟</label>
@@ -359,12 +360,10 @@
                         </label>
                     </div>
 
-                    <!-- خيار 1: مساهم واحد فقط -->
                     <div id="single-payer-group">
                         <select id="ex-payer" required></select>
                     </div>
 
-                    <!-- خيار 2: عدة مساهمين وتحديد مبلغ كل شخص -->
                     <div id="multi-payer-group" style="display: none;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                             <span style="font-size: 12px; color: #666;">اختر المساهمين وحدد المبلغ المدفوع من كل شخص:</span>
@@ -385,33 +384,7 @@
         </div>
     </div>
 
-                    <!-- 1. وضع الدافع الواحد (الافتراضي) -->
-                    <div id="single-payer-group">
-                        <select id="ex-payer"></select>
-                    </div>
-
-                    <!-- 2. وضع تعدد الدافعين وتحديد الحصص -->
-                    <div id="multi-payer-group" style="display: none;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-                            <span style="font-size: 12px; color: #666;">حدد المشاركين وحصة كل منهم:</span>
-                            <button type="button" class="btn btn-sm" onclick="splitExpenseEqually()" style="font-size: 11px; padding: 4px 8px;">
-                                <i class="fas fa-balance-scale"></i> تقسيم بالتساوي
-                            </button>
-                        </div>
-                        <div id="multi-payer-list" style="max-height: 160px; overflow-y: auto;"></div>
-                    </div>
-                </div>
-                </div>
-
-                <div class="form-group"><label>اسم المساهم</label><input type="text" id="sh-name" required></div>
-                <div class="form-group"><label>الحصة المقررة</label><input type="number" id="sh-quota" step="0.01" required></div>
-                <div class="form-group"><label>المبلغ المدفوع</label><input type="number" id="sh-paid" step="0.01" required></div>
-                <button type="submit" class="btn">حفظ ومزامنة</button>
-            </form>
-        </div>
-    </div>
-    
-    <!-- 3. نافذة الديون -->
+    <!-- 3. نافذة إضافة دين -->
     <div id="modal-debt" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('modal-debt')">&times;</span>
@@ -424,7 +397,7 @@
                 <div class="form-group"><label>إجمالي مبلغ الدين</label><input type="number" id="db-total" step="0.01" required></div>
                 <div class="form-group"><label>المبلغ المقرر سداده في كل جلسة (قسط الدورة)</label><input type="number" id="db-session-amount" step="0.01" value="0" required></div>
                 <div class="form-group"><label>المبلغ المسدد حتى الآن</label><input type="number" id="db-paid" step="0.01" value="0" required></div>
-                <button type="submit" class="btn">حفظ ومزامنة</button>
+                <button type="submit" class="btn">حفظ</button>
             </form>
         </div>
     </div>
