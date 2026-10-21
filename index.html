@@ -482,62 +482,96 @@
 
         async function fetchFromDrive() {
             const indicator = document.getElementById('sync-indicator');
+            let localData = null;
+
+            // 1. قراءة النسخة المحلية أولاً
             const localSaved = localStorage.getItem('masroofat_appData');
             if (localSaved) {
                 try {
-                    appData = JSON.parse(localSaved);
+                    localData = JSON.parse(localSaved);
+                    appData = localData;
                     ensureDataStructure();
                     renderUI();
                 } catch(e) {}
             }
 
             if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("ضع_الرابط")) {
-                if (indicator) indicator.innerHTML = '<i class="fas fa-hdd"></i> وضع الحفظ المحلي';
-                ensureDataStructure();
-                renderUI();
+                if (indicator) indicator.innerHTML = '<i class="fas fa-hdd"></i> وضع الحفظ المحلي (الرابط غير مضاف)';
                 return;
             }
 
-            if (indicator) indicator.innerHTML = '<i class="fas fa-sync fa-spin"></i> جاري جلب البيانات...';
+            if (indicator) indicator.innerHTML = '<i class="fas fa-sync fa-spin"></i> جاري المزامنة...';
             try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, { redirect: 'follow' });
+                // إضافة (?t=وقت_الحالي) لإجبار المتصفح على جلب أحدث بيانات من الشيت وعدم قراءة الكاش القديم
+                const noCacheUrl = GOOGLE_SCRIPT_URL + (GOOGLE_SCRIPT_URL.includes('?') ? '&' : '?') + 't=' + Date.now();
+                const response = await fetch(noCacheUrl, {
+                    method: 'GET',
+                    redirect: 'follow',
+                    cache: 'no-store'
+                });
+
                 const textData = await response.text();
-                const data = JSON.parse(textData);
-                if (data && typeof data === 'object') {
-                    appData = data;
+                const driveData = JSON.parse(textData);
+
+                if (driveData && typeof driveData === 'object' && Array.isArray(driveData.shareholders)) {
+                    const driveTime = Number(driveData.lastUpdated) || 0;
+                    const localTime = (localData && Number(localData.lastUpdated)) || 0;
+
+                    // إذا كانت بيانات المتصفح أحدث من الشيت (مثلاً لم يكتمل الرفع بعد)، نحافظ عليها ونرفعها للشيت
+                    if (localTime > driveTime) {
+                        appData = localData;
+                        ensureDataStructure();
+                        renderUI();
+                        pushToDrive();
+                        return;
+                    }
+
+                    // إذا كانت بيانات الشيت أحدث (أو فُتح التطبيق من جهاز آخر)، نعتمد بيانات الشيت
+                    appData = driveData;
                     ensureDataStructure();
+                    localStorage.setItem('masroofat_appData', JSON.stringify(appData));
                 }
+
                 renderUI();
-                if (indicator) indicator.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success)"></i> متصل بـ Drive';
+                if (indicator) indicator.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success)"></i> متزامن مع Drive';
             } catch (error) {
                 console.error("Fetch error:", error);
                 if (indicator) indicator.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--warning)"></i> يعمل محلياً';
-                ensureDataStructure();
-                renderUI();
             }
         }
 
         async function pushToDrive() {
             ensureDataStructure();
+            // تسجيل وقت التعديل بدقة لمنع البيانات القديمة من الكتابة فوقه
+            appData.lastUpdated = Date.now();
             localStorage.setItem('masroofat_appData', JSON.stringify(appData));
-            const indicator = document.getElementById('sync-indicator');
-            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("https://script.google.com/macros/s/AKfycbxqPfoP2oqDPE4eT4aayRiU9OhEhaCXRtONUCHHK00cs7xDaFT1vKc2OVJOLqfaI2Vj/exec")) return;
 
-            if (indicator) indicator.innerHTML = '<i class="fas fa-cloud-upload-alt fa-pulse"></i> جاري الحفظ...';
+            const indicator = document.getElementById('sync-indicator');
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("ضع_الرابط")) {
+                if (indicator) indicator.innerHTML = '<i class="fas fa-exclamation-circle" style="color: var(--warning)"></i> حُفظ محلياً (أضف رابط Drive)';
+                return;
+            }
+
+            if (indicator) indicator.innerHTML = '<i class="fas fa-cloud-upload-alt fa-pulse"></i> جاري الحفظ في Drive...';
             try {
-                await fetch(GOOGLE_SCRIPT_URL, {
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
                     redirect: 'follow',
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify(appData)
                 });
-                if (indicator) indicator.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success)"></i> تم الحفظ في Drive';
+
+                const resText = await response.text();
+                if (resText.includes("Success")) {
+                    if (indicator) indicator.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success)"></i> تم الحفظ في Drive';
+                } else {
+                    throw new Error("Unexpected response: " + resText);
+                }
             } catch (error) {
                 console.error("Save error:", error);
-                if (indicator) indicator.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger)"></i> حُفظ محلياً فقط';
+                if (indicator) indicator.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger)"></i> حُفظ بالجهاز (تعذر التحديث في Drive)';
             }
         }
-
         const formatCurrency = (num) => Number(num || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ر.س';
         const getStatusBadge = (remaining, total) => {
             if (remaining <= 0) return '<span class="badge success">مكتمل بالكامل</span>';
