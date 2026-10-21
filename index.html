@@ -430,7 +430,7 @@
 
                 <div class="form-group">
                     <label>طريقة الدفع</label>
-                    <select id="ex-method"><option>تحويل بنكي</option><option>نقدي</option><option>بطاقة مدى / ائتمان</option></select>
+                    <select id="ex-method"><option>تحويل بنكي</option><option>نقدي</option><option>بطاقة ائتمان</option></select>
                 </div>
                 <button type="submit" class="btn" style="width: 100%; justify-content: center;">حفظ المصروف</button>
             </form>
@@ -572,7 +572,7 @@
                 if (indicator) indicator.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger)"></i> حُفظ بالجهاز (تعذر التحديث في Drive)';
             }
         }
-        const formatCurrency = (num) => Number(num || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ر.س';
+        const formatCurrency = (num) => Number(num || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ر.ع';
         const getStatusBadge = (remaining, total) => {
             if (remaining <= 0) return '<span class="badge success">مكتمل بالكامل</span>';
             if (remaining >= total) return '<span class="badge danger">غير مسدد</span>';
