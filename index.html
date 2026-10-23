@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مصروفــــــاتي</title>
+    <title>مصروفــــــاتي - إدارة الدورات المالية</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -15,6 +15,7 @@
             --dark: #5a5c69;
             --light: #f8f9fc;
             --border: #e3e6f0;
+            --info: #36b9cc;
         }
         * { box-sizing: border-box; }
         body {
@@ -25,12 +26,36 @@
             padding: 15px;
             line-height: 1.6;
         }
-        .container { max-width: 1200px; margin: 0 auto; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px; }
-        .header h2 { margin: 0; color: #333; font-size: 1.5rem; }
+        .container { max-width: 1250px; margin: 0 auto; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px; background: #fff; padding: 15px 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+        .header h2 { margin: 0; color: #333; font-size: 1.4rem; display: flex; align-items: center; gap: 10px; }
         
+        .session-switcher-bar {
+            background: #eef2f7;
+            padding: 10px 15px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+        .session-selector-group { display: flex; align-items: center; gap: 10px; }
+        .session-select {
+            padding: 8px 12px;
+            border-radius: 6px;
+            border: 1px solid var(--primary);
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--primary);
+            background: #fff;
+            min-width: 220px;
+        }
+
         .dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 25px; }
-        .card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15); border-right: 4px solid var(--primary); }
+        .card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.10); border-right: 4px solid var(--primary); }
         .card.expenses { border-right-color: var(--danger); }
         .card.balance { border-right-color: var(--success); }
         .card.debts { border-right-color: var(--warning); }
@@ -43,206 +68,185 @@
         .tab-btn.active { background: var(--primary); color: #fff; }
         
         .controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; flex-wrap: wrap; gap: 10px; }
-        .filter-group { display: flex; gap: 10px; align-items: center; background: var(--light); padding: 10px; border-radius: 8px; border: 1px solid var(--border); }
+        .filter-group { display: flex; gap: 10px; align-items: center; background: var(--light); padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); }
         .filter-group input { padding: 5px; border: 1px solid var(--border); border-radius: 4px; }
         
-        .btn { background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 5px; cursor: pointer; font-size: 14px; font-weight: 600; transition: background 0.3s; display: inline-flex; align-items: center; gap: 8px; }
+        .btn { background: var(--primary); color: white; border: none; padding: 8px 14px; border-radius: 5px; cursor: pointer; font-size: 13px; font-weight: 600; transition: background 0.3s; display: inline-flex; align-items: center; gap: 6px; }
         .btn:hover { background: var(--primary-hover); }
         .btn-danger { background: var(--danger); }
         .btn-danger:hover { background: #c82333; }
         .btn-success { background: var(--success); }
         .btn-success:hover { background: #13855c; }
-        .btn-sm { padding: 5px 10px; font-size: 12px; }
+        .btn-warning { background: var(--warning); color: #333; }
+        .btn-info { background: var(--info); }
+        .btn-sm { padding: 4px 8px; font-size: 11px; }
         
-        .tab-content { display: none; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.15); }
+        .tab-content { display: none; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.10); }
         .tab-content.active { display: block; }
         
         .table-responsive { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        table { width: 100%; border-collapse: collapse; min-width: 700px; }
-        th, td { padding: 12px 15px; text-align: right; border-bottom: 1px solid var(--border); font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; min-width: 750px; }
+        th, td { padding: 10px 12px; text-align: right; border-bottom: 1px solid var(--border); font-size: 13.5px; }
         th { background-color: var(--light); color: #4a4b53; font-weight: 600; }
-        tr:hover { background-color: var(--light); }
+        tr:hover { background-color: #fcfcfd; }
         
-        .badge { padding: 5px 10px; border-radius: 15px; font-size: 11px; font-weight: bold; display: inline-block; }
+        .badge { padding: 4px 8px; border-radius: 12px; font-size: 11px; font-weight: bold; display: inline-block; }
         .badge.success { background: #1cc88a20; color: var(--success); }
         .badge.danger { background: #e74a3b20; color: var(--danger); }
         .badge.warning { background: #f6c23e20; color: #b18817; }
+        .badge.info { background: #36b9cc20; color: var(--info); }
         
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
-        .modal.active { display: flex; }
-        .modal-content { background: #fff; padding: 25px; border-radius: 8px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; position: relative; }
+        .modal.active { display: flex !important; }
+        .modal-content { background: #fff; padding: 25px; border-radius: 8px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; position: relative; }
         .close-modal { position: absolute; top: 15px; left: 15px; cursor: pointer; font-size: 20px; color: #858796; }
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 14px; }
-        .form-group input, .form-group select { width: 100%; padding: 10px; border: 1px solid var(--border); border-radius: 5px; font-family: inherit; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 13px; }
+        .form-group input, .form-group select { width: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: 5px; font-family: inherit; font-size: 14px; }
         
-        .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-top: 20px; }
+        .settings-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 20px; margin-top: 20px; }
         .settings-card { border: 1px solid var(--border); padding: 20px; border-radius: 8px; text-align: center; }
 
-        @media (max-width: 768px) {
-            .header h2 { font-size: 1.2rem; }
-            .dashboard { grid-template-columns: 1fr 1fr; }
-            .filter-group { width: 100%; flex-wrap: wrap; justify-content: space-between; }
-        }
-        @media (max-width: 480px) { .dashboard { grid-template-columns: 1fr; } }
-        .app-footer {
-    text-align: center;
-    margin-top: 40px;
-    padding: 15px;
-    color: #858796;
-    font-size: 14px;
-    border-top: 1px solid var(--border);
-}
-.app-footer span {
-    color: var(--primary);
-    font-weight: bold;
-}
-        /* شاشة القفل */
-#app-lock-screen {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 20px;
-}
-#app-lock-screen.unlocked {
-    display: none;
-}
-.lock-box {
-    background: #fff;
-    padding: 30px 25px;
-    border-radius: 12px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-    text-align: center;
-    width: 100%;
-    max-width: 360px;
-}
-.lock-box i.lock-icon {
-    font-size: 45px;
-    color: var(--primary);
-    margin-bottom: 15px;
-}
-.pin-input {
-    width: 100%;
-    padding: 12px;
-    font-size: 22px;
-    text-align: center;
-    letter-spacing: 8px;
-    border: 2px solid var(--border);
-    border-radius: 8px;
-    margin: 15px 0;
-    font-weight: bold;
-    outline: none;
-}
-.pin-input:focus {
-    border-color: var(--primary);
-}
-        #modal-shareholder, #modal-expense, #modal-debt { display: none; }
-#modal-shareholder.active, #modal-expense.active, #modal-debt.active { display: flex !important; }
+        .mp-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; background: #fff; padding: 8px 12px; margin-bottom: 8px; border-radius: 6px; border: 1px solid var(--border); }
+        .mp-row label { margin: 0; display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; flex: 1; }
+        .mp-row input[type="number"] { width: 120px; padding: 5px 8px; text-align: center; border: 1px solid var(--primary); border-radius: 5px; font-weight: bold; }
+
+        .app-footer { text-align: center; margin-top: 40px; padding: 15px; color: #858796; font-size: 13px; border-top: 1px solid var(--border); }
+        .app-footer span { color: var(--primary); font-weight: bold; }
     </style>
 </head>
 <body>
-    <!-- شاشة قفل التطبيق المحدثة -->
+    <!-- شاشة القفل -->
     <div id="app-lock-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #4e73df 0%, #224abe 100%); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px;">
-        <div class="lock-box" style="background: #fff; padding: 30px 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; width: 100%; max-width: 360px;">
+        <div style="background: #fff; padding: 30px 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; width: 100%; max-width: 360px;">
             <i class="fas fa-shield-alt" style="font-size: 45px; color: var(--primary); margin-bottom: 15px;"></i>
             <h3 style="margin: 0 0 5px; color: #333;">النظام محمي</h3>
             <p style="margin: 0; font-size: 13px; color: #858796;">أدخل رمز المرور (الافتراضي: 1234)</p>
-            
             <input type="password" id="pin-input" placeholder="••••" inputmode="numeric" 
                    style="width: 100%; padding: 12px; font-size: 22px; text-align: center; letter-spacing: 8px; border: 2px solid var(--border); border-radius: 8px; margin: 15px 0; font-weight: bold; outline: none;"
                    onkeydown="if(event.key === 'Enter') unlockApp()">
-            
             <p id="lock-error" style="color: var(--danger); font-size: 13px; margin: 0 0 10px; display: none; font-weight: bold;">رمز المرور غير صحيح!</p>
-            
-            <button type="button" class="btn" onclick="unlockApp()" style="width: 100%; justify-content: center; padding: 12px; font-size: 16px;">
+            <button type="button" class="btn" onclick="unlockApp()" style="width: 100%; justify-content: center; padding: 12px; font-size: 15px;">
                 <i class="fas fa-unlock"></i> فتح النظام
             </button>
         </div>
     </div>
+
     <div class="container">
+        <!-- شريط الرأس -->
         <div class="header">
-            <button class="btn btn-sm" style="background: var(--dark);" onclick="changeAppPin()" title="تغيير رمز المرور"><i class="fas fa-key"></i> تغيير الرمز</button>
-<button class="btn btn-danger btn-sm" onclick="lockAppNow()" title="قفل التطبيق الآن"><i class="fas fa-lock"></i> قفل</button>
-            <h2><i class="fas fa-chart-line"></i> مصروفــــــاتي</h2>
-            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                <span id="sync-indicator" style="font-size: 13px; font-weight: bold; color: var(--primary);"><i class="fas fa-cloud"></i> جاري الاتصال...</span>
-                <span class="badge success" id="session-indicator" style="font-size: 14px; padding: 8px 15px;">الجلسة الحالية</span>
-                <footer class="app-footer">
-    تم التصميم والتطوير بواسطة: <span>سيف عامر المعمري</span> &copy; <script>document.write(new Date().getFullYear())</script>
-</footer>
+            <h2><i class="fas fa-wallet" style="color: var(--primary);"></i> مصروفــــــاتي</h2>
+            <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
+                <span id="sync-indicator" style="font-size: 12px; font-weight: bold; color: var(--primary);"><i class="fas fa-cloud"></i> جاري الاتصال...</span>
+                <button class="btn btn-sm" style="background: var(--dark);" onclick="changeAppPin()"><i class="fas fa-key"></i> الرمز</button>
+                <button class="btn btn-danger btn-sm" onclick="lockAppNow()"><i class="fas fa-lock"></i> قفل</button>
             </div>
         </div>
 
+        <!-- شريط إدارة والتنقل بين الدورات (الجلسات) -->
+        <div class="session-switcher-bar">
+            <div class="session-selector-group">
+                <i class="fas fa-history" style="color: var(--primary); font-size: 18px;"></i>
+                <label style="font-weight: bold; font-size: 13px;">الدورة المالية المعروضة:</label>
+                <select id="session-select-box" class="session-select" onchange="switchSession(this.value)"></select>
+                <span id="active-session-badge" class="badge success">الدورة الحالية النشطة</span>
+            </div>
+            <div style="display: flex; gap: 8px;">
+                <button class="btn btn-success btn-sm" onclick="openStartNewSessionModal()">
+                    <i class="fas fa-calendar-plus"></i> بدء دورة جديدة (مع ترحيل الديون)
+                </button>
+            </div>
+        </div>
+
+        <!-- لوحة الإحصائيات للدورة المختارة -->
         <div class="dashboard">
-            <div class="card"><h3>إجمالي الاشتراكات المحصلة</h3><p id="total-subscriptions">0.00</p></div>
-            <div class="card expenses"><h3>إجمالي المصروفات</h3><p id="total-expenses">0.00</p></div>
-            <div class="card balance"><h3>صافي الرصيد المتاح</h3><p id="net-balance">0.00</p></div>
-            <div class="card debts"><h3>إجمالي الديون المتبقية</h3><p id="total-debts">0.00</p></div>
+            <div class="card"><h3>إجمالي الاشتراكات المحصلة</h3><p id="total-subscriptions">0.00 ر.ع</p></div>
+            <div class="card expenses"><h3>إجمالي المصروفات</h3><p id="total-expenses">0.00 ر.ع</p></div>
+            <div class="card balance"><h3>صافي الرصيد المتاح</h3><p id="net-balance">0.00 ر.ع</p></div>
+            <div class="card debts"><h3>إجمالي الديون المتبقية</h3><p id="total-debts">0.00 ر.ع</p></div>
         </div>
 
+        <!-- أزرار التبويبات -->
         <div class="tabs">
-            <button class="tab-btn active" onclick="openTab('shareholders', event)">سجل المساهمين</button>
-            <button class="tab-btn" onclick="openTab('expenses', event)">سجل المصروفات</button>
-            <button class="tab-btn" onclick="openTab('debts', event)">الديون والالتزامات</button>
-            <button class="tab-btn" onclick="openTab('sessions', event)"><i class="fas fa-database"></i> إدارة البيانات</button>
+            <button class="tab-btn active" onclick="openTab('shareholders', event)"><i class="fas fa-users"></i> سجل المساهمين</button>
+            <button class="tab-btn" onclick="openTab('expenses', event)"><i class="fas fa-receipt"></i> سجل المصروفات</button>
+            <button class="tab-btn" onclick="openTab('debts', event)"><i class="fas fa-hand-holding-usd"></i> الديون والالتزامات</button>
+            <button class="tab-btn" onclick="openTab('sessions', event)"><i class="fas fa-database"></i> إدارة الدورات والنسخ</button>
         </div>
 
-        <!-- Shareholders Tab -->
+        <!-- تبويب 1: المساهمون -->
         <div id="shareholders" class="tab-content active">
             <div class="controls">
-                <h3 style="margin:0">المساهمون والاشتراكات</h3>
-                <button class="btn" onclick="openModal('modal-shareholder')"><i class="fas fa-plus"></i> إضافة مساهم</button>
-            </div>
-            <div class="table-responsive">
-                <table>
-                    <thead><tr><th>المعرف</th><th>اسم المساهم</th><th>الحصة المقررة</th><th>المبلغ المدفوع</th><th>المتبقي / العجز</th><th>حالة السداد</th><th>إجراء</th></tr></thead>
-                    <tbody id="shareholders-body"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Expenses Tab -->
-        <div id="expenses" class="tab-content">
-            <div class="controls">
-                <h3 style="margin:0">سجل المصروفات التفصيلي</h3>
-                <div class="filter-group">
-                    <label>من:</label><input type="date" id="filter-from" onchange="renderUI()">
-                    <label>إلى:</label><input type="date" id="filter-to" onchange="renderUI()">
-                    <button class="btn btn-sm" onclick="clearFilters()"><i class="fas fa-times"></i> إلغاء الفلتر</button>
-                </div>
-                <button class="btn" onclick="openModal('modal-expense')"><i class="fas fa-plus"></i> إضافة مصروف</button>
-            </div>
-            <div class="table-responsive">
-                <table>
-                    <thead><tr><th>التاريخ</th><th>بيان المصروف</th><th>التصنيف</th><th>المبلغ</th><th>الدافع</th><th>طريقة الدفع</th><th>إجراء</th></tr></thead>
-                    <tbody id="expenses-body"></tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Debts Tab -->
-        <div id="debts" class="tab-content">
-            <div class="controls">
-                <h3 style="margin:0">الديون والالتزامات</h3>
-                <button class="btn" onclick="openModal('modal-debt')"><i class="fas fa-plus"></i> إضافة دين</button>
+                <h3 style="margin:0">مساهمو واشتراكات هذه الدورة</h3>
+                <button class="btn" onclick="openModal('modal-shareholder')"><i class="fas fa-user-plus"></i> إضافة مساهم للدورة</button>
             </div>
             <div class="table-responsive">
                 <table>
                     <thead>
                         <tr>
-                            <th>الجهة / الدائن</th>
-                            <th>تاريخ الدين</th>
-                            <th>موعد السداد (الاستحقاق)</th>
-                            <th>مبلغ الدين</th>
-                            <th>قسط الجلسة</th>
-                            <th>المبلغ المسدد</th>
-                            <th>المتبقي تلقائياً</th>
+                            <th>المعرف</th>
+                            <th>اسم المساهم</th>
+                            <th>الحصة المقررة لهذه الدورة</th>
+                            <th>المبلغ المدفوع</th>
+                            <th>المتبقي / العجز</th>
                             <th>حالة السداد</th>
-                            <th>إجراء</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="shareholders-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- تبويب 2: المصروفات -->
+        <div id="expenses" class="tab-content">
+            <div class="controls">
+                <h3 style="margin:0">سجل مصروفات الدورة</h3>
+                <div class="filter-group">
+                    <label>من:</label><input type="date" id="filter-from" onchange="renderUI()">
+                    <label>إلى:</label><input type="date" id="filter-to" onchange="renderUI()">
+                    <button class="btn btn-sm" onclick="clearFilters()"><i class="fas fa-times"></i> مسح</button>
+                </div>
+                <button class="btn" onclick="openModal('modal-expense')"><i class="fas fa-plus"></i> إضافة مصروف</button>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>التاريخ</th>
+                            <th>بيان المصروف</th>
+                            <th>التصنيف</th>
+                            <th>المبلغ</th>
+                            <th>الدافع</th>
+                            <th>طريقة الدفع</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
+                    <tbody id="expenses-body"></tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- تبويب 3: الديون -->
+        <div id="debts" class="tab-content">
+            <div class="controls">
+                <h3 style="margin:0">ديون والتزامات هذه الدورة</h3>
+                <button class="btn" onclick="openModal('modal-debt')"><i class="fas fa-plus"></i> تسجيل دين جديد</button>
+            </div>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الدائن / الجهة</th>
+                            <th>تاريخ التسجيل</th>
+                            <th>الاستحقاق</th>
+                            <th>إجمالي الدين</th>
+                            <th>قسط الدورة</th>
+                            <th>المسدد</th>
+                            <th>المتبقي</th>
+                            <th>الحالة</th>
+                            <th>سداد سريع</th>
+                            <th>إجراءات</th>
                         </tr>
                     </thead>
                     <tbody id="debts-body"></tbody>
@@ -250,117 +254,68 @@
             </div>
         </div>
 
-        <!-- Sessions & Backup Tab -->
+        <!-- تبويب 4: إدارة البيانات والنسخ -->
         <div id="sessions" class="tab-content">
-            <h3 style="margin:0; border-bottom: 2px solid #eee; padding-bottom: 10px;">إدارة البيانات والجلسات (النسخ الاحتياطي)</h3>
+            <h3 style="margin:0 0 15px; border-bottom: 2px solid #eee; padding-bottom: 10px;">إدارة وحفظ كافة الدورات</h3>
             <div class="settings-grid">
                 <div class="settings-card">
                     <i class="fas fa-download fa-3x" style="color: var(--success); margin-bottom: 15px;"></i>
-                    <h4>نسخة احتياطية (Backup)</h4>
-                    <p style="font-size: 13px; color: #666;">حفظ بيانات الجلسة الحالية كملف لحمايتها من الفقدان.</p>
-                    <button class="btn btn-success" onclick="exportBackup()"><i class="fas fa-save"></i> تحميل البيانات (JSON)</button>
+                    <h4>تصدير نسخة شاملة (Backup)</h4>
+                    <p style="font-size: 13px; color: #666;">تحميل ملف يحتوي جميع الدورات الحالية والسابقة وسجلات المساهمين.</p>
+                    <button class="btn btn-success" onclick="exportBackup()"><i class="fas fa-save"></i> تحميل الكل (JSON)</button>
                 </div>
                 <div class="settings-card">
                     <i class="fas fa-upload fa-3x" style="color: var(--primary); margin-bottom: 15px;"></i>
                     <h4>استعادة البيانات (Restore)</h4>
-                    <p style="font-size: 13px; color: #666;">رفع ملف نسخة احتياطية سابقة لاستعادة كافة البيانات.</p>
+                    <p style="font-size: 13px; color: #666;">استعادة الملف الشامل بجميع دوراته التاريخية.</p>
                     <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importBackup(event)">
-                    <button class="btn" onclick="document.getElementById('import-file').click()"><i class="fas fa-folder-open"></i> اختيار ملف واستعادة</button>
-                </div>
-                <div class="settings-card" style="border-color: var(--danger);">
-                    <i class="fas fa-calendar-plus fa-3x" style="color: var(--danger); margin-bottom: 15px;"></i>
-                    <h4>بدء دورة مالية جديدة</h4>
-                    <p style="font-size: 13px; color: #666;">مسح جميع البيانات للبدء من الصفر. <b>تأكد من أخذ نسخة احتياطية!</b></p>
-                    <button class="btn btn-danger" onclick="createNewSession()"><i class="fas fa-trash"></i> تصفير وبدء جلسة جديدة</button>
+                    <button class="btn" onclick="document.getElementById('import-file').click()"><i class="fas fa-folder-open"></i> استعادة الملف</button>
                 </div>
             </div>
         </div>
+
+        <footer class="app-footer">
+            تم التطوير بواسطة: <span>سيف عامر المعمري</span> &copy; <script>document.write(new Date().getFullYear())</script>
+        </footer>
     </div>
 
-    <!-- Footer: حقوق التصميم -->
-        <footer style="text-align: center; margin-top: 40px; padding: 15px; color: #FFFFFF; font-size: 14px; border-top: 1px solid var(--border);">
-            تم التصميم والتطوير بواسطة: <span style="color: var(--primary); font-weight: bold;"></span> &copy; <script>document.write(new Date().getFullYear())</script>
-        </footer>
-    </div> <!-- إغلاق container -->
-
-    <!-- تنسيق إضافي لضمان ظهور النوافذ وخانات تقسيم المبالغ بشكل سليم -->
-    <style>
-        #modal-shareholder, #modal-expense, #modal-debt { display: none; }
-        #modal-shareholder.active, #modal-expense.active, #modal-debt.active { display: flex !important; }
-        
-        .mp-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 10px;
-            background: #fff;
-            padding: 8px 12px;
-            margin-bottom: 8px;
-            border-radius: 6px;
-            border: 1px solid var(--border);
-        }
-        .mp-row label {
-            margin: 0 !important;
-            display: flex !important;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            flex: 1;
-        }
-        .mp-row input[type="checkbox"] {
-            width: 18px !important;
-            height: 18px !important;
-            margin: 0 !important;
-            cursor: pointer;
-        }
-        .mp-row input[type="number"] {
-            width: 130px !important;
-            padding: 6px 10px !important;
-            text-align: center;
-            border: 1px solid var(--primary) !important;
-            border-radius: 5px;
-            font-weight: bold;
-            background: #fff;
-        }
-    </style>
-
-    <!-- 1. نافذة إضافة / تعديل مساهم -->
+    <!-- نافذة 1: إضافة مساهم في الدورة الحالية -->
     <div id="modal-shareholder" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('modal-shareholder')">&times;</span>
-            <h3 id="sh-modal-title">إضافة / تعديل مساهم</h3>
+            <h3 id="sh-modal-title">إضافة / تعديل مساهم بالدورة</h3>
             <form id="form-shareholder" onsubmit="addShareholder(event)">
                 <input type="hidden" id="sh-edit-index" value="-1">
                 
-                <div class="form-group" style="background: #f1f5ff; padding: 10px; border-radius: 5px; border: 1px solid #d0dfff;">
-                    <label>اختيار سريع من المساهمين المحفوظين (اختياري)</label>
+                <div class="form-group" style="background: #f1f5ff; padding: 12px; border-radius: 6px; border: 1px solid #d0dfff;">
+                    <label>اختيار مساهم موجود مسبقاً (مع إمكانية إبقاء الحصة أو تغييرها):</label>
                     <div style="display: flex; gap: 5px;">
                         <select id="sh-saved-list" onchange="fillSavedContributor()">
-                            <option value="">-- اختر اسماً محفوظاً أو اكتب اسماً جديداً بالأسفل --</option>
+                            <option value="">-- اختر من المسجلين أو اكتب مساهماً جديداً بالأسفل --</option>
                         </select>
-                        <button type="button" class="btn btn-danger btn-sm" onclick="deletePermanentContributor()" title="حذف من القائمة الدائمة"><i class="fas fa-user-times"></i></button>
+                        <button type="button" class="btn btn-danger btn-sm" onclick="deletePermanentContributor()" title="حذف نهائي"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
 
                 <div class="form-group"><label>اسم المساهم</label><input type="text" id="sh-name" required></div>
-                <div class="form-group"><label>الحصة المقررة</label><input type="number" id="sh-quota" step="0.01" required></div>
-                <div class="form-group"><label>المبلغ المدفوع</label><input type="number" id="sh-paid" step="0.01" value="0" required></div>
-                <button type="submit" class="btn" style="width: 100%; justify-content: center;">حفظ المساهم</button>
+                <div class="form-group">
+                    <label>الحصة المقررة لهذه الدورة (يمكنك تعديلها كما تشاء):</label>
+                    <input type="number" id="sh-quota" step="0.01" required>
+                </div>
+                <div class="form-group"><label>المبلغ المدفوع حتى الآن في هذه الدورة</label><input type="number" id="sh-paid" step="0.01" value="0" required></div>
+                <button type="submit" class="btn" style="width: 100%; justify-content: center;">حفظ المساهم بالدورة</button>
             </form>
         </div>
     </div>
 
-    <!-- 2. نافذة إضافة / تعديل مصروف -->
+    <!-- نافذة 2: إضافة مصروف -->
     <div id="modal-expense" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('modal-expense')">&times;</span>
             <h3 id="ex-modal-title">إضافة / تعديل مصروف</h3>
             <form id="form-expense" onsubmit="addExpense(event)">
                 <input type="hidden" id="ex-edit-index" value="-1">
-                
                 <div class="form-group"><label>التاريخ</label><input type="date" id="ex-date" required></div>
-                
                 <div class="form-group">
                     <label>التصنيف</label>
                     <select id="ex-category" onchange="handleCategoryChange()">
@@ -368,57 +323,53 @@
                         <option value="فواتير وخدمات">فواتير وخدمات</option>
                         <option value="صيانة">صيانة</option>
                         <option value="مستلزمات">مستلزمات</option>
+                        <option value="سداد ديون">سداد ديون</option>
                         <option value="أخرى">أخرى (بيان مخصص)</option>
                     </select>
                 </div>
 
                 <div class="form-group" id="food-group">
-                    <label>ما هو الصنف / الطعام؟</label>
-                    <input type="text" id="ex-food-item" placeholder="مثال: عشاء، خضروات، قهوة...">
+                    <label>ما هو الصنف / المقاضي؟</label>
+                    <input type="text" id="ex-food-item" placeholder="مثال: ذبيحة، خضار وفواكه...">
                 </div>
 
                 <div class="form-group" id="service-group" style="display: none;">
                     <label>نوع الخدمة</label>
                     <div style="display: flex; gap: 5px;">
                         <select id="ex-service-type"></select>
-                        <button type="button" class="btn btn-sm" onclick="addNewServiceType()"><i class="fas fa-plus"></i> إضافة</button>
+                        <button type="button" class="btn btn-sm" onclick="addNewServiceType()"><i class="fas fa-plus"></i></button>
                     </div>
                 </div>
 
                 <div class="form-group" id="statement-group" style="display: none;">
                     <label>بيان المصروف</label>
-                    <input type="text" id="ex-statement" placeholder="اكتب تفاصيل المصروف...">
+                    <input type="text" id="ex-statement" placeholder="تفاصيل المصروف...">
                 </div>
 
                 <div class="form-group">
                     <label>المبلغ الإجمالي للمصروف</label>
-                    <input type="number" id="ex-amount" step="0.01" placeholder="أدخل إجمالي المبلغ هنا..." required>
+                    <input type="number" id="ex-amount" step="0.01" required>
                 </div>
                 
-                <!-- قسم اختيار الدافع (فردي أو مشترك مع خانات التقسيم) -->
                 <div class="form-group" style="background: #f8f9fc; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <label style="margin: 0;">من قام بالدفع؟</label>
-                        <label style="margin: 0; font-size: 13px; color: var(--primary); cursor: pointer; display: flex; align-items: center; gap: 6px; width: auto;">
-                            <input type="checkbox" id="ex-multi-payer" onchange="toggleMultiPayer()" style="width: 16px; height: 16px;">
-                            <span>دفع مشترك (تقسيم بين المساهمين)</span>
+                        <label style="margin: 0; font-size: 13px; color: var(--primary); cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                            <input type="checkbox" id="ex-multi-payer" onchange="toggleMultiPayer()">
+                            <span>دفع مشترك بين مساهمين</span>
                         </label>
                     </div>
 
-                    <!-- الوضع الفردي -->
                     <div id="single-payer-group">
                         <select id="ex-payer"></select>
                     </div>
 
-                    <!-- الوضع المشترك (تحديد المساهمين وخانات المبالغ) -->
                     <div id="multi-payer-group" style="display: none;">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; background: #eef2ff; padding: 8px; border-radius: 6px;">
-                            <span style="font-size: 12px; color: #333; font-weight: 600;">حدد المساهمين واكتب حصة كل شخص أو قسمها بالتساوي:</span>
-                            <button type="button" class="btn btn-sm" onclick="splitExpenseEqually()">
-                                <i class="fas fa-balance-scale"></i> تقسيم المبلغ بالتساوي
-                            </button>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <span style="font-size: 12px; color: #555;">حدد المساهمين أو وزع الحصص:</span>
+                            <button type="button" class="btn btn-sm" onclick="splitExpenseEqually()"><i class="fas fa-balance-scale"></i> تقسيم بالتساوي</button>
                         </div>
-                        <div id="multi-payer-list" style="max-height: 200px; overflow-y: auto; padding: 2px;"></div>
+                        <div id="multi-payer-list" style="max-height: 180px; overflow-y: auto;"></div>
                     </div>
                 </div>
 
@@ -431,7 +382,7 @@
         </div>
     </div>
 
-    <!-- 3. نافذة إضافة / تعديل دين -->
+    <!-- نافذة 3: إضافة دين -->
     <div id="modal-debt" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('modal-debt')">&times;</span>
@@ -439,133 +390,189 @@
             <form id="form-debt" onsubmit="addDebt(event)">
                 <input type="hidden" id="db-edit-index" value="-1">
                 <div class="form-group"><label>اسم الدائن / الجهة</label><input type="text" id="db-creditor" required></div>
-                <div class="form-group"><label>تاريخ تسجيل الدين</label><input type="date" id="db-date" required></div>
-                <div class="form-group"><label>الموعد النهائي للسداد (تاريخ الاستحقاق)</label><input type="date" id="db-deadline" required></div>
+                <div class="form-group"><label>تاريخ التسجيل</label><input type="date" id="db-date" required></div>
+                <div class="form-group"><label>موعد السداد النهائي (الاستحقاق)</label><input type="date" id="db-deadline" required></div>
                 <div class="form-group"><label>إجمالي مبلغ الدين</label><input type="number" id="db-total" step="0.01" required></div>
-                <div class="form-group"><label>المبلغ المقرر سداده في كل جلسة (قسط الدورة)</label><input type="number" id="db-session-amount" step="0.01" value="0" required></div>
+                <div class="form-group"><label>المبلغ المقرر سداده في هذه الدورة (القسط المطلوب)</label><input type="number" id="db-session-amount" step="0.01" value="0" required></div>
                 <div class="form-group"><label>المبلغ المسدد حتى الآن</label><input type="number" id="db-paid" step="0.01" value="0" required></div>
                 <button type="submit" class="btn" style="width: 100%; justify-content: center;">حفظ الدين</button>
             </form>
         </div>
     </div>
 
+    <!-- نافذة 4: نقل سجل إلى دورة أخرى -->
+    <div id="modal-transfer" class="modal">
+        <div class="modal-content" style="max-width: 400px;">
+            <span class="close-modal" onclick="closeModal('modal-transfer')">&times;</span>
+            <h3><i class="fas fa-exchange-alt"></i> نقل إلى دورة أخرى</h3>
+            <p style="font-size: 13px; color: #666;" id="transfer-desc"></p>
+            <div class="form-group">
+                <label>اختر الدورة المالية الهدف:</label>
+                <select id="transfer-target-session"></select>
+            </div>
+            <button type="button" class="btn btn-warning" style="width: 100%; justify-content: center;" onclick="confirmTransfer()">
+                تأكيد النقل الآن
+            </button>
+        </div>
+    </div>
+
+    <!-- نافذة 5: بدء دورة جديدة وتأكيد ترحيل الديون -->
+    <div id="modal-new-session" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeModal('modal-new-session')">&times;</span>
+            <h3><i class="fas fa-calendar-plus" style="color: var(--success);"></i> بدء دورة مالية جديدة</h3>
+            <div class="form-group">
+                <label>اسم الدورة الجديدة (مثال: دورة شوال 1446، دورة مايو 2025):</label>
+                <input type="text" id="new-session-name" required placeholder="اكتب اسم الدورة...">
+            </div>
+            <div class="form-group">
+                <label>تاريخ بدء الدورة:</label>
+                <input type="date" id="new-session-date" required>
+            </div>
+            
+            <div style="background: #eefbf5; border: 1px solid #c3e6cb; padding: 12px; border-radius: 6px; margin-bottom: 15px;">
+                <h4 style="margin: 0 0 5px; color: #155724; font-size: 14px;"><i class="fas fa-info-circle"></i> ترحيل البيانات التلقائي:</h4>
+                <ul style="margin: 0; padding-right: 20px; font-size: 13px; color: #155724;">
+                    <li><strong>الديون غير المسددة:</strong> ستنتقل تلقائياً لهذه الدورة مع خصم ما سُدد منها.</li>
+                    <li><strong>الديون المسددة بالكامل:</strong> ستبقى في أرشيف الدورة السابقة ولن تُنقل.</li>
+                    <li><strong>المساهمون:</strong> يمكنك استيراد المساهمين المعتادين مع إمكانية تعديل حصة كل شخص.</li>
+                </ul>
+            </div>
+
+            <div class="form-group">
+                <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
+                    <input type="checkbox" id="import-contributors-check" checked style="width:18px; height:18px;">
+                    <span>إدراج المساهمين الدائمين تلقائياً في هذه الدورة (مع تصفير المدفوع)</span>
+                </label>
+            </div>
+
+            <button type="button" class="btn btn-success" style="width: 100%; justify-content: center; padding: 10px;" onclick="confirmStartNewSession()">
+                بدء الدورة وترحيل الأرصدة
+            </button>
+        </div>
+    </div>
+
     <script>
-        // ⚠️ ضع رابط Google Apps Script الخاص بك هنا ⚠️
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxqPfoP2oqDPE4eT4aayRiU9OhEhaCXRtONUCHHK00cs7xDaFT1vKc2OVJOLqfaI2Vj/exec";
 
-        const emptyState = {
-            sessionDate: new Date().toISOString().split('T')[0],
+        // الهيكل المحدث الداعم للدورات المتعددة
+        let appData = {
+            activeSessionId: "sess_initial",
+            viewingSessionId: "sess_initial",
+            sessions: [
+                {
+                    id: "sess_initial",
+                    name: "الدورة الافتتاحية",
+                    startDate: new Date().toISOString().split('T')[0],
+                    shareholders: [],
+                    expenses: [],
+                    debts: []
+                }
+            ],
             permanentContributors: [],
             serviceTypes: ['كهرباء', 'مياه', 'إنترنت', 'غاز', 'بلدية'],
-            shareholders: [],
-            expenses: [],
-            debts: []
+            appPin: "1234",
+            lastUpdated: Date.now()
         };
 
-        let appData = JSON.parse(JSON.stringify(emptyState));
-
+        // ترحيل هيكل البيانات القديم إن وُجد لحمايته من الضياع
         function ensureDataStructure() {
-            if (!appData || typeof appData !== 'object') appData = JSON.parse(JSON.stringify(emptyState));
-            if (!Array.isArray(appData.shareholders)) appData.shareholders = [];
-            if (!Array.isArray(appData.expenses)) appData.expenses = [];
-            if (!Array.isArray(appData.debts)) appData.debts = [];
+            if (!appData || typeof appData !== 'object') appData = {};
             if (!Array.isArray(appData.permanentContributors)) appData.permanentContributors = [];
             if (!Array.isArray(appData.serviceTypes)) appData.serviceTypes = ['كهرباء', 'مياه', 'إنترنت', 'غاز', 'بلدية'];
-            if (!appData.sessionDate) appData.sessionDate = new Date().toISOString().split('T')[0];
+
+            // في حال وجود نسخة قديمة (أحادية الجلسة)
+            if (!Array.isArray(appData.sessions) || appData.sessions.length === 0) {
+                const legacyShareholders = Array.isArray(appData.shareholders) ? appData.shareholders : [];
+                const legacyExpenses = Array.isArray(appData.expenses) ? appData.expenses : [];
+                const legacyDebts = Array.isArray(appData.debts) ? appData.debts : [];
+                const legacyDate = appData.sessionDate || new Date().toISOString().split('T')[0];
+
+                appData.sessions = [{
+                    id: "sess_legacy",
+                    name: "الدورة الأولى (" + legacyDate + ")",
+                    startDate: legacyDate,
+                    shareholders: legacyShareholders,
+                    expenses: legacyExpenses,
+                    debts: legacyDebts
+                }];
+                appData.activeSessionId = "sess_legacy";
+            }
+
+            if (!appData.activeSessionId || !appData.sessions.some(s => s.id === appData.activeSessionId)) {
+                appData.activeSessionId = appData.sessions[0].id;
+            }
+            if (!appData.viewingSessionId || !appData.sessions.some(s => s.id === appData.viewingSessionId)) {
+                appData.viewingSessionId = appData.activeSessionId;
+            }
+
+            // التأكد من كمال كل دورة
+            appData.sessions.forEach(s => {
+                if (!Array.isArray(s.shareholders)) s.shareholders = [];
+                if (!Array.isArray(s.expenses)) s.expenses = [];
+                if (!Array.isArray(s.debts)) s.debts = [];
+            });
         }
 
+        function getCurrentSession() {
+            ensureDataStructure();
+            return appData.sessions.find(s => s.id === appData.viewingSessionId) || appData.sessions[0];
+        }
+
+        // --- المزامنة والحفظ ---
         async function fetchFromDrive() {
             const indicator = document.getElementById('sync-indicator');
-            let localData = null;
-
-            // 1. قراءة النسخة المحلية أولاً
             const localSaved = localStorage.getItem('masroofat_appData');
             if (localSaved) {
                 try {
-                    localData = JSON.parse(localSaved);
-                    appData = localData;
+                    appData = JSON.parse(localSaved);
                     ensureDataStructure();
                     renderUI();
                 } catch(e) {}
             }
 
             if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("ضع_الرابط")) {
-                if (indicator) indicator.innerHTML = '<i class="fas fa-hdd"></i> وضع الحفظ المحلي (الرابط غير مضاف)';
+                if (indicator) indicator.innerHTML = '<i class="fas fa-hdd"></i> محلي (لم يُربط Drive)';
                 return;
             }
 
             if (indicator) indicator.innerHTML = '<i class="fas fa-sync fa-spin"></i> جاري المزامنة...';
             try {
-                // إضافة (?t=وقت_الحالي) لإجبار المتصفح على جلب أحدث بيانات من الشيت وعدم قراءة الكاش القديم
-                const noCacheUrl = GOOGLE_SCRIPT_URL + (GOOGLE_SCRIPT_URL.includes('?') ? '&' : '?') + 't=' + Date.now();
-                const response = await fetch(noCacheUrl, {
-                    method: 'GET',
-                    redirect: 'follow',
-                    cache: 'no-store'
-                });
-
-                const textData = await response.text();
-                const driveData = JSON.parse(textData);
-
-                if (driveData && typeof driveData === 'object' && Array.isArray(driveData.shareholders)) {
-                    const driveTime = Number(driveData.lastUpdated) || 0;
-                    const localTime = (localData && Number(localData.lastUpdated)) || 0;
-
-                    // إذا كانت بيانات المتصفح أحدث من الشيت (مثلاً لم يكتمل الرفع بعد)، نحافظ عليها ونرفعها للشيت
-                    if (localTime > driveTime) {
-                        appData = localData;
-                        ensureDataStructure();
-                        renderUI();
-                        pushToDrive();
-                        return;
-                    }
-
-                    // إذا كانت بيانات الشيت أحدث (أو فُتح التطبيق من جهاز آخر)، نعتمد بيانات الشيت
+                const response = await fetch(GOOGLE_SCRIPT_URL + '?t=' + Date.now(), { method: 'GET', cache: 'no-store' });
+                const driveData = await response.json();
+                if (driveData && typeof driveData === 'object') {
                     appData = driveData;
                     ensureDataStructure();
                     localStorage.setItem('masroofat_appData', JSON.stringify(appData));
+                    renderUI();
+                    if (indicator) indicator.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success)"></i> متزامن مع Drive';
                 }
-
-                renderUI();
-                if (indicator) indicator.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success)"></i> متزامن مع Drive';
-            } catch (error) {
-                console.error("Fetch error:", error);
+            } catch (err) {
                 if (indicator) indicator.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--warning)"></i> يعمل محلياً';
             }
         }
 
         async function pushToDrive() {
             ensureDataStructure();
-            // تسجيل وقت التعديل بدقة لمنع البيانات القديمة من الكتابة فوقه
             appData.lastUpdated = Date.now();
             localStorage.setItem('masroofat_appData', JSON.stringify(appData));
 
             const indicator = document.getElementById('sync-indicator');
-            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("ضع_الرابط")) {
-                if (indicator) indicator.innerHTML = '<i class="fas fa-exclamation-circle" style="color: var(--warning)"></i> حُفظ محلياً (أضف رابط Drive)';
-                return;
-            }
+            if (!GOOGLE_SCRIPT_URL || GOOGLE_SCRIPT_URL.includes("ضع_الرابط")) return;
 
-            if (indicator) indicator.innerHTML = '<i class="fas fa-cloud-upload-alt fa-pulse"></i> جاري الحفظ في Drive...';
+            if (indicator) indicator.innerHTML = '<i class="fas fa-cloud-upload-alt fa-pulse"></i> حفظ بالسحابة...';
             try {
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                await fetch(GOOGLE_SCRIPT_URL, {
                     method: 'POST',
-                    redirect: 'follow',
                     headers: { "Content-Type": "text/plain;charset=utf-8" },
                     body: JSON.stringify(appData)
                 });
-
-                const resText = await response.text();
-                if (resText.includes("Success")) {
-                    if (indicator) indicator.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success)"></i> تم الحفظ في Drive';
-                } else {
-                    throw new Error("Unexpected response: " + resText);
-                }
-            } catch (error) {
-                console.error("Save error:", error);
-                if (indicator) indicator.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger)"></i> حُفظ بالجهاز (تعذر التحديث في Drive)';
+                if (indicator) indicator.innerHTML = '<i class="fas fa-check-circle" style="color: var(--success)"></i> تم الحفظ في Drive';
+            } catch(e) {
+                if (indicator) indicator.innerHTML = '<i class="fas fa-exclamation-triangle" style="color: var(--danger)"></i> حُفظ بالجهاز فقط';
             }
         }
+
         const formatCurrency = (num) => Number(num || 0).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) + ' ر.ع';
         const getStatusBadge = (remaining, total) => {
             if (remaining <= 0) return '<span class="badge success">مكتمل بالكامل</span>';
@@ -573,34 +580,270 @@
             return '<span class="badge warning">مسدد جزئياً</span>';
         };
 
-        function getDeadlineDisplay(deadline, remaining) {
-            if (!deadline) return '<span style="color:#999;">غير محدد</span>';
-            if (remaining <= 0) return `<span>${deadline}</span>`;
-
-            const today = new Date(); today.setHours(0, 0, 0, 0);
-            const target = new Date(deadline); target.setHours(0, 0, 0, 0);
-            const diffDays = Math.floor((today - target) / (1000 * 60 * 60 * 24));
-
-            if (diffDays > 0) {
-                return `<div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
-                    <span style="color: var(--danger); font-weight: bold;">${deadline}</span>
-                    <span class="badge danger"><i class="fas fa-exclamation-circle"></i> متأخر ${diffDays} يوم</span>
-                </div>`;
-            }
-            return `<span>${deadline}</span>`;
+        // --- إدارة الدورات (الجلسات) ---
+        function switchSession(sessId) {
+            appData.viewingSessionId = sessId;
+            renderUI();
         }
 
-        // تحديث جميع القوائم المنسدلة وخانات تقسيم المبالغ
-        function updateDropdowns() {
-            ensureDataStructure();
+        function openStartNewSessionModal() {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('new-session-date').value = today;
+            document.getElementById('new-session-name').value = 'دورة شهر ' + (new Date().getMonth() + 1) + ' - ' + new Date().getFullYear();
+            openModal('modal-new-session');
+        }
 
-            const savedSelect = document.getElementById('sh-saved-list');
-            if (savedSelect) {
-                savedSelect.innerHTML = '<option value="">-- اختر اسماً محفوظاً أو اكتب اسماً جديداً بالأسفل --</option>' +
-                    appData.permanentContributors.map((c, idx) => `<option value="${idx}">${c.name} (الحصة: ${c.quota})</option>`).join('');
+        function confirmStartNewSession() {
+            const name = document.getElementById('new-session-name').value.trim() || 'دورة جديدة';
+            const startDate = document.getElementById('new-session-date').value || new Date().toISOString().split('T')[0];
+            const importContributors = document.getElementById('import-contributors-check').checked;
+
+            const activeSess = appData.sessions.find(s => s.id === appData.activeSessionId) || appData.sessions[appData.sessions.length - 1];
+
+            // 1. ترحيل الديون غير المسددة فقط
+            const carriedDebts = [];
+            if (activeSess && Array.isArray(activeSess.debts)) {
+                activeSess.debts.forEach(d => {
+                    const remaining = (Number(d.total) || 0) - (Number(d.paid) || 0);
+                    if (remaining > 0) {
+                        // ينتقل للدورة الجديدة بالرصيد المتبقي لتبدأ منه
+                        carriedDebts.push({
+                            id: 'DBT-CR-' + Date.now().toString().slice(-4) + Math.floor(Math.random()*10),
+                            creditor: d.creditor + ' (مرحّل)',
+                            date: startDate,
+                            deadline: d.deadline || '',
+                            total: remaining,
+                            sessionAmount: d.sessionAmount || remaining,
+                            paid: 0,
+                            carriedFrom: activeSess.name
+                        });
+                    }
+                });
             }
 
-            const currentNames = appData.shareholders.map(s => s.name);
+            // 2. ترحيل المساهمين اختياًرياً مع تصفير المدفوع
+            const newShareholders = [];
+            if (importContributors && appData.permanentContributors.length > 0) {
+                appData.permanentContributors.forEach((c, idx) => {
+                    newShareholders.push({
+                        id: 'SH-' + (idx + 1).toString().padStart(3, '0'),
+                        name: c.name,
+                        quota: c.quota,
+                        paid: 0
+                    });
+                });
+            }
+
+            const newSessionObj = {
+                id: 'sess_' + Date.now(),
+                name: name,
+                startDate: startDate,
+                shareholders: newShareholders,
+                expenses: [],
+                debts: carriedDebts
+            };
+
+            appData.sessions.push(newSessionObj);
+            appData.activeSessionId = newSessionObj.id;
+            appData.viewingSessionId = newSessionObj.id;
+
+            closeModal('modal-new-session');
+            renderUI();
+            pushToDrive();
+            alert('تم إنشاء الدورة الجديدة بنجاح، وترحيل الديون المتبقية (' + carriedDebts.length + ' دين).');
+        }
+
+        // --- نقل السجلات بين الدورات ---
+        let transferTarget = { type: '', index: -1 };
+
+        window.openTransferModal = function(type, index) {
+            transferTarget = { type, index };
+            const sess = getCurrentSession();
+            let itemName = "";
+            if (type === 'shareholders') itemName = "المساهم: " + sess.shareholders[index].name;
+            if (type === 'expenses') itemName = "المصروف: " + sess.expenses[index].statement;
+            if (type === 'debts') itemName = "الدين: " + sess.debts[index].creditor;
+
+            document.getElementById('transfer-desc').innerText = `سيتم نقل (${itemName}) من (${sess.name}) إلى الدورة المختارة:`;
+            
+            const targetSelect = document.getElementById('transfer-target-session');
+            targetSelect.innerHTML = appData.sessions
+                .filter(s => s.id !== sess.id)
+                .map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+
+            if (targetSelect.options.length === 0) {
+                return alert('لا توجد دورات أخرى متاحة للنقل إليها. أنشئ دورة جديدة أولاً.');
+            }
+
+            openModal('modal-transfer');
+        };
+
+        window.confirmTransfer = function() {
+            const targetSessId = document.getElementById('transfer-target-session').value;
+            const fromSess = getCurrentSession();
+            const toSess = appData.sessions.find(s => s.id === targetSessId);
+
+            if (!toSess || transferTarget.index === -1) return;
+
+            const item = fromSess[transferTarget.type].splice(transferTarget.index, 1)[0];
+            toSess[transferTarget.type].push(item);
+
+            closeModal('modal-transfer');
+            renderUI();
+            pushToDrive();
+            alert('تم نقل السجل بنجاح إلى ' + toSess.name);
+        };
+
+        // --- السداد السريع لقسط الدين ---
+        window.quickPayInstallment = function(debtIndex) {
+            const sess = getCurrentSession();
+            const debt = sess.debts[debtIndex];
+            if (!debt) return;
+
+            const remaining = (Number(debt.total) || 0) - (Number(debt.paid) || 0);
+            if (remaining <= 0) return alert('هذا الدين مكتمل السداد بالفعل!');
+
+            let payAmount = Number(debt.sessionAmount) || remaining;
+            if (payAmount > remaining) payAmount = remaining;
+
+            const confirmed = confirm(`تأكيد سداد قسط للدائن (${debt.creditor}) بمبلغ: ${formatCurrency(payAmount)}؟\nسيتم تسجيله أيضاً في سجل المصروفات تلقائياً.`);
+            if (!confirmed) return;
+
+            debt.paid = (Number(debt.paid) || 0) + payAmount;
+
+            // تسجيل المصروف تلقائياً
+            sess.expenses.push({
+                id: 'EXP-D-' + Date.now().toString().slice(-4),
+                date: new Date().toISOString().split('T')[0],
+                statement: 'سداد قسط دين: ' + debt.creditor,
+                category: 'سداد ديون',
+                amount: payAmount,
+                payer: 'الخزينة العامة',
+                isMultiPayer: false,
+                payersSplit: [],
+                method: 'تحويل بنكي'
+            });
+
+            renderUI();
+            pushToDrive();
+            alert('تم سداد القسط وتحديث المصروفات والمتبقي بنجاح!');
+        };
+
+        // --- عرض الواجهة (Render) ---
+        function renderUI() {
+            ensureDataStructure();
+            const sess = getCurrentSession();
+            const isCurrentActive = (sess.id === appData.activeSessionId);
+
+            // تحديث شريط اختيار الدورة
+            const selectBox = document.getElementById('session-select-box');
+            selectBox.innerHTML = appData.sessions.map(s => 
+                `<option value="${s.id}" ${s.id === sess.id ? 'selected' : ''}>${s.name} ${s.id === appData.activeSessionId ? ' ⭐ (الحالية)' : ''}</option>`
+            ).join('');
+
+            const badge = document.getElementById('active-session-badge');
+            if (isCurrentActive) {
+                badge.className = 'badge success';
+                badge.innerText = 'الدورة الحالية النشطة';
+            } else {
+                badge.className = 'badge warning';
+                badge.innerText = 'دورة سابقة (أرشيف تاريخي)';
+            }
+
+            // الفلاتر
+            const fromDate = document.getElementById('filter-from').value;
+            const toDate = document.getElementById('filter-to').value;
+
+            let totalSubs = 0, totalExp = 0, totalRemainingDebts = 0;
+
+            // 1. جدول المساهمين
+            document.getElementById('shareholders-body').innerHTML = sess.shareholders.map((s, index) => {
+                const remaining = (Number(s.quota) || 0) - (Number(s.paid) || 0);
+                totalSubs += Number(s.paid) || 0;
+                return `<tr>
+                    <td>${s.id || '-'}</td>
+                    <td><strong>${s.name}</strong></td>
+                    <td>${formatCurrency(s.quota)}</td>
+                    <td>${formatCurrency(s.paid)}</td>
+                    <td dir="ltr">${formatCurrency(remaining)}</td>
+                    <td>${getStatusBadge(remaining, s.quota)}</td>
+                    <td>
+                        <button class="btn btn-sm" style="background:var(--warning)" onclick="editShareholder(${index})" title="تعديل"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-info" onclick="openTransferModal('shareholders', ${index})" title="نقل لدورة أخرى"><i class="fas fa-exchange-alt"></i></button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteRecord('shareholders', ${index})" title="حذف"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            // 2. جدول المصروفات
+            let filteredExpenses = sess.expenses.map((e, idx) => ({ ...e, _origIndex: idx }));
+            if (fromDate) filteredExpenses = filteredExpenses.filter(e => e.date >= fromDate);
+            if (toDate) filteredExpenses = filteredExpenses.filter(e => e.date <= toDate);
+
+            document.getElementById('expenses-body').innerHTML = filteredExpenses.map(e => {
+                totalExp += Number(e.amount) || 0;
+                return `<tr>
+                    <td>${e.date}</td>
+                    <td>${e.statement}</td>
+                    <td><span class="badge info">${e.category}</span></td>
+                    <td><strong>${formatCurrency(e.amount)}</strong></td>
+                    <td>${e.payer}</td>
+                    <td>${e.method}</td>
+                    <td>
+                        <button class="btn btn-sm" style="background:var(--warning)" onclick="editExpense(${e._origIndex})" title="تعديل"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-info" onclick="openTransferModal('expenses', ${e._origIndex})" title="نقل لدورة أخرى"><i class="fas fa-exchange-alt"></i></button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteRecord('expenses', ${e._origIndex})" title="حذف"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            // 3. جدول الديون
+            document.getElementById('debts-body').innerHTML = sess.debts.map((d, index) => {
+                const remaining = (Number(d.total) || 0) - (Number(d.paid) || 0);
+                totalRemainingDebts += remaining;
+                const isPaidFull = remaining <= 0;
+                return `<tr>
+                    <td><strong>${d.creditor}</strong></td>
+                    <td>${d.date}</td>
+                    <td>${d.deadline || 'غير محدد'}</td>
+                    <td>${formatCurrency(d.total)}</td>
+                    <td><strong style="color:var(--primary)">${formatCurrency(d.sessionAmount || 0)}</strong></td>
+                    <td>${formatCurrency(d.paid)}</td>
+                    <td dir="ltr" style="font-weight:bold; color:${isPaidFull ? 'var(--success)' : 'var(--danger)'}">${formatCurrency(remaining)}</td>
+                    <td>${getStatusBadge(remaining, d.total)}</td>
+                    <td>
+                        ${!isPaidFull ? `<button class="btn btn-sm btn-success" onclick="quickPayInstallment(${index})" title="دفع القسط الآن"><i class="fas fa-bolt"></i> تسديد القسط</button>` : '<i class="fas fa-check-double text-success"></i>'}
+                    </td>
+                    <td>
+                        <button class="btn btn-sm" style="background:var(--warning)" onclick="editDebt(${index})" title="تعديل"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-info" onclick="openTransferModal('debts', ${index})" title="نقل لدورة أخرى"><i class="fas fa-exchange-alt"></i></button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteRecord('debts', ${index})" title="حذف"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            // تحديث بطاقات الإحصاءات
+            document.getElementById('total-subscriptions').innerText = formatCurrency(totalSubs);
+            document.getElementById('total-expenses').innerText = formatCurrency(totalExp);
+            document.getElementById('net-balance').innerText = formatCurrency(totalSubs - totalExp);
+            document.getElementById('total-debts').innerText = formatCurrency(totalRemainingDebts);
+
+            updateDropdowns();
+        }
+
+        function updateDropdowns() {
+            ensureDataStructure();
+            const sess = getCurrentSession();
+
+            // قائمة المساهمين الدائمين
+            const savedSelect = document.getElementById('sh-saved-list');
+            if (savedSelect) {
+                savedSelect.innerHTML = '<option value="">-- اختر من المسجلين أو اكتب اسماً جديداً بالأسفل --</option>' +
+                    appData.permanentContributors.map((c, idx) => `<option value="${idx}">${c.name} (الحصة السابقة: ${c.quota})</option>`).join('');
+            }
+
+            // قائمة الدافعين (المساهمون في هذه الدورة + الدائمون)
+            const currentNames = sess.shareholders.map(s => s.name);
             const permNames = appData.permanentContributors.map(c => c.name);
             const allNames = [...new Set([...currentNames, ...permNames])].filter(Boolean);
 
@@ -611,23 +854,17 @@
                     : '<option value="عام">عام</option>';
             }
 
-            // إنشاء خانات إدخال المبالغ لكل مساهم في الدفع المشترك (مفعّلة وجاهزة للكتابة فوراً)
             const multiList = document.getElementById('multi-payer-list');
             if (multiList) {
-                if (allNames.length > 0) {
-                    multiList.innerHTML = allNames.map(name => `
-                        <div class="mp-row">
-                            <label>
-                                <input type="checkbox" class="mp-check" data-name="${name}" onchange="onMultiPayerCheck(this)">
-                                <span>${name}</span>
-                            </label>
-                            <input type="number" class="mp-amount" data-name="${name}" step="0.01" min="0" placeholder="أدخل المبلغ..."
-                                   oninput="onShareAmountInput(this)">
-                        </div>
-                    `).join('');
-                } else {
-                    multiList.innerHTML = '<p style="font-size:13px; color:var(--danger); margin:5px 0;">يرجى إضافة مساهمين أولاً من تبويب "سجل المساهمين" لتقسيم المبلغ بينهم.</p>';
-                }
+                multiList.innerHTML = allNames.map(name => `
+                    <div class="mp-row">
+                        <label>
+                            <input type="checkbox" class="mp-check" data-name="${name}">
+                            <span>${name}</span>
+                        </label>
+                        <input type="number" class="mp-amount" data-name="${name}" step="0.01" placeholder="المبلغ...">
+                    </div>
+                `).join('');
             }
 
             const serviceSelect = document.getElementById('ex-service-type');
@@ -636,233 +873,50 @@
             }
         }
 
-        window.toggleMultiPayer = function() {
-            const isMulti = document.getElementById('ex-multi-payer').checked;
-            document.getElementById('single-payer-group').style.display = isMulti ? 'none' : 'block';
-            document.getElementById('multi-payer-group').style.display = isMulti ? 'block' : 'none';
-            // إذا لم تكن القائمة مبنية بعد، نقوم ببنائها فوراً
-            if (isMulti && document.querySelectorAll('.mp-row').length === 0) {
-                updateDropdowns();
-            }
-        };
-
-        // عند كتابة مبلغ في خانة المساهم، يتم تحديد علامة الصح تلقائياً وحساب المجموع
-        window.onShareAmountInput = function(input) {
-            const row = input.closest('.mp-row');
-            const chk = row.querySelector('.mp-check');
-            const val = parseFloat(input.value) || 0;
-            chk.checked = (val > 0);
-            recalcMultiPayerTotal();
-        };
-
-        window.onMultiPayerCheck = function(checkbox) {
-            const row = checkbox.closest('.mp-row');
-            const amountInput = row.querySelector('.mp-amount');
-            if (!checkbox.checked) {
-                amountInput.value = '';
-            } else if (!amountInput.value) {
-                amountInput.focus();
-            }
-            recalcMultiPayerTotal();
-        };
-
-        window.recalcMultiPayerTotal = function() {
-            let sum = 0;
-            document.querySelectorAll('.mp-row').forEach(row => {
-                const chk = row.querySelector('.mp-check');
-                const amt = parseFloat(row.querySelector('.mp-amount').value) || 0;
-                if (chk.checked && amt > 0) sum += amt;
-            });
-            if (sum > 0) {
-                document.getElementById('ex-amount').value = sum.toFixed(2);
-            }
-        };
-
-        // زر تقسيم المبلغ بالتساوي على المساهمين المحددين (أو على الجميع إذا لم يحدد أحداً)
-        window.splitExpenseEqually = function() {
-            const total = parseFloat(document.getElementById('ex-amount').value) || 0;
-            if (total <= 0) {
-                document.getElementById('ex-amount').focus();
-                return alert('يرجى كتابة "المبلغ الإجمالي للمصروف" في الخانة العلوية أولاً ليتم تقسيمه.');
-            }
-
-            let checkedBoxes = Array.from(document.querySelectorAll('.mp-check:checked'));
-            // إذا لم يضع علامة صح على أحد، نقوم بتحديد الجميع تلقائياً لتسهيل الأمر
-            if (checkedBoxes.length === 0) {
-                const allBoxes = Array.from(document.querySelectorAll('.mp-check'));
-                if (allBoxes.length === 0) return alert('لا يوجد مساهمون لتقسيم المبلغ عليهم.');
-                allBoxes.forEach(cb => cb.checked = true);
-                checkedBoxes = allBoxes;
-            }
-
-            const share = (total / checkedBoxes.length).toFixed(2);
-            document.querySelectorAll('.mp-row').forEach(row => {
-                const chk = row.querySelector('.mp-check');
-                const amtInput = row.querySelector('.mp-amount');
-                amtInput.value = chk.checked ? share : '';
-            });
-        };
-
-        function renderUI() {
-            ensureDataStructure();
-            const fromDate = document.getElementById('filter-from') ? document.getElementById('filter-from').value : '';
-            const toDate = document.getElementById('filter-to') ? document.getElementById('filter-to').value : '';
-
-            let totalSubs = 0, totalExp = 0, totalRemainingDebts = 0;
-
-            document.getElementById('shareholders-body').innerHTML = appData.shareholders.map((s, index) => {
-                const remaining = (Number(s.quota) || 0) - (Number(s.paid) || 0);
-                totalSubs += Number(s.paid) || 0;
-                return `<tr>
-                    <td>${s.id || '-'}</td>
-                    <td>${s.name}</td>
-                    <td>${formatCurrency(s.quota)}</td>
-                    <td>${formatCurrency(s.paid)}</td>
-                    <td dir="ltr">${formatCurrency(remaining)}</td>
-                    <td>${getStatusBadge(remaining, s.quota)}</td>
-                    <td>
-                        <button type="button" class="btn btn-sm" style="background: var(--warning);" onclick="editShareholder(${index})" title="تعديل"><i class="fas fa-edit"></i></button>
-                        <button type="button" class="btn btn-danger btn-sm" onclick="deleteRecord('shareholders', ${index})" title="حذف"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>`;
-            }).join('');
-
-            let mappedExpenses = appData.expenses.map((e, idx) => ({ ...e, _origIndex: idx }));
-            if (fromDate) mappedExpenses = mappedExpenses.filter(e => e.date >= fromDate);
-            if (toDate) mappedExpenses = mappedExpenses.filter(e => e.date <= toDate);
-
-            document.getElementById('expenses-body').innerHTML = mappedExpenses.map((e) => {
-                totalExp += Number(e.amount) || 0;
-                return `<tr>
-                    <td>${e.date}</td>
-                    <td>${e.statement}</td>
-                    <td>${e.category}</td>
-                    <td>${formatCurrency(e.amount)}</td>
-                    <td>${e.payer}</td>
-                    <td>${e.method}</td>
-                    <td>
-                        <button type="button" class="btn btn-sm" style="background: var(--warning);" onclick="editExpense(${e._origIndex})" title="تعديل"><i class="fas fa-edit"></i></button>
-                        <button type="button" class="btn btn-danger btn-sm" onclick="deleteRecord('expenses', ${e._origIndex})" title="حذف"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>`;
-            }).join('');
-
-            // التحقق من عدد أعمدة جدول الديون لعرض الأعمدة المتوافقة
-            const debtHeadersCount = document.querySelectorAll('#debts thead th').length;
-            document.getElementById('debts-body').innerHTML = appData.debts.map((d, index) => {
-                const remaining = (Number(d.total) || 0) - (Number(d.paid) || 0);
-                totalRemainingDebts += remaining;
-                
-                if (debtHeadersCount >= 9) {
-                    return `<tr>
-                        <td>${d.creditor}</td>
-                        <td>${d.date}</td>
-                        <td>${getDeadlineDisplay(d.deadline, remaining)}</td>
-                        <td>${formatCurrency(d.total)}</td>
-                        <td>${formatCurrency(d.sessionAmount || 0)}</td>
-                        <td>${formatCurrency(d.paid)}</td>
-                        <td>${formatCurrency(remaining)}</td>
-                        <td>${getStatusBadge(remaining, d.total)}</td>
-                        <td>
-                            <button type="button" class="btn btn-sm" style="background: var(--warning);" onclick="editDebt(${index})" title="تعديل"><i class="fas fa-edit"></i></button>
-                            <button type="button" class="btn btn-danger btn-sm" onclick="deleteRecord('debts', ${index})" title="حذف"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>`;
-                } else {
-                    return `<tr>
-                        <td>${d.creditor}</td>
-                        <td>${d.date} <br><small>${getDeadlineDisplay(d.deadline, remaining)}</small></td>
-                        <td>${formatCurrency(d.total)} <br><small style="color:var(--primary)">قسط الجلسة: ${formatCurrency(d.sessionAmount || 0)}</small></td>
-                        <td>${formatCurrency(d.paid)}</td>
-                        <td>${formatCurrency(remaining)}</td>
-                        <td>${getStatusBadge(remaining, d.total)}</td>
-                        <td>
-                            <button type="button" class="btn btn-sm" style="background: var(--warning);" onclick="editDebt(${index})" title="تعديل"><i class="fas fa-edit"></i></button>
-                            <button type="button" class="btn btn-danger btn-sm" onclick="deleteRecord('debts', ${index})" title="حذف"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>`;
-                }
-            }).join('');
-
-            document.getElementById('total-subscriptions').innerText = formatCurrency(totalSubs);
-            document.getElementById('total-expenses').innerText = formatCurrency(totalExp);
-            document.getElementById('net-balance').innerText = formatCurrency(totalSubs - totalExp);
-            document.getElementById('total-debts').innerText = formatCurrency(totalRemainingDebts);
-            document.getElementById('session-indicator').innerText = "تاريخ البدء: " + (appData.sessionDate || "غير محدد");
-
-            updateDropdowns();
-            localStorage.setItem('masroofat_appData', JSON.stringify(appData));
-        }
-
+        // اختيار مساهم محفوظ وتعبئة حصته تلقائياً مع السماح بتعديلها
         window.fillSavedContributor = function() {
             const idx = document.getElementById('sh-saved-list').value;
             if (idx !== "") {
                 const c = appData.permanentContributors[idx];
                 document.getElementById('sh-name').value = c.name;
-                document.getElementById('sh-quota').value = c.quota;
+                document.getElementById('sh-quota').value = c.quota; // يمكن للمستخدم تعديلها للدورة الحالية
                 document.getElementById('sh-paid').value = 0;
             }
         };
 
         window.deletePermanentContributor = function() {
             const idx = document.getElementById('sh-saved-list').value;
-            if (idx === "") return alert("يرجى اختيار مساهم من القائمة العلوية أولاً لحذفه.");
-            if (confirm("هل أنت متأكد من حذف هذا المساهم من القائمة الدائمة نهائياً؟")) {
+            if (idx === "") return alert("اختر اسماً من القائمة أولاً لحذفه.");
+            if (confirm("هل تريد مسحه من السجل العام نهائياً؟")) {
                 appData.permanentContributors.splice(idx, 1);
                 updateDropdowns();
                 pushToDrive();
             }
         };
 
-        window.handleCategoryChange = function() {
-            const category = document.getElementById('ex-category').value;
-            document.getElementById('food-group').style.display = (category === 'طعام ومقاضي') ? 'block' : 'none';
-            document.getElementById('service-group').style.display = (category === 'فواتير وخدمات') ? 'block' : 'none';
-            document.getElementById('statement-group').style.display = (category !== 'طعام ومقاضي' && category !== 'فواتير وخدمات') ? 'block' : 'none';
-        };
-
-        window.addNewServiceType = function() {
-            const newService = prompt("أدخل اسم الخدمة الجديدة (مثال: هاتف، غاز، صيانة):");
-            if (newService && newService.trim() !== "") {
-                appData.serviceTypes.push(newService.trim());
-                updateDropdowns();
-                document.getElementById('ex-service-type').value = newService.trim();
-                pushToDrive();
-            }
-        };
-
-        // إضافة وتعديل المساهمين
-        window.editShareholder = function(index) {
-            const s = appData.shareholders[index];
-            if (!s) return;
-            document.getElementById('sh-edit-index').value = index;
-            document.getElementById('sh-name').value = s.name;
-            document.getElementById('sh-quota').value = s.quota;
-            document.getElementById('sh-paid').value = s.paid;
-            document.getElementById('modal-shareholder').classList.add('active');
-        };
-
+        // --- إضافة وتعديل المساهم في الدورة ---
         window.addShareholder = function(e) {
             e.preventDefault();
-            ensureDataStructure();
+            const sess = getCurrentSession();
             const name = document.getElementById('sh-name').value.trim();
             const quota = parseFloat(document.getElementById('sh-quota').value) || 0;
             const paid = parseFloat(document.getElementById('sh-paid').value) || 0;
             const editIndex = parseInt(document.getElementById('sh-edit-index').value);
 
-            const existingPermIndex = appData.permanentContributors.findIndex(c => c.name === name);
-            if (existingPermIndex > -1) {
-                appData.permanentContributors[existingPermIndex].quota = quota;
+            // تحديث أو إضافة إلى قائمة المساهمين الدائمين
+            const existingPerm = appData.permanentContributors.find(c => c.name === name);
+            if (existingPerm) {
+                existingPerm.quota = quota;
             } else {
                 appData.permanentContributors.push({ name, quota });
             }
 
-            if (editIndex > -1 && appData.shareholders[editIndex]) {
-                appData.shareholders[editIndex].name = name;
-                appData.shareholders[editIndex].quota = quota;
-                appData.shareholders[editIndex].paid = paid;
+            if (editIndex > -1 && sess.shareholders[editIndex]) {
+                sess.shareholders[editIndex].name = name;
+                sess.shareholders[editIndex].quota = quota;
+                sess.shareholders[editIndex].paid = paid;
             } else {
-                appData.shareholders.push({ id: 'SH-' + Date.now().toString().slice(-4), name, quota, paid });
+                sess.shareholders.push({ id: 'SH-' + Date.now().toString().slice(-4), name, quota, paid });
             }
 
             closeModal('modal-shareholder');
@@ -870,66 +924,27 @@
             pushToDrive();
         };
 
-        // إضافة وتعديل المصروفات
-        window.editExpense = function(index) {
-            const e = appData.expenses[index];
-            if (!e) return;
-            updateDropdowns();
-            document.getElementById('ex-edit-index').value = index;
-            document.getElementById('ex-date').value = e.date;
-            document.getElementById('ex-category').value = e.category;
-            handleCategoryChange();
-
-            if (e.category === 'طعام ومقاضي') {
-                document.getElementById('ex-food-item').value = (e.statement || '').replace('طعام: ', '');
-            } else if (e.category === 'فواتير وخدمات') {
-                const srvName = (e.statement || '').replace('فاتورة / خدمة: ', '');
-                if (srvName && !appData.serviceTypes.includes(srvName)) {
-                    appData.serviceTypes.push(srvName);
-                    updateDropdowns();
-                }
-                document.getElementById('ex-service-type').value = srvName;
-            } else {
-                document.getElementById('ex-statement').value = e.statement || '';
-            }
-
-            document.getElementById('ex-amount').value = e.amount;
-            document.getElementById('ex-method').value = e.method;
-
-            if (e.isMultiPayer && Array.isArray(e.payersSplit)) {
-                document.getElementById('ex-multi-payer').checked = true;
-                toggleMultiPayer();
-                e.payersSplit.forEach(item => {
-                    const chk = document.querySelector(`.mp-check[data-name="${item.name}"]`);
-                    const amt = document.querySelector(`.mp-amount[data-name="${item.name}"]`);
-                    if (chk && amt) {
-                        chk.checked = true;
-                        amt.value = item.amount;
-                    }
-                });
-            } else {
-                document.getElementById('ex-multi-payer').checked = false;
-                toggleMultiPayer();
-                document.getElementById('ex-payer').value = e.payer;
-            }
-
-            document.getElementById('modal-expense').classList.add('active');
+        window.editShareholder = function(index) {
+            const s = getCurrentSession().shareholders[index];
+            if (!s) return;
+            document.getElementById('sh-edit-index').value = index;
+            document.getElementById('sh-name').value = s.name;
+            document.getElementById('sh-quota').value = s.quota;
+            document.getElementById('sh-paid').value = s.paid;
+            openModal('modal-shareholder');
         };
 
+        // --- إضافة وتعديل المصروف ---
         window.addExpense = function(e) {
             e.preventDefault();
-            ensureDataStructure();
+            const sess = getCurrentSession();
             const editIndex = parseInt(document.getElementById('ex-edit-index').value);
             const category = document.getElementById('ex-category').value;
 
             let statement = '';
-            if (category === 'طعام ومقاضي') {
-                statement = 'طعام: ' + (document.getElementById('ex-food-item').value.trim() || 'غير محدد');
-            } else if (category === 'فواتير وخدمات') {
-                statement = 'فاتورة / خدمة: ' + (document.getElementById('ex-service-type').value || 'عام');
-            } else {
-                statement = document.getElementById('ex-statement').value.trim() || category;
-            }
+            if (category === 'طعام ومقاضي') statement = 'طعام: ' + (document.getElementById('ex-food-item').value.trim() || 'عام');
+            else if (category === 'فواتير وخدمات') statement = 'خدمة: ' + (document.getElementById('ex-service-type').value || 'عام');
+            else statement = document.getElementById('ex-statement').value.trim() || category;
 
             const isMulti = document.getElementById('ex-multi-payer').checked;
             let payerDisplay = '';
@@ -940,20 +955,16 @@
                     const chk = row.querySelector('.mp-check');
                     const name = chk.getAttribute('data-name');
                     const amt = parseFloat(row.querySelector('.mp-amount').value) || 0;
-                    if (chk.checked && amt > 0) {
-                        payersSplit.push({ name: name, amount: amt });
-                    }
+                    if (chk.checked && amt > 0) payersSplit.push({ name, amount: amt });
                 });
-                if (payersSplit.length === 0) {
-                    return alert('يرجى تحديد المساهمين وكتابة مبلغ كل شخص أو الضغط على "تقسيم المبلغ بالتساوي".');
-                }
+                if (payersSplit.length === 0) return alert('حدد المساهمين المشاركين بالدفع.');
                 payerDisplay = payersSplit.map(p => `${p.name} (${p.amount})`).join(' ، ');
             } else {
                 payerDisplay = document.getElementById('ex-payer').value || 'عام';
             }
 
             const expenseObj = {
-                id: (editIndex > -1 && appData.expenses[editIndex]) ? appData.expenses[editIndex].id : 'EXP-' + Date.now().toString().slice(-4),
+                id: (editIndex > -1 && sess.expenses[editIndex]) ? sess.expenses[editIndex].id : 'EXP-' + Date.now().toString().slice(-4),
                 date: document.getElementById('ex-date').value,
                 statement: statement,
                 category: category,
@@ -964,62 +975,124 @@
                 method: document.getElementById('ex-method').value
             };
 
-            if (editIndex > -1 && appData.expenses[editIndex]) {
-                appData.expenses[editIndex] = expenseObj;
-            } else {
-                appData.expenses.push(expenseObj);
-            }
+            if (editIndex > -1 && sess.expenses[editIndex]) sess.expenses[editIndex] = expenseObj;
+            else sess.expenses.push(expenseObj);
 
             closeModal('modal-expense');
             renderUI();
             pushToDrive();
         };
 
-        // إضافة وتعديل الديون
-        window.editDebt = function(index) {
-            const d = appData.debts[index];
-            if (!d) return;
-            document.getElementById('db-edit-index').value = index;
-            document.getElementById('db-creditor').value = d.creditor;
-            document.getElementById('db-date').value = d.date;
-            if (document.getElementById('db-deadline')) document.getElementById('db-deadline').value = d.deadline || '';
-            document.getElementById('db-total').value = d.total;
-            if (document.getElementById('db-session-amount')) document.getElementById('db-session-amount').value = d.sessionAmount || 0;
-            document.getElementById('db-paid').value = d.paid;
-            document.getElementById('modal-debt').classList.add('active');
+        window.editExpense = function(index) {
+            const e = getCurrentSession().expenses[index];
+            if (!e) return;
+            document.getElementById('ex-edit-index').value = index;
+            document.getElementById('ex-date').value = e.date;
+            document.getElementById('ex-category').value = e.category;
+            handleCategoryChange();
+            document.getElementById('ex-statement').value = e.statement;
+            document.getElementById('ex-amount').value = e.amount;
+            document.getElementById('ex-method').value = e.method;
+            openModal('modal-expense');
         };
 
+        // --- إضافة وتعديل الدين ---
         window.addDebt = function(e) {
             e.preventDefault();
-            ensureDataStructure();
+            const sess = getCurrentSession();
             const editIndex = parseInt(document.getElementById('db-edit-index').value);
+
             const debtObj = {
-                id: (editIndex > -1 && appData.debts[editIndex]) ? appData.debts[editIndex].id : 'DBT-' + Date.now().toString().slice(-4),
+                id: (editIndex > -1 && sess.debts[editIndex]) ? sess.debts[editIndex].id : 'DBT-' + Date.now().toString().slice(-4),
                 creditor: document.getElementById('db-creditor').value.trim(),
                 date: document.getElementById('db-date').value,
-                deadline: document.getElementById('db-deadline') ? document.getElementById('db-deadline').value : '',
+                deadline: document.getElementById('db-deadline').value,
                 total: parseFloat(document.getElementById('db-total').value) || 0,
-                sessionAmount: document.getElementById('db-session-amount') ? (parseFloat(document.getElementById('db-session-amount').value) || 0) : 0,
+                sessionAmount: parseFloat(document.getElementById('db-session-amount').value) || 0,
                 paid: parseFloat(document.getElementById('db-paid').value) || 0
             };
 
-            if (editIndex > -1 && appData.debts[editIndex]) {
-                appData.debts[editIndex] = debtObj;
-            } else {
-                appData.debts.push(debtObj);
-            }
+            if (editIndex > -1 && sess.debts[editIndex]) sess.debts[editIndex] = debtObj;
+            else sess.debts.push(debtObj);
 
             closeModal('modal-debt');
             renderUI();
             pushToDrive();
         };
 
+        window.editDebt = function(index) {
+            const d = getCurrentSession().debts[index];
+            if (!d) return;
+            document.getElementById('db-edit-index').value = index;
+            document.getElementById('db-creditor').value = d.creditor;
+            document.getElementById('db-date').value = d.date;
+            document.getElementById('db-deadline').value = d.deadline;
+            document.getElementById('db-total').value = d.total;
+            document.getElementById('db-session-amount').value = d.sessionAmount || 0;
+            document.getElementById('db-paid').value = d.paid;
+            openModal('modal-debt');
+        };
+
         window.deleteRecord = function(collection, index) {
-            if (confirm('هل أنت متأكد من حذف هذا السجل نهائياً؟')) {
-                appData[collection].splice(index, 1);
+            if (confirm('هل أنت متأكد من حذف هذا السجل نهائياً من هذه الدورة؟')) {
+                getCurrentSession()[collection].splice(index, 1);
                 renderUI();
                 pushToDrive();
             }
+        };
+
+        // --- أدوات المساعدة ---
+        window.openModal = function(id) {
+            document.getElementById(id).classList.add('active');
+            if (id === 'modal-expense' && document.getElementById('ex-edit-index').value === "-1") {
+                document.getElementById('ex-date').value = new Date().toISOString().split('T')[0];
+            }
+            if (id === 'modal-debt' && document.getElementById('db-edit-index').value === "-1") {
+                document.getElementById('db-date').value = new Date().toISOString().split('T')[0];
+            }
+        };
+
+        window.closeModal = function(id) {
+            const m = document.getElementById(id);
+            if (!m) return;
+            m.classList.remove('active');
+            const form = m.querySelector('form');
+            if (form) form.reset();
+            if (document.getElementById('sh-edit-index')) document.getElementById('sh-edit-index').value = "-1";
+            if (document.getElementById('ex-edit-index')) document.getElementById('ex-edit-index').value = "-1";
+            if (document.getElementById('db-edit-index')) document.getElementById('db-edit-index').value = "-1";
+        };
+
+        window.openTab = function(tabId, ev) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            if (ev && ev.currentTarget) ev.currentTarget.classList.add('active');
+        };
+
+        window.handleCategoryChange = function() {
+            const val = document.getElementById('ex-category').value;
+            document.getElementById('food-group').style.display = (val === 'طعام ومقاضي') ? 'block' : 'none';
+            document.getElementById('service-group').style.display = (val === 'فواتير وخدمات') ? 'block' : 'none';
+            document.getElementById('statement-group').style.display = (val !== 'طعام ومقاضي' && val !== 'فواتير وخدمات') ? 'block' : 'none';
+        };
+
+        window.toggleMultiPayer = function() {
+            const isMulti = document.getElementById('ex-multi-payer').checked;
+            document.getElementById('single-payer-group').style.display = isMulti ? 'none' : 'block';
+            document.getElementById('multi-payer-group').style.display = isMulti ? 'block' : 'none';
+        };
+
+        window.splitExpenseEqually = function() {
+            const total = parseFloat(document.getElementById('ex-amount').value) || 0;
+            if (total <= 0) return alert('اكتب المبلغ الإجمالي أولاً لتقسيمه.');
+            const allRows = document.querySelectorAll('.mp-row');
+            if (allRows.length === 0) return;
+            const share = (total / allRows.length).toFixed(2);
+            allRows.forEach(row => {
+                row.querySelector('.mp-check').checked = true;
+                row.querySelector('.mp-amount').value = share;
+            });
         };
 
         window.clearFilters = function() {
@@ -1028,155 +1101,66 @@
             renderUI();
         };
 
-        window.openTab = function(tabId, event) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-            if (event && event.currentTarget) event.currentTarget.classList.add('active');
-        };
-
-        window.openModal = function(id) {
-            updateDropdowns();
-            const today = new Date().toISOString().split('T')[0];
-            if (id === 'modal-expense' && document.getElementById('ex-edit-index').value === "-1") {
-                document.getElementById('ex-date').value = today;
-                document.getElementById('ex-multi-payer').checked = false;
-                toggleMultiPayer();
-                handleCategoryChange();
-            }
-            if (id === 'modal-debt' && document.getElementById('db-edit-index').value === "-1") {
-                document.getElementById('db-date').value = today;
-            }
-            document.getElementById(id).classList.add('active');
-        };
-
-        window.closeModal = function(id) {
-            const modal = document.getElementById(id);
-            if (!modal) return;
-            modal.classList.remove('active');
-            const form = modal.querySelector('form');
-            if (form) form.reset();
-            if (document.getElementById('sh-edit-index')) document.getElementById('sh-edit-index').value = "-1";
-            if (document.getElementById('ex-edit-index')) document.getElementById('ex-edit-index').value = "-1";
-            if (document.getElementById('db-edit-index')) document.getElementById('db-edit-index').value = "-1";
-            if (document.getElementById('ex-multi-payer')) {
-                document.getElementById('ex-multi-payer').checked = false;
-                toggleMultiPayer();
-            }
-            handleCategoryChange();
-        };
-
         window.exportBackup = function() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
-            const downloadNode = document.createElement('a');
-            downloadNode.setAttribute("href", dataStr);
-            downloadNode.setAttribute("download", "masroofat_backup_" + new Date().toISOString().split('T')[0] + ".json");
-            document.body.appendChild(downloadNode);
-            downloadNode.click();
-            downloadNode.remove();
+            const dl = document.createElement('a');
+            dl.setAttribute("href", dataStr);
+            dl.setAttribute("download", "masroofat_all_sessions_" + new Date().toISOString().split('T')[0] + ".json");
+            document.body.appendChild(dl);
+            dl.click();
+            dl.remove();
         };
 
-        window.importBackup = function(event) {
-            const file = event.target.files[0];
+        window.importBackup = function(e) {
+            const file = e.target.files[0];
             if (!file) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function(evt) {
                 try {
-                    const importedData = JSON.parse(e.target.result);
-                    if (importedData && typeof importedData === 'object') {
-                        appData = importedData;
+                    const imported = JSON.parse(evt.target.result);
+                    if (imported && typeof imported === 'object') {
+                        appData = imported;
                         ensureDataStructure();
                         renderUI();
                         pushToDrive();
-                        alert('تم استعادة النسخة الاحتياطية بنجاح!');
+                        alert('تمت استعادة كافة الدورات بنجاح!');
                     }
-                } catch (err) {
-                    alert('حدث خطأ أثناء قراءة الملف.');
-                }
+                } catch(err) { alert('ملف غير صالح.'); }
             };
             reader.readAsText(file);
-            event.target.value = '';
         };
 
-        window.createNewSession = function() {
-            if (confirm('تحذير: سيتم تصفير المصروفات والديون لبدء دورة جديدة (مع الاحتفاظ بقائمة المساهمين الدائمة). هل أنت متأكد؟')) {
-                const savedContributors = appData.permanentContributors || [];
-                const savedServices = appData.serviceTypes || ['كهرباء', 'مياه', 'إنترنت', 'غاز', 'بلدية'];
-
-                appData = JSON.parse(JSON.stringify(emptyState));
-                appData.sessionDate = new Date().toISOString().split('T')[0];
-                appData.permanentContributors = savedContributors;
-                appData.serviceTypes = savedServices;
-
-                if (savedContributors.length > 0 && confirm('هل تريد إدراج المساهمين المحفوظين تلقائياً في هذه الجلسة الجديدة (مع تصفير المبالغ المدفوعة)؟')) {
-                    appData.shareholders = savedContributors.map((c, i) => ({
-                        id: 'SH-00' + (i + 1),
-                        name: c.name,
-                        quota: c.quota,
-                        paid: 0
-                    }));
-                }
-
-                clearFilters();
-                pushToDrive();
-                alert('تم بدء دورة مالية جديدة بنجاح.');
-            }
-        };
-
-        // نظام القفل (الافتراضي: 1234)
-        function normalizeDigits(str) {
-            return String(str || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).trim();
-        }
-
+        // قفل التطبيق
         function checkLockState() {
             const isUnlocked = sessionStorage.getItem('masroofat_unlocked');
-            const lockScreen = document.getElementById('app-lock-screen');
-            if (!lockScreen) return;
-            lockScreen.style.display = (isUnlocked === 'true') ? 'none' : 'flex';
+            const screen = document.getElementById('app-lock-screen');
+            if (screen) screen.style.display = (isUnlocked === 'true') ? 'none' : 'flex';
         }
 
-        window.unlockApp = function(e) {
-            if (e) e.preventDefault();
-            const pinInput = document.getElementById('pin-input');
-            const errorMsg = document.getElementById('lock-error');
-            const lockScreen = document.getElementById('app-lock-screen');
-            if (!pinInput || !lockScreen) return;
-
-            const enteredPin = normalizeDigits(pinInput.value);
-            const rawSavedPin = (appData && appData.appPin) ? appData.appPin : (localStorage.getItem('masroofat_pin') || "1234");
-            const savedPin = normalizeDigits(rawSavedPin);
-
-            if (enteredPin === savedPin) {
+        window.unlockApp = function() {
+            const pin = document.getElementById('pin-input').value.trim();
+            const savedPin = (appData && appData.appPin) ? appData.appPin : "1234";
+            if (pin === savedPin) {
                 sessionStorage.setItem('masroofat_unlocked', 'true');
-                lockScreen.style.display = 'none';
-                pinInput.value = '';
-                if (errorMsg) errorMsg.style.display = 'none';
+                document.getElementById('app-lock-screen').style.display = 'none';
             } else {
-                if (errorMsg) errorMsg.style.display = 'block';
-                pinInput.value = '';
-                pinInput.focus();
+                document.getElementById('lock-error').style.display = 'block';
             }
         };
 
         window.lockAppNow = function() {
             sessionStorage.removeItem('masroofat_unlocked');
-            const lockScreen = document.getElementById('app-lock-screen');
-            if (lockScreen) lockScreen.style.display = 'flex';
+            document.getElementById('app-lock-screen').style.display = 'flex';
         };
 
         window.changeAppPin = function() {
-            const rawSavedPin = (appData && appData.appPin) ? appData.appPin : (localStorage.getItem('masroofat_pin') || "1234");
             const oldPin = prompt("أدخل رمز المرور الحالي:");
-            if (oldPin === null) return;
-            if (normalizeDigits(oldPin) !== normalizeDigits(rawSavedPin)) return alert("رمز المرور الحالي غير صحيح!");
-
-            const newPin = prompt("أدخل رمز المرور الجديد:");
-            if (newPin && normalizeDigits(newPin).length >= 3) {
-                const cleanPin = normalizeDigits(newPin);
-                appData.appPin = cleanPin;
-                localStorage.setItem('masroofat_pin', cleanPin);
+            if (oldPin !== (appData.appPin || "1234")) return alert("الرمز غير صحيح!");
+            const newPin = prompt("أدخل رمز المرور الجديد (أرقام):");
+            if (newPin && newPin.trim().length >= 3) {
+                appData.appPin = newPin.trim();
                 pushToDrive();
-                alert("تم تغيير رمز المرور بنجاح إلى: " + cleanPin);
+                alert("تم تحديث رمز المرور بنجاح.");
             }
         };
 
