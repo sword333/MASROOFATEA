@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مصروفــــــاتي - إدارة الدورات المالية</title>
+    <title>مصروفــــــاتي - إدارة الدورات والديون المستقلة</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
@@ -16,6 +16,7 @@
             --light: #f8f9fc;
             --border: #e3e6f0;
             --info: #36b9cc;
+            --purple: #6f42c1;
         }
         * { box-sizing: border-box; }
         body {
@@ -58,7 +59,7 @@
         .card { background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.10); border-right: 4px solid var(--primary); }
         .card.expenses { border-right-color: var(--danger); }
         .card.balance { border-right-color: var(--success); }
-        .card.debts { border-right-color: var(--warning); }
+        .card.debts { border-right-color: var(--purple); }
         .card h3 { margin: 0 0 10px; font-size: 13px; color: #858796; text-transform: uppercase; }
         .card p { margin: 0; font-size: 1.5rem; font-weight: bold; color: #5a5c69; }
         
@@ -79,7 +80,9 @@
         .btn-success:hover { background: #13855c; }
         .btn-warning { background: var(--warning); color: #333; }
         .btn-info { background: var(--info); }
-        .btn-sm { padding: 4px 8px; font-size: 11px; }
+        .btn-purple { background: var(--purple); color: #fff; }
+        .btn-purple:hover { background: #5a32a3; }
+        .btn-sm { padding: 5px 9px; font-size: 12px; }
         
         .tab-content { display: none; background: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0.15rem 1.75rem 0 rgba(58, 59, 69, 0.10); }
         .tab-content.active { display: block; }
@@ -95,6 +98,7 @@
         .badge.danger { background: #e74a3b20; color: var(--danger); }
         .badge.warning { background: #f6c23e20; color: #b18817; }
         .badge.info { background: #36b9cc20; color: var(--info); }
+        .badge.purple { background: #6f42c120; color: var(--purple); }
         
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; padding: 15px; }
         .modal.active { display: flex !important; }
@@ -143,7 +147,7 @@
             </div>
         </div>
 
-        <!-- شريط إدارة والتنقل بين الدورات (الجلسات) -->
+        <!-- شريط التنقل بين الدورات -->
         <div class="session-switcher-bar">
             <div class="session-selector-group">
                 <i class="fas fa-history" style="color: var(--primary); font-size: 18px;"></i>
@@ -153,28 +157,28 @@
             </div>
             <div style="display: flex; gap: 8px;">
                 <button class="btn btn-success btn-sm" onclick="openStartNewSessionModal()">
-                    <i class="fas fa-calendar-plus"></i> بدء دورة جديدة (مع ترحيل الديون)
+                    <i class="fas fa-calendar-plus"></i> بدء دورة جديدة (مع ترحيل الديون المتبقية)
                 </button>
             </div>
         </div>
 
-        <!-- لوحة الإحصائيات للدورة المختارة -->
+        <!-- لوحة الإحصائيات (الديون مفصولة تماماً عن الحصص والمصروفات) -->
         <div class="dashboard">
-            <div class="card"><h3>إجمالي الاشتراكات المحصلة</h3><p id="total-subscriptions">0.00 ر.ع</p></div>
-            <div class="card expenses"><h3>إجمالي المصروفات</h3><p id="total-expenses">0.00 ر.ع</p></div>
-            <div class="card balance"><h3>صافي الرصيد المتاح</h3><p id="net-balance">0.00 ر.ع</p></div>
-            <div class="card debts"><h3>إجمالي الديون المتبقية</h3><p id="total-debts">0.00 ر.ع</p></div>
+            <div class="card"><h3>إجمالي الاشتراكات المحصلة (الحصص)</h3><p id="total-subscriptions">0.00 ر.ع</p></div>
+            <div class="card expenses"><h3>إجمالي المصروفات الفعلية</h3><p id="total-expenses">0.00 ر.ع</p></div>
+            <div class="card balance"><h3>صافي الرصيد المتاح للصندوق</h3><p id="net-balance">0.00 ر.ع</p></div>
+            <div class="card debts"><h3>سجل الديون المتبقية (توثيقي فقط)</h3><p id="total-debts">0.00 ر.ع</p></div>
         </div>
 
-        <!-- أزرار التبويبات -->
+        <!-- التبويبات -->
         <div class="tabs">
             <button class="tab-btn active" onclick="openTab('shareholders', event)"><i class="fas fa-users"></i> سجل المساهمين</button>
             <button class="tab-btn" onclick="openTab('expenses', event)"><i class="fas fa-receipt"></i> سجل المصروفات</button>
-            <button class="tab-btn" onclick="openTab('debts', event)"><i class="fas fa-hand-holding-usd"></i> الديون والالتزامات</button>
+            <button class="tab-btn" onclick="openTab('debts', event)"><i class="fas fa-book"></i> سجل الديون والالتزامات (توثيقي)</button>
             <button class="tab-btn" onclick="openTab('sessions', event)"><i class="fas fa-database"></i> إدارة الدورات والنسخ</button>
         </div>
 
-        <!-- تبويب 1: المساهمون -->
+        <!-- 1. المساهمون -->
         <div id="shareholders" class="tab-content active">
             <div class="controls">
                 <h3 style="margin:0">مساهمو واشتراكات هذه الدورة</h3>
@@ -198,7 +202,7 @@
             </div>
         </div>
 
-        <!-- تبويب 2: المصروفات -->
+        <!-- 2. المصروفات -->
         <div id="expenses" class="tab-content">
             <div class="controls">
                 <h3 style="margin:0">سجل مصروفات الدورة</h3>
@@ -227,11 +231,14 @@
             </div>
         </div>
 
-        <!-- تبويب 3: الديون -->
+        <!-- 3. الديون (مستقلة للتوثيق فقط) -->
         <div id="debts" class="tab-content">
+            <div style="background: #f7f3fc; border: 1px solid #dcd1f3; padding: 10px 14px; border-radius: 6px; margin-bottom: 15px; font-size: 13px; color: #4b2382;">
+                <i class="fas fa-info-circle"></i> <strong>ملاحظة:</strong> هذا السجل مخصص لتوثيق ومتابعة الديون فقط؛ تسجيل أو تسديد أي دفعة هنا لا يؤثر إطلاقاً على أسهم المساهمين ولا يضاف للمصروفات.
+            </div>
             <div class="controls">
-                <h3 style="margin:0">ديون والتزامات هذه الدورة</h3>
-                <button class="btn" onclick="openModal('modal-debt')"><i class="fas fa-plus"></i> تسجيل دين جديد</button>
+                <h3 style="margin:0">سجل الديون والالتزامات</h3>
+                <button class="btn btn-purple" onclick="openModal('modal-debt')"><i class="fas fa-plus"></i> تسجيل دين جديد</button>
             </div>
             <div class="table-responsive">
                 <table>
@@ -239,13 +246,13 @@
                         <tr>
                             <th>الدائن / الجهة</th>
                             <th>تاريخ التسجيل</th>
-                            <th>الاستحقاق</th>
+                            <th>موعد الاستحقاق</th>
                             <th>إجمالي الدين</th>
                             <th>قسط الدورة</th>
-                            <th>المسدد</th>
+                            <th>المسدد توثيقياً</th>
                             <th>المتبقي</th>
                             <th>الحالة</th>
-                            <th>سداد سريع</th>
+                            <th>تسجيل السداد / تراجع</th>
                             <th>إجراءات</th>
                         </tr>
                     </thead>
@@ -254,22 +261,22 @@
             </div>
         </div>
 
-        <!-- تبويب 4: إدارة البيانات والنسخ -->
+        <!-- 4. إدارة البيانات والنسخ -->
         <div id="sessions" class="tab-content">
-            <h3 style="margin:0 0 15px; border-bottom: 2px solid #eee; padding-bottom: 10px;">إدارة وحفظ كافة الدورات</h3>
+            <h3 style="margin:0 0 15px; border-bottom: 2px solid #eee; padding-bottom: 10px;">إدارة الدورات والنسخ الاحتياطي</h3>
             <div class="settings-grid">
                 <div class="settings-card">
                     <i class="fas fa-download fa-3x" style="color: var(--success); margin-bottom: 15px;"></i>
                     <h4>تصدير نسخة شاملة (Backup)</h4>
-                    <p style="font-size: 13px; color: #666;">تحميل ملف يحتوي جميع الدورات الحالية والسابقة وسجلات المساهمين.</p>
-                    <button class="btn btn-success" onclick="exportBackup()"><i class="fas fa-save"></i> تحميل الكل (JSON)</button>
+                    <p style="font-size: 13px; color: #666;">تحميل ملف JSON بكافة الدورات الحالية والسابقة وسجلات الديون.</p>
+                    <button class="btn btn-success" onclick="exportBackup()"><i class="fas fa-save"></i> تحميل الملف</button>
                 </div>
                 <div class="settings-card">
                     <i class="fas fa-upload fa-3x" style="color: var(--primary); margin-bottom: 15px;"></i>
                     <h4>استعادة البيانات (Restore)</h4>
-                    <p style="font-size: 13px; color: #666;">استعادة الملف الشامل بجميع دوراته التاريخية.</p>
+                    <p style="font-size: 13px; color: #666;">استعادة ملف نسخ احتياطي محفوظ سابقاً.</p>
                     <input type="file" id="import-file" accept=".json" style="display: none;" onchange="importBackup(event)">
-                    <button class="btn" onclick="document.getElementById('import-file').click()"><i class="fas fa-folder-open"></i> استعادة الملف</button>
+                    <button class="btn" onclick="document.getElementById('import-file').click()"><i class="fas fa-folder-open"></i> استعادة ملف</button>
                 </div>
             </div>
         </div>
@@ -279,36 +286,31 @@
         </footer>
     </div>
 
-    <!-- نافذة 1: إضافة مساهم في الدورة الحالية -->
+    <!-- نافذة إضافة مساهم -->
     <div id="modal-shareholder" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('modal-shareholder')">&times;</span>
-            <h3 id="sh-modal-title">إضافة / تعديل مساهم بالدورة</h3>
+            <h3 id="sh-modal-title">إضافة / تعديل مساهم</h3>
             <form id="form-shareholder" onsubmit="addShareholder(event)">
                 <input type="hidden" id="sh-edit-index" value="-1">
-                
                 <div class="form-group" style="background: #f1f5ff; padding: 12px; border-radius: 6px; border: 1px solid #d0dfff;">
-                    <label>اختيار مساهم موجود مسبقاً (مع إمكانية إبقاء الحصة أو تغييرها):</label>
+                    <label>اختيار مساهم موجود مسبقاً (مع إمكانية تعديل الحصة):</label>
                     <div style="display: flex; gap: 5px;">
                         <select id="sh-saved-list" onchange="fillSavedContributor()">
-                            <option value="">-- اختر من المسجلين أو اكتب مساهماً جديداً بالأسفل --</option>
+                            <option value="">-- اختر من المسجلين أو اكتب اسماً جديداً بالأسفل --</option>
                         </select>
                         <button type="button" class="btn btn-danger btn-sm" onclick="deletePermanentContributor()" title="حذف نهائي"><i class="fas fa-trash"></i></button>
                     </div>
                 </div>
-
                 <div class="form-group"><label>اسم المساهم</label><input type="text" id="sh-name" required></div>
-                <div class="form-group">
-                    <label>الحصة المقررة لهذه الدورة (يمكنك تعديلها كما تشاء):</label>
-                    <input type="number" id="sh-quota" step="0.01" required>
-                </div>
-                <div class="form-group"><label>المبلغ المدفوع حتى الآن في هذه الدورة</label><input type="number" id="sh-paid" step="0.01" value="0" required></div>
-                <button type="submit" class="btn" style="width: 100%; justify-content: center;">حفظ المساهم بالدورة</button>
+                <div class="form-group"><label>الحصة المقررة لهذه الدورة:</label><input type="number" id="sh-quota" step="0.01" required></div>
+                <div class="form-group"><label>المبلغ المدفوع بالدورة</label><input type="number" id="sh-paid" step="0.01" value="0" required></div>
+                <button type="submit" class="btn" style="width: 100%; justify-content: center;">حفظ المساهم</button>
             </form>
         </div>
     </div>
 
-    <!-- نافذة 2: إضافة مصروف -->
+    <!-- نافذة إضافة مصروف -->
     <div id="modal-expense" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('modal-expense')">&times;</span>
@@ -323,14 +325,13 @@
                         <option value="فواتير وخدمات">فواتير وخدمات</option>
                         <option value="صيانة">صيانة</option>
                         <option value="مستلزمات">مستلزمات</option>
-                        <option value="سداد ديون">سداد ديون</option>
                         <option value="أخرى">أخرى (بيان مخصص)</option>
                     </select>
                 </div>
 
                 <div class="form-group" id="food-group">
                     <label>ما هو الصنف / المقاضي؟</label>
-                    <input type="text" id="ex-food-item" placeholder="مثال: ذبيحة، خضار وفواكه...">
+                    <input type="text" id="ex-food-item" placeholder="مثال: ذبيحة، فواكه...">
                 </div>
 
                 <div class="form-group" id="service-group" style="display: none;">
@@ -346,10 +347,7 @@
                     <input type="text" id="ex-statement" placeholder="تفاصيل المصروف...">
                 </div>
 
-                <div class="form-group">
-                    <label>المبلغ الإجمالي للمصروف</label>
-                    <input type="number" id="ex-amount" step="0.01" required>
-                </div>
+                <div class="form-group"><label>المبلغ الإجمالي للمصروف</label><input type="number" id="ex-amount" step="0.01" required></div>
                 
                 <div class="form-group" style="background: #f8f9fc; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -360,9 +358,7 @@
                         </label>
                     </div>
 
-                    <div id="single-payer-group">
-                        <select id="ex-payer"></select>
-                    </div>
+                    <div id="single-payer-group"><select id="ex-payer"></select></div>
 
                     <div id="multi-payer-group" style="display: none;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -382,32 +378,32 @@
         </div>
     </div>
 
-    <!-- نافذة 3: إضافة دين -->
+    <!-- نافذة تسجيل دين -->
     <div id="modal-debt" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('modal-debt')">&times;</span>
-            <h3 id="db-modal-title">إضافة / تعديل دين</h3>
+            <h3 id="db-modal-title">تسجيل / تعديل دين (توثيقي فقط)</h3>
             <form id="form-debt" onsubmit="addDebt(event)">
                 <input type="hidden" id="db-edit-index" value="-1">
                 <div class="form-group"><label>اسم الدائن / الجهة</label><input type="text" id="db-creditor" required></div>
                 <div class="form-group"><label>تاريخ التسجيل</label><input type="date" id="db-date" required></div>
                 <div class="form-group"><label>موعد السداد النهائي (الاستحقاق)</label><input type="date" id="db-deadline" required></div>
                 <div class="form-group"><label>إجمالي مبلغ الدين</label><input type="number" id="db-total" step="0.01" required></div>
-                <div class="form-group"><label>المبلغ المقرر سداده في هذه الدورة (القسط المطلوب)</label><input type="number" id="db-session-amount" step="0.01" value="0" required></div>
-                <div class="form-group"><label>المبلغ المسدد حتى الآن</label><input type="number" id="db-paid" step="0.01" value="0" required></div>
-                <button type="submit" class="btn" style="width: 100%; justify-content: center;">حفظ الدين</button>
+                <div class="form-group"><label>قسط الدورة المطلوب سداده (اختياري)</label><input type="number" id="db-session-amount" step="0.01" value="0"></div>
+                <div class="form-group"><label>المبلغ المسدد حتى الآن (توثيقياً)</label><input type="number" id="db-paid" step="0.01" value="0"></div>
+                <button type="submit" class="btn btn-purple" style="width: 100%; justify-content: center;">حفظ الدين</button>
             </form>
         </div>
     </div>
 
-    <!-- نافذة 4: نقل سجل إلى دورة أخرى -->
+    <!-- نافذة نقل سجل إلى دورة أخرى -->
     <div id="modal-transfer" class="modal">
         <div class="modal-content" style="max-width: 400px;">
             <span class="close-modal" onclick="closeModal('modal-transfer')">&times;</span>
-            <h3><i class="fas fa-exchange-alt"></i> نقل إلى دورة أخرى</h3>
+            <h3><i class="fas fa-exchange-alt"></i> نقل السجل لدورة أخرى</h3>
             <p style="font-size: 13px; color: #666;" id="transfer-desc"></p>
             <div class="form-group">
-                <label>اختر الدورة المالية الهدف:</label>
+                <label>اختر الدورة المستهدفة:</label>
                 <select id="transfer-target-session"></select>
             </div>
             <button type="button" class="btn btn-warning" style="width: 100%; justify-content: center;" onclick="confirmTransfer()">
@@ -416,33 +412,31 @@
         </div>
     </div>
 
-    <!-- نافذة 5: بدء دورة جديدة وتأكيد ترحيل الديون -->
+    <!-- نافذة بدء دورة جديدة -->
     <div id="modal-new-session" class="modal">
         <div class="modal-content">
             <span class="close-modal" onclick="closeModal('modal-new-session')">&times;</span>
-            <h3><i class="fas fa-calendar-plus" style="color: var(--success);"></i> بدء دورة مالية جديدة</h3>
+            <h3><i class="fas fa-calendar-plus" style="color: var(--success);"></i> بدء دورة جديدة</h3>
             <div class="form-group">
-                <label>اسم الدورة الجديدة (مثال: دورة شوال 1446، دورة مايو 2025):</label>
-                <input type="text" id="new-session-name" required placeholder="اكتب اسم الدورة...">
+                <label>اسم الدورة الجديدة:</label>
+                <input type="text" id="new-session-name" required placeholder="مثال: دورة ذو الحجة 1446">
             </div>
             <div class="form-group">
-                <label>تاريخ بدء الدورة:</label>
+                <label>تاريخ البدء:</label>
                 <input type="date" id="new-session-date" required>
             </div>
             
             <div style="background: #eefbf5; border: 1px solid #c3e6cb; padding: 12px; border-radius: 6px; margin-bottom: 15px;">
-                <h4 style="margin: 0 0 5px; color: #155724; font-size: 14px;"><i class="fas fa-info-circle"></i> ترحيل البيانات التلقائي:</h4>
-                <ul style="margin: 0; padding-right: 20px; font-size: 13px; color: #155724;">
-                    <li><strong>الديون غير المسددة:</strong> ستنتقل تلقائياً لهذه الدورة مع خصم ما سُدد منها.</li>
-                    <li><strong>الديون المسددة بالكامل:</strong> ستبقى في أرشيف الدورة السابقة ولن تُنقل.</li>
-                    <li><strong>المساهمون:</strong> يمكنك استيراد المساهمين المعتادين مع إمكانية تعديل حصة كل شخص.</li>
-                </ul>
+                <h4 style="margin: 0 0 5px; color: #155724; font-size: 13px;"><i class="fas fa-info-circle"></i> ترحيل الديون المتبقية:</h4>
+                <p style="margin: 0; font-size: 12.5px; color: #155724;">
+                    الديون التي ما زال فيها متبقٍ ستنتقل تلقائياً لهذه الدورة برصيدها الفعلي، بينما الديون المسددة بالكامل ستبقى في الأرشيف فقط.
+                </p>
             </div>
 
             <div class="form-group">
                 <label style="display:flex; align-items:center; gap:8px; cursor:pointer;">
                     <input type="checkbox" id="import-contributors-check" checked style="width:18px; height:18px;">
-                    <span>إدراج المساهمين الدائمين تلقائياً في هذه الدورة (مع تصفير المدفوع)</span>
+                    <span>إدراج المساهمين الدائمين في هذه الدورة (مع تصفير المدفوع)</span>
                 </label>
             </div>
 
@@ -455,7 +449,6 @@
     <script>
         const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxqPfoP2oqDPE4eT4aayRiU9OhEhaCXRtONUCHHK00cs7xDaFT1vKc2OVJOLqfaI2Vj/exec";
 
-        // الهيكل المحدث الداعم للدورات المتعددة
         let appData = {
             activeSessionId: "sess_initial",
             viewingSessionId: "sess_initial",
@@ -475,13 +468,11 @@
             lastUpdated: Date.now()
         };
 
-        // ترحيل هيكل البيانات القديم إن وُجد لحمايته من الضياع
         function ensureDataStructure() {
             if (!appData || typeof appData !== 'object') appData = {};
             if (!Array.isArray(appData.permanentContributors)) appData.permanentContributors = [];
             if (!Array.isArray(appData.serviceTypes)) appData.serviceTypes = ['كهرباء', 'مياه', 'إنترنت', 'غاز', 'بلدية'];
 
-            // في حال وجود نسخة قديمة (أحادية الجلسة)
             if (!Array.isArray(appData.sessions) || appData.sessions.length === 0) {
                 const legacyShareholders = Array.isArray(appData.shareholders) ? appData.shareholders : [];
                 const legacyExpenses = Array.isArray(appData.expenses) ? appData.expenses : [];
@@ -506,11 +497,13 @@
                 appData.viewingSessionId = appData.activeSessionId;
             }
 
-            // التأكد من كمال كل دورة
             appData.sessions.forEach(s => {
                 if (!Array.isArray(s.shareholders)) s.shareholders = [];
                 if (!Array.isArray(s.expenses)) s.expenses = [];
                 if (!Array.isArray(s.debts)) s.debts = [];
+                s.debts.forEach(d => {
+                    if (!Array.isArray(d.paymentHistory)) d.paymentHistory = [];
+                });
             });
         }
 
@@ -580,7 +573,6 @@
             return '<span class="badge warning">مسدد جزئياً</span>';
         };
 
-        // --- إدارة الدورات (الجلسات) ---
         function switchSession(sessId) {
             appData.viewingSessionId = sessId;
             renderUI();
@@ -600,13 +592,12 @@
 
             const activeSess = appData.sessions.find(s => s.id === appData.activeSessionId) || appData.sessions[appData.sessions.length - 1];
 
-            // 1. ترحيل الديون غير المسددة فقط
+            // ترحيل الديون غير المسددة فقط كأرصدة مستقلة
             const carriedDebts = [];
             if (activeSess && Array.isArray(activeSess.debts)) {
                 activeSess.debts.forEach(d => {
                     const remaining = (Number(d.total) || 0) - (Number(d.paid) || 0);
                     if (remaining > 0) {
-                        // ينتقل للدورة الجديدة بالرصيد المتبقي لتبدأ منه
                         carriedDebts.push({
                             id: 'DBT-CR-' + Date.now().toString().slice(-4) + Math.floor(Math.random()*10),
                             creditor: d.creditor + ' (مرحّل)',
@@ -615,13 +606,12 @@
                             total: remaining,
                             sessionAmount: d.sessionAmount || remaining,
                             paid: 0,
-                            carriedFrom: activeSess.name
+                            paymentHistory: []
                         });
                     }
                 });
             }
 
-            // 2. ترحيل المساهمين اختياًرياً مع تصفير المدفوع
             const newShareholders = [];
             if (importContributors && appData.permanentContributors.length > 0) {
                 appData.permanentContributors.forEach((c, idx) => {
@@ -650,8 +640,60 @@
             closeModal('modal-new-session');
             renderUI();
             pushToDrive();
-            alert('تم إنشاء الدورة الجديدة بنجاح، وترحيل الديون المتبقية (' + carriedDebts.length + ' دين).');
+            alert('تم بدء الدورة بنجاح، وترحيل الديون المتبقية (' + carriedDebts.length + ' دين) كأرصدة مستقلة.');
         }
+
+        // --- إدارة الديون: سداد توثيقي والتراجع عنه دون لمس المصروفات أو الأسهم ---
+        window.quickPayInstallment = function(debtIndex) {
+            const sess = getCurrentSession();
+            const debt = sess.debts[debtIndex];
+            if (!debt) return;
+
+            const remaining = (Number(debt.total) || 0) - (Number(debt.paid) || 0);
+            if (remaining <= 0) return alert('هذا الدين مكتمل السداد بالفعل!');
+
+            let payAmount = Number(debt.sessionAmount) || remaining;
+            if (payAmount > remaining) payAmount = remaining;
+
+            const confirmed = confirm(`تأكيد تسجيل دفعة للدائن (${debt.creditor}) بمبلغ: ${formatCurrency(payAmount)}؟\n\n(ملاحظة: هذا تسجيل توثيقي فقط؛ لن يخصم من أسهم المساهمين ولن يضاف للمصروفات).`);
+            if (!confirmed) return;
+
+            if (!Array.isArray(debt.paymentHistory)) debt.paymentHistory = [];
+            
+            // حفظ الدفعة للتمكن من التراجع في حال الخطأ
+            debt.paymentHistory.push(payAmount);
+            debt.paid = (Number(debt.paid) || 0) + payAmount;
+
+            renderUI();
+            pushToDrive();
+        };
+
+        // زر التراجع الفوري عن السداد في حال الضغط بالخطأ
+        window.undoDebtPayment = function(debtIndex) {
+            const sess = getCurrentSession();
+            const debt = sess.debts[debtIndex];
+            if (!debt) return;
+
+            if (!Array.isArray(debt.paymentHistory)) debt.paymentHistory = [];
+
+            if (debt.paymentHistory.length > 0) {
+                const lastAmount = debt.paymentHistory.pop();
+                if (confirm(`هل تريد التراجع عن تسجيل الدفعة الأخيرة بمبلغ: ${formatCurrency(lastAmount)} وإعادتها لمبلغ الدين غير المسدد؟`)) {
+                    debt.paid = Math.max(0, (Number(debt.paid) || 0) - lastAmount);
+                    renderUI();
+                    pushToDrive();
+                }
+            } else if ((Number(debt.paid) || 0) > 0) {
+                // إذا لم يوجد سجل دفعات دقيق، نسأله إذا كان يريد تصفير المسدد أو تعديله
+                if (confirm(`هل ترغب في إعادة الدين بالكامل كغير مسدد (تصفير المسدد البالغ: ${formatCurrency(debt.paid)})؟`)) {
+                    debt.paid = 0;
+                    renderUI();
+                    pushToDrive();
+                }
+            } else {
+                alert('لا توجد دفعات مسجلة على هذا الدين للتراجع عنها.');
+            }
+        };
 
         // --- نقل السجلات بين الدورات ---
         let transferTarget = { type: '', index: -1 };
@@ -664,7 +706,7 @@
             if (type === 'expenses') itemName = "المصروف: " + sess.expenses[index].statement;
             if (type === 'debts') itemName = "الدين: " + sess.debts[index].creditor;
 
-            document.getElementById('transfer-desc').innerText = `سيتم نقل (${itemName}) من (${sess.name}) إلى الدورة المختارة:`;
+            document.getElementById('transfer-desc').innerText = `سيتم نقل (${itemName}) من (${sess.name}) إلى الدورة المحددة:`;
             
             const targetSelect = document.getElementById('transfer-target-session');
             targetSelect.innerHTML = appData.sessions
@@ -694,48 +736,12 @@
             alert('تم نقل السجل بنجاح إلى ' + toSess.name);
         };
 
-        // --- السداد السريع لقسط الدين ---
-        window.quickPayInstallment = function(debtIndex) {
-            const sess = getCurrentSession();
-            const debt = sess.debts[debtIndex];
-            if (!debt) return;
-
-            const remaining = (Number(debt.total) || 0) - (Number(debt.paid) || 0);
-            if (remaining <= 0) return alert('هذا الدين مكتمل السداد بالفعل!');
-
-            let payAmount = Number(debt.sessionAmount) || remaining;
-            if (payAmount > remaining) payAmount = remaining;
-
-            const confirmed = confirm(`تأكيد سداد قسط للدائن (${debt.creditor}) بمبلغ: ${formatCurrency(payAmount)}؟\nسيتم تسجيله أيضاً في سجل المصروفات تلقائياً.`);
-            if (!confirmed) return;
-
-            debt.paid = (Number(debt.paid) || 0) + payAmount;
-
-            // تسجيل المصروف تلقائياً
-            sess.expenses.push({
-                id: 'EXP-D-' + Date.now().toString().slice(-4),
-                date: new Date().toISOString().split('T')[0],
-                statement: 'سداد قسط دين: ' + debt.creditor,
-                category: 'سداد ديون',
-                amount: payAmount,
-                payer: 'الخزينة العامة',
-                isMultiPayer: false,
-                payersSplit: [],
-                method: 'تحويل بنكي'
-            });
-
-            renderUI();
-            pushToDrive();
-            alert('تم سداد القسط وتحديث المصروفات والمتبقي بنجاح!');
-        };
-
-        // --- عرض الواجهة (Render) ---
+        // --- عرض الواجهة (Render UI) ---
         function renderUI() {
             ensureDataStructure();
             const sess = getCurrentSession();
             const isCurrentActive = (sess.id === appData.activeSessionId);
 
-            // تحديث شريط اختيار الدورة
             const selectBox = document.getElementById('session-select-box');
             selectBox.innerHTML = appData.sessions.map(s => 
                 `<option value="${s.id}" ${s.id === sess.id ? 'selected' : ''}>${s.name} ${s.id === appData.activeSessionId ? ' ⭐ (الحالية)' : ''}</option>`
@@ -750,13 +756,12 @@
                 badge.innerText = 'دورة سابقة (أرشيف تاريخي)';
             }
 
-            // الفلاتر
             const fromDate = document.getElementById('filter-from').value;
             const toDate = document.getElementById('filter-to').value;
 
             let totalSubs = 0, totalExp = 0, totalRemainingDebts = 0;
 
-            // 1. جدول المساهمين
+            // 1. جدول المساهمين (الحصص مستقلة تماماً)
             document.getElementById('shareholders-body').innerHTML = sess.shareholders.map((s, index) => {
                 const remaining = (Number(s.quota) || 0) - (Number(s.paid) || 0);
                 totalSubs += Number(s.paid) || 0;
@@ -775,7 +780,7 @@
                 </tr>`;
             }).join('');
 
-            // 2. جدول المصروفات
+            // 2. جدول المصروفات (المصروفات الفعلية للصندوق فقط)
             let filteredExpenses = sess.expenses.map((e, idx) => ({ ...e, _origIndex: idx }));
             if (fromDate) filteredExpenses = filteredExpenses.filter(e => e.date >= fromDate);
             if (toDate) filteredExpenses = filteredExpenses.filter(e => e.date <= toDate);
@@ -797,22 +802,27 @@
                 </tr>`;
             }).join('');
 
-            // 3. جدول الديون
+            // 3. جدول الديون (توثيقي فقط مع زر التراجع في حال الخطأ)
             document.getElementById('debts-body').innerHTML = sess.debts.map((d, index) => {
                 const remaining = (Number(d.total) || 0) - (Number(d.paid) || 0);
                 totalRemainingDebts += remaining;
                 const isPaidFull = remaining <= 0;
+                const hasPaidAmount = (Number(d.paid) || 0) > 0;
+
                 return `<tr>
                     <td><strong>${d.creditor}</strong></td>
                     <td>${d.date}</td>
                     <td>${d.deadline || 'غير محدد'}</td>
                     <td>${formatCurrency(d.total)}</td>
-                    <td><strong style="color:var(--primary)">${formatCurrency(d.sessionAmount || 0)}</strong></td>
+                    <td><strong style="color:var(--purple)">${formatCurrency(d.sessionAmount || 0)}</strong></td>
                     <td>${formatCurrency(d.paid)}</td>
                     <td dir="ltr" style="font-weight:bold; color:${isPaidFull ? 'var(--success)' : 'var(--danger)'}">${formatCurrency(remaining)}</td>
                     <td>${getStatusBadge(remaining, d.total)}</td>
                     <td>
-                        ${!isPaidFull ? `<button class="btn btn-sm btn-success" onclick="quickPayInstallment(${index})" title="دفع القسط الآن"><i class="fas fa-bolt"></i> تسديد القسط</button>` : '<i class="fas fa-check-double text-success"></i>'}
+                        <div style="display: flex; gap: 4px; align-items: center; flex-wrap: wrap;">
+                            ${!isPaidFull ? `<button class="btn btn-sm btn-success" onclick="quickPayInstallment(${index})" title="تسجيل سداد القسط توثيقياً"><i class="fas fa-check"></i> تسجيل سداد</button>` : '<span class="badge success">مسدد</span>'}
+                            ${hasPaidAmount ? `<button class="btn btn-sm btn-warning" onclick="undoDebtPayment(${index})" title="تراجع عن السداد في حال الضغط بالخطأ"><i class="fas fa-undo"></i> تراجع</button>` : ''}
+                        </div>
                     </td>
                     <td>
                         <button class="btn btn-sm" style="background:var(--warning)" onclick="editDebt(${index})" title="تعديل"><i class="fas fa-edit"></i></button>
@@ -825,6 +835,7 @@
             // تحديث بطاقات الإحصاءات
             document.getElementById('total-subscriptions').innerText = formatCurrency(totalSubs);
             document.getElementById('total-expenses').innerText = formatCurrency(totalExp);
+            // صافي الصندوق = الحصص المحصلة - المصروفات (دون خصم أي ديون)
             document.getElementById('net-balance').innerText = formatCurrency(totalSubs - totalExp);
             document.getElementById('total-debts').innerText = formatCurrency(totalRemainingDebts);
 
@@ -835,14 +846,12 @@
             ensureDataStructure();
             const sess = getCurrentSession();
 
-            // قائمة المساهمين الدائمين
             const savedSelect = document.getElementById('sh-saved-list');
             if (savedSelect) {
                 savedSelect.innerHTML = '<option value="">-- اختر من المسجلين أو اكتب اسماً جديداً بالأسفل --</option>' +
-                    appData.permanentContributors.map((c, idx) => `<option value="${idx}">${c.name} (الحصة السابقة: ${c.quota})</option>`).join('');
+                    appData.permanentContributors.map((c, idx) => `<option value="${idx}">${c.name} (الحصة المسجلة: ${c.quota})</option>`).join('');
             }
 
-            // قائمة الدافعين (المساهمون في هذه الدورة + الدائمون)
             const currentNames = sess.shareholders.map(s => s.name);
             const permNames = appData.permanentContributors.map(c => c.name);
             const allNames = [...new Set([...currentNames, ...permNames])].filter(Boolean);
@@ -873,13 +882,12 @@
             }
         }
 
-        // اختيار مساهم محفوظ وتعبئة حصته تلقائياً مع السماح بتعديلها
         window.fillSavedContributor = function() {
             const idx = document.getElementById('sh-saved-list').value;
             if (idx !== "") {
                 const c = appData.permanentContributors[idx];
                 document.getElementById('sh-name').value = c.name;
-                document.getElementById('sh-quota').value = c.quota; // يمكن للمستخدم تعديلها للدورة الحالية
+                document.getElementById('sh-quota').value = c.quota;
                 document.getElementById('sh-paid').value = 0;
             }
         };
@@ -887,14 +895,13 @@
         window.deletePermanentContributor = function() {
             const idx = document.getElementById('sh-saved-list').value;
             if (idx === "") return alert("اختر اسماً من القائمة أولاً لحذفه.");
-            if (confirm("هل تريد مسحه من السجل العام نهائياً؟")) {
+            if (confirm("هل تريد مسحه من القائمة العامة؟")) {
                 appData.permanentContributors.splice(idx, 1);
                 updateDropdowns();
                 pushToDrive();
             }
         };
 
-        // --- إضافة وتعديل المساهم في الدورة ---
         window.addShareholder = function(e) {
             e.preventDefault();
             const sess = getCurrentSession();
@@ -903,13 +910,9 @@
             const paid = parseFloat(document.getElementById('sh-paid').value) || 0;
             const editIndex = parseInt(document.getElementById('sh-edit-index').value);
 
-            // تحديث أو إضافة إلى قائمة المساهمين الدائمين
             const existingPerm = appData.permanentContributors.find(c => c.name === name);
-            if (existingPerm) {
-                existingPerm.quota = quota;
-            } else {
-                appData.permanentContributors.push({ name, quota });
-            }
+            if (existingPerm) existingPerm.quota = quota;
+            else appData.permanentContributors.push({ name, quota });
 
             if (editIndex > -1 && sess.shareholders[editIndex]) {
                 sess.shareholders[editIndex].name = name;
@@ -934,7 +937,6 @@
             openModal('modal-shareholder');
         };
 
-        // --- إضافة وتعديل المصروف ---
         window.addExpense = function(e) {
             e.preventDefault();
             const sess = getCurrentSession();
@@ -996,7 +998,6 @@
             openModal('modal-expense');
         };
 
-        // --- إضافة وتعديل الدين ---
         window.addDebt = function(e) {
             e.preventDefault();
             const sess = getCurrentSession();
@@ -1009,7 +1010,8 @@
                 deadline: document.getElementById('db-deadline').value,
                 total: parseFloat(document.getElementById('db-total').value) || 0,
                 sessionAmount: parseFloat(document.getElementById('db-session-amount').value) || 0,
-                paid: parseFloat(document.getElementById('db-paid').value) || 0
+                paid: parseFloat(document.getElementById('db-paid').value) || 0,
+                paymentHistory: (editIndex > -1 && sess.debts[editIndex]) ? (sess.debts[editIndex].paymentHistory || []) : []
             };
 
             if (editIndex > -1 && sess.debts[editIndex]) sess.debts[editIndex] = debtObj;
@@ -1034,14 +1036,14 @@
         };
 
         window.deleteRecord = function(collection, index) {
-            if (confirm('هل أنت متأكد من حذف هذا السجل نهائياً من هذه الدورة؟')) {
+            if (confirm('هل أنت متأكد من حذف هذا السجل نهائياً؟')) {
                 getCurrentSession()[collection].splice(index, 1);
                 renderUI();
                 pushToDrive();
             }
         };
 
-        // --- أدوات المساعدة ---
+        // --- النوافذ والمساعدات ---
         window.openModal = function(id) {
             document.getElementById(id).classList.add('active');
             if (id === 'modal-expense' && document.getElementById('ex-edit-index').value === "-1") {
@@ -1105,7 +1107,7 @@
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData));
             const dl = document.createElement('a');
             dl.setAttribute("href", dataStr);
-            dl.setAttribute("download", "masroofat_all_sessions_" + new Date().toISOString().split('T')[0] + ".json");
+            dl.setAttribute("download", "masroofat_data_" + new Date().toISOString().split('T')[0] + ".json");
             document.body.appendChild(dl);
             dl.click();
             dl.remove();
@@ -1123,14 +1125,13 @@
                         ensureDataStructure();
                         renderUI();
                         pushToDrive();
-                        alert('تمت استعادة كافة الدورات بنجاح!');
+                        alert('تمت استعادة البيانات بنجاح!');
                     }
                 } catch(err) { alert('ملف غير صالح.'); }
             };
             reader.readAsText(file);
         };
 
-        // قفل التطبيق
         function checkLockState() {
             const isUnlocked = sessionStorage.getItem('masroofat_unlocked');
             const screen = document.getElementById('app-lock-screen');
