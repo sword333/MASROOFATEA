@@ -193,11 +193,11 @@
         <th>الحصة المقررة لهذه الدورة</th>
         <th>المبلغ المدفوع</th>
         <th>المتبقي / العجز</th>
-        <th>المتبقي من الحصة (الرصيد المتاح)</th> <!-- العمود الجديد -->
+        <th>المتبقي من الحصة (بعد المصروفات)</th> <!-- أضف هذا السطر -->
         <th>حالة السداد</th>
         <th>إجراءات</th>
     </tr>
-                    </thead>
+</thead>
                     <tbody id="shareholders-body"></tbody>
                 </table>
             </div>
@@ -348,7 +348,10 @@
                     <input type="text" id="ex-statement" placeholder="تفاصيل المصروف...">
                 </div>
 
-                <div class="form-group"><label>المبلغ الإجمالي للمصروف</label><input type="number" id="ex-amount" step="0.01" required></div>
+                <div class="form-group">
+    <label>المبلغ الإجمالي للمصروف</label>
+    <input type="number" id="ex-amount" step="0.01" required oninput="if(document.getElementById('ex-multi-payer').checked) splitExpenseEqually()">
+</div>
                 
                 <div class="form-group" style="background: #f8f9fc; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -359,7 +362,9 @@
                         </label>
                     </div>
 
-                    <div id="single-payer-group"><select id="ex-payer"></select></div>
+                   <div id="single-payer-group">
+    <select id="ex-payer" onchange="checkSinglePayerShare()"></select>
+</div>
 
                     <div id="multi-payer-group" style="display: none;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -512,7 +517,35 @@
             ensureDataStructure();
             return appData.sessions.find(s => s.id === appData.viewingSessionId) || appData.sessions[0];
         }
+// 1. حساب إجمالي ما صُرف من حصة مساهم معين في الدورة
+function getShareholderSpent(sess, shareholderName, excludeExpenseIndex = -1) {
+    if (!sess || !Array.isArray(sess.expenses)) return 0;
+    let totalSpent = 0;
+    sess.expenses.forEach((exp, idx) => {
+        if (idx === excludeExpenseIndex) return; // استثناء المصروف قيد التعديل
+        if (exp.isMultiPayer && Array.isArray(exp.payersSplit)) {
+            exp.payersSplit.forEach(split => {
+                if (split.name === shareholderName) {
+                    totalSpent += (Number(split.amount) || 0);
+                }
+            });
+        } else if (!exp.isMultiPayer && exp.payer === shareholderName) {
+            totalSpent += (Number(exp.amount) || 0);
+        }
+    });
+    return Math.round(totalSpent * 100) / 100;
+}
 
+// 2. حساب المتبقي من حصة المساهم (الرصيد المتاح بعد خصم المصروفات)
+function getShareholderRemainingShare(sess, shareholderName, excludeExpenseIndex = -1) {
+    if (!sess || !Array.isArray(sess.shareholders)) return 0;
+    const sh = sess.shareholders.find(s => s.name === shareholderName);
+    if (!sh) return 0;
+    // يعتمد على المبلغ المدفوع (أو الحصة المقررة إذا لم يُسجل مدفوع بعد)
+    const baseShare = (Number(sh.paid) > 0 ? Number(sh.paid) : Number(sh.quota)) || 0;
+    const spent = getShareholderSpent(sess, shareholderName, excludeExpenseIndex);
+    return Math.round((baseShare - spent) * 100) / 100;
+}
         // --- المزامنة والحفظ ---
         async function fetchFromDrive() {
             const indicator = document.getElementById('sync-indicator');
@@ -761,25 +794,42 @@
             const toDate = document.getElementById('filter-to').value;
 
             let totalSubs = 0, totalExp = 0, totalRemainingDebts = 0;
+// 1. جدول المساهمين (مع إظهار المتبقي من الحصة بعد المصروفات)
+document.getElementById('shareholders-body').innerHTML = sess.shareholders.map((s, index) => {
+    const remaining = (Number(s.quota) || 0) - (Number(s.paid) || 0);
+    const spentFromShare = getShareholderSpent(sess, s.name);
+    const remainingShare = getShareholderRemainingShare(sess, s.name);
+    totalSubs += Number(s.paid) || 0;
 
-            // 1. جدول المساهمين (الحصص مستقلة تماماً)
-            document.getElementById('shareholders-body').innerHTML = sess.shareholders.map((s, index) => {
-                const remaining = (Number(s.quota) || 0) - (Number(s.paid) || 0);
-                totalSubs += Number(s.paid) || 0;
-                return `<tr>
-                    <td>${s.id || '-'}</td>
-                    <td><strong>${s.name}</strong></td>
-                    <td>${formatCurrency(s.quota)}</td>
-                    <td>${formatCurrency(s.paid)}</td>
-                    <td dir="ltr">${formatCurrency(remaining)}</td>
-                    <td>${getStatusBadge(remaining, s.quota)}</td>
-                    <td>
-                        <button class="btn btn-sm" style="background:var(--warning)" onclick="editShareholder(${index})" title="تعديل"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-sm btn-info" onclick="openTransferModal('shareholders', ${index})" title="نقل لدورة أخرى"><i class="fas fa-exchange-alt"></i></button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteRecord('shareholders', ${index})" title="حذف"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>`;
-            }).join('');
+    // تلوين المتبقي من الحصة (أخضر للمتاح، أصفر للصفر، أحمر للسالب)
+    let shareColor = 'var(--success)';
+    let shareBadge = '';
+    if (remainingShare === 0) {
+        shareColor = '#b18817';
+        shareBadge = '<span class="badge warning">صفر</span>';
+    } else if (remainingShare < 0) {
+        shareColor = 'var(--danger)';
+        shareBadge = '<span class="badge danger">خصم بالسالب</span>';
+    }
+
+    return `<tr>
+        <td>${s.id || '-'}</td>
+        <td><strong>${s.name}</strong></td>
+        <td>${formatCurrency(s.quota)}</td>
+        <td>${formatCurrency(s.paid)}</td>
+        <td dir="ltr">${formatCurrency(remaining)}</td>
+        <td dir="ltr" style="font-weight:bold; color:${shareColor};">
+            ${formatCurrency(remainingShare)} ${shareBadge}
+            <div style="font-size:11px; color:#858796; font-weight:normal;" dir="rtl">صُرف من حصته: ${formatCurrency(spentFromShare)}</div>
+        </td>
+        <td>${getStatusBadge(remaining, s.quota)}</td>
+        <td>
+            <button class="btn btn-sm" style="background:var(--warning)" onclick="editShareholder(${index})" title="تعديل"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-sm btn-info" onclick="openTransferModal('shareholders', ${index})" title="نقل لدورة أخرى"><i class="fas fa-exchange-alt"></i></button>
+            <button class="btn btn-danger btn-sm" onclick="deleteRecord('shareholders', ${index})" title="حذف"><i class="fas fa-trash"></i></button>
+        </td>
+    </tr>`;
+}).join('');
 
             // 2. جدول المصروفات (المصروفات الفعلية للصندوق فقط)
             let filteredExpenses = sess.expenses.map((e, idx) => ({ ...e, _origIndex: idx }));
@@ -857,25 +907,34 @@
             const permNames = appData.permanentContributors.map(c => c.name);
             const allNames = [...new Set([...currentNames, ...permNames])].filter(Boolean);
 
-            const payerSelect = document.getElementById('ex-payer');
-            if (payerSelect) {
-                payerSelect.innerHTML = allNames.length > 0
-                    ? allNames.map(name => `<option value="${name}">${name}</option>`).join('')
-                    : '<option value="عام">عام</option>';
-            }
+            const editExpIndex = parseInt(document.getElementById('ex-edit-index')?.value ?? "-1");
 
-            const multiList = document.getElementById('multi-payer-list');
-            if (multiList) {
-                multiList.innerHTML = allNames.map(name => `
-                    <div class="mp-row">
-                        <label>
-                            <input type="checkbox" class="mp-check" data-name="${name}">
-                            <span>${name}</span>
-                        </label>
-                        <input type="number" class="mp-amount" data-name="${name}" step="0.01" placeholder="المبلغ...">
-                    </div>
-                `).join('');
-            }
+const payerSelect = document.getElementById('ex-payer');
+if (payerSelect) {
+    payerSelect.innerHTML = allNames.length > 0
+        ? allNames.map(name => {
+            const rem = getShareholderRemainingShare(sess, name, editExpIndex);
+            return `<option value="${name}">${name} (المتبقي من الحصة: ${formatCurrency(rem)})</option>`;
+        }).join('')
+        : '<option value="عام">عام</option>';
+}
+
+const multiList = document.getElementById('multi-payer-list');
+if (multiList) {
+    multiList.innerHTML = allNames.map(name => {
+        const rem = getShareholderRemainingShare(sess, name, editExpIndex);
+        const badgeClass = rem > 0 ? 'success' : (rem === 0 ? 'warning' : 'danger');
+        return `
+        <div class="mp-row">
+            <label>
+                <input type="checkbox" class="mp-check" data-name="${name}" onchange="splitExpenseEqually()">
+                <span>${name}</span>
+                <span class="badge ${badgeClass}" dir="ltr">المتبقي: ${formatCurrency(rem)}</span>
+            </label>
+            <input type="number" class="mp-amount" data-name="${name}" step="0.01" placeholder="0.00">
+        </div>`;
+    }).join('');
+}
 
             const serviceSelect = document.getElementById('ex-service-type');
             if (serviceSelect) {
@@ -966,53 +1025,113 @@ function getShareholderRemainingShare(sess, shareholderName, excludeExpenseIndex
     const spent = getShareholderSpent(sess, shareholderName, excludeExpenseIndex);
     return Math.round((baseShare - spent) * 100) / 100;
 }
-        window.addExpense = function(e) {
-            e.preventDefault();
-            const sess = getCurrentSession();
-            const editIndex = parseInt(document.getElementById('ex-edit-index').value);
-            const category = document.getElementById('ex-category').value;
+        // دالة فحص فوري عند اختيار المساهم من القائمة المنسدلة
+window.checkSinglePayerShare = function() {
+    const sess = getCurrentSession();
+    const editIndex = parseInt(document.getElementById('ex-edit-index').value);
+    const payerName = document.getElementById('ex-payer').value;
+    const amount = parseFloat(document.getElementById('ex-amount').value) || 0;
+    if (!payerName || payerName === 'عام') return true;
 
-            let statement = '';
-            if (category === 'طعام ومقاضي') statement = 'طعام: ' + (document.getElementById('ex-food-item').value.trim() || 'عام');
-            else if (category === 'فواتير وخدمات') statement = 'خدمة: ' + (document.getElementById('ex-service-type').value || 'عام');
-            else statement = document.getElementById('ex-statement').value.trim() || category;
+    const remShare = getShareholderRemainingShare(sess, payerName, editIndex);
 
-            const isMulti = document.getElementById('ex-multi-payer').checked;
-            let payerDisplay = '';
-            let payersSplit = [];
+    // إذا كان رصيد حصته صفر أو أقل من مبلغ المصروف
+    if (remShare <= 0 || (amount > 0 && remShare < amount)) {
+        // البحث عن مساهم آخر لديه حصة متبقية
+        const alternatives = sess.shareholders
+            .map(s => ({ name: s.name, rem: getShareholderRemainingShare(sess, s.name, editIndex) }))
+            .filter(s => s.name !== payerName && s.rem > 0)
+            .sort((a, b) => b.rem - a.rem);
 
-            if (isMulti) {
-                document.querySelectorAll('.mp-row').forEach(row => {
-                    const chk = row.querySelector('.mp-check');
-                    const name = chk.getAttribute('data-name');
-                    const amt = parseFloat(row.querySelector('.mp-amount').value) || 0;
-                    if (chk.checked && amt > 0) payersSplit.push({ name, amount: amt });
-                });
-                if (payersSplit.length === 0) return alert('حدد المساهمين المشاركين بالدفع.');
-                payerDisplay = payersSplit.map(p => `${p.name} (${p.amount})`).join(' ، ');
-            } else {
-                payerDisplay = document.getElementById('ex-payer').value || 'عام';
+        const altText = alternatives.length > 0
+            ? `المساهم المتاح بدلاً منه: (${alternatives[0].name}) برصيد متبقٍ (${formatCurrency(alternatives[0].rem)}).`
+            : `لا يوجد مساهم آخر لديه رصيد متبقٍ موجب حالياً.`;
+
+        const msg = `⚠️ تنبيه رصيد الحصة:\n` +
+                    `المساهم (${payerName}) المتبقي من حصته هو (${formatCurrency(remShare)})` +
+                    (amount > 0 ? ` ومبلغ المصروف (${formatCurrency(amount)})` : ``) + `.\n\n` +
+                    `• اضغط [موافق / OK] للاستمرار بالخصم بالسالب (Minus) على (${payerName}).\n` +
+                    `• اضغط [إلغاء / Cancel] لتغيير الدافع إلى مساهم لديه رصيد متبقٍ.\n` +
+                    `${altText}`;
+
+        const continueWithMinus = confirm(msg);
+        if (!continueWithMinus) {
+            if (alternatives.length > 0) {
+                document.getElementById('ex-payer').value = alternatives[0].name;
+                alert(`تم تغيير الدافع تلقائياً إلى: ${alternatives[0].name}`);
             }
+            return false;
+        }
+    }
+    return true;
+};
 
-            const expenseObj = {
-                id: (editIndex > -1 && sess.expenses[editIndex]) ? sess.expenses[editIndex].id : 'EXP-' + Date.now().toString().slice(-4),
-                date: document.getElementById('ex-date').value,
-                statement: statement,
-                category: category,
-                amount: parseFloat(document.getElementById('ex-amount').value) || 0,
-                payer: payerDisplay,
-                isMultiPayer: isMulti,
-                payersSplit: payersSplit,
-                method: document.getElementById('ex-method').value
-            };
+window.addExpense = function(e) {
+    e.preventDefault();
+    const sess = getCurrentSession();
+    const editIndex = parseInt(document.getElementById('ex-edit-index').value);
+    const category = document.getElementById('ex-category').value;
+    const totalAmount = parseFloat(document.getElementById('ex-amount').value) || 0;
 
-            if (editIndex > -1 && sess.expenses[editIndex]) sess.expenses[editIndex] = expenseObj;
-            else sess.expenses.push(expenseObj);
+    let statement = '';
+    if (category === 'طعام ومقاضي') statement = 'طعام: ' + (document.getElementById('ex-food-item').value.trim() || 'عام');
+    else if (category === 'فواتير وخدمات') statement = 'خدمة: ' + (document.getElementById('ex-service-type').value || 'عام');
+    else statement = document.getElementById('ex-statement').value.trim() || category;
 
-            closeModal('modal-expense');
-            renderUI();
-            pushToDrive();
-        };
+    const isMulti = document.getElementById('ex-multi-payer').checked;
+    let payerDisplay = '';
+    let payersSplit = [];
+
+    if (isMulti) {
+        let sumSplits = 0;
+        let minusPayers = [];
+
+        document.querySelectorAll('.mp-row').forEach(row => {
+            const chk = row.querySelector('.mp-check');
+            const name = chk.getAttribute('data-name');
+            const amt = parseFloat(row.querySelector('.mp-amount').value) || 0;
+            if (chk.checked && amt > 0) {
+                payersSplit.push({ name, amount: amt });
+                sumSplits += amt;
+                const rem = getShareholderRemainingShare(sess, name, editIndex);
+                if (amt > rem) minusPayers.push(`${name} (المتبقي: ${formatCurrency(rem)}، المطلوب: ${formatCurrency(amt)})`);
+            }
+        });
+
+        if (payersSplit.length === 0) return alert('حدد المساهمين المشاركين بالدفع.');
+        if (Math.abs(sumSplits - totalAmount) > 0.05) {
+            return alert(`مجموع التوزيع (${formatCurrency(sumSplits)}) لا يطابق مبلغ المصروف (${formatCurrency(totalAmount)})!`);
+        }
+        if (minusPayers.length > 0) {
+            const ok = confirm(`⚠️ تنبيه: المساهمون التالية أسماؤهم ستنزل حصتهم بالسالب:\n- ${minusPayers.join('\n- ')}\n\nهل تريد الاستمرار بالخصم بالسالب؟`);
+            if (!ok) return;
+        }
+        payerDisplay = payersSplit.map(p => `${p.name} (${p.amount})`).join(' ، ');
+    } else {
+        payerDisplay = document.getElementById('ex-payer').value || 'عام';
+        // فحص رصيد المساهم المنفرد قبل الحفظ
+        if (!checkSinglePayerShare()) return;
+    }
+
+    const expenseObj = {
+        id: (editIndex > -1 && sess.expenses[editIndex]) ? sess.expenses[editIndex].id : 'EXP-' + Date.now().toString().slice(-4),
+        date: document.getElementById('ex-date').value,
+        statement: statement,
+        category: category,
+        amount: totalAmount,
+        payer: payerDisplay,
+        isMultiPayer: isMulti,
+        payersSplit: payersSplit,
+        method: document.getElementById('ex-method').value
+    };
+
+    if (editIndex > -1 && sess.expenses[editIndex]) sess.expenses[editIndex] = expenseObj;
+    else sess.expenses.push(expenseObj);
+
+    closeModal('modal-expense');
+    renderUI();
+    pushToDrive();
+};
 
         window.editExpense = function(index) {
             const e = getCurrentSession().expenses[index];
@@ -1109,22 +1228,122 @@ function getShareholderRemainingShare(sess, shareholderName, excludeExpenseIndex
         };
 
         window.toggleMultiPayer = function() {
-            const isMulti = document.getElementById('ex-multi-payer').checked;
-            document.getElementById('single-payer-group').style.display = isMulti ? 'none' : 'block';
-            document.getElementById('multi-payer-group').style.display = isMulti ? 'block' : 'none';
-        };
+    const isMulti = document.getElementById('ex-multi-payer').checked;
+    document.getElementById('single-payer-group').style.display = isMulti ? 'none' : 'block';
+    document.getElementById('multi-payer-group').style.display = isMulti ? 'block' : 'none';
 
-        window.splitExpenseEqually = function() {
-            const total = parseFloat(document.getElementById('ex-amount').value) || 0;
-            if (total <= 0) return alert('اكتب المبلغ الإجمالي أولاً لتقسيمه.');
-            const allRows = document.querySelectorAll('.mp-row');
-            if (allRows.length === 0) return;
-            const share = (total / allRows.length).toFixed(2);
-            allRows.forEach(row => {
-                row.querySelector('.mp-check').checked = true;
-                row.querySelector('.mp-amount').value = share;
+    if (isMulti) {
+        // تحديد جميع المساهمين الذين لديهم رصيد متبقٍ موجب تلقائياً عند تفعيل الدفع المشترك
+        const sess = getCurrentSession();
+        const editIndex = parseInt(document.getElementById('ex-edit-index').value);
+        const rows = document.querySelectorAll('.mp-row');
+        const anyChecked = Array.from(rows).some(r => r.querySelector('.mp-check').checked);
+
+        if (!anyChecked) {
+            rows.forEach(row => {
+                const chk = row.querySelector('.mp-check');
+                const rem = getShareholderRemainingShare(sess, chk.getAttribute('data-name'), editIndex);
+                chk.checked = (rem > 0);
             });
+            // إذا كان الجميع رصيدهم 0، نحدد الجميع
+            if (!Array.from(rows).some(r => r.querySelector('.mp-check').checked)) {
+                rows.forEach(r => r.querySelector('.mp-check').checked = true);
+            }
+        }
+        splitExpenseEqually();
+    }
+};
+
+// تقسيم المبلغ بالتساوي إن أمكن، وإلا تحميل صاحب الحصة المتبقية الأكبر المبلغ الأكبر
+window.splitExpenseEqually = function() {
+    const total = parseFloat(document.getElementById('ex-amount').value) || 0;
+    const sess = getCurrentSession();
+    const editIndex = parseInt(document.getElementById('ex-edit-index').value);
+    const allRows = Array.from(document.querySelectorAll('.mp-row'));
+    if (allRows.length === 0) return;
+
+    // تصفير غير المحددين
+    allRows.forEach(row => {
+        if (!row.querySelector('.mp-check').checked) {
+            row.querySelector('.mp-amount').value = '';
+        }
+    });
+
+    const selectedRows = allRows.filter(row => row.querySelector('.mp-check').checked);
+    if (selectedRows.length === 0 || total <= 0) return;
+
+    // تحويل المبلغ إلى بيسات/سنتات لتجنب كسور الفاصلة العائمة
+    const totalCents = Math.round(total * 100);
+    const payers = selectedRows.map(row => {
+        const name = row.querySelector('.mp-check').getAttribute('data-name');
+        const rem = getShareholderRemainingShare(sess, name, editIndex);
+        return {
+            name: name,
+            row: row,
+            rem: rem,
+            availCents: Math.max(0, Math.round(rem * 100)),
+            allocCents: 0
         };
+    });
+
+    let remainingToAllocate = totalCents;
+    let active = [...payers];
+
+    // المرحلة 1: التوزيع المتساوي مع سقف الحصة المتبقية لكل مساهم
+    // وتوجيه الفروقات والكسور لصاحب الحصة المتبقية الأكبر
+    while (active.length > 0 && remainingToAllocate > 0) {
+        // ترتيب تنازلي حسب المتبقي الفعلي من الحصة (الأكبر رصيداً أولاً)
+        active.sort((a, b) => ((b.availCents - b.allocCents) - (a.availCents - a.allocCents)) || (b.rem - a.rem));
+
+        const k = active.length;
+        const baseShare = Math.floor(remainingToAllocate / k);
+        const remainder = remainingToAllocate % k;
+
+        let cappedSomeone = false;
+        for (let i = 0; i < k; i++) {
+            const p = active[i];
+            const tentative = baseShare + (i < remainder ? 1 : 0);
+            const availLeft = p.availCents - p.allocCents;
+
+            if (availLeft < tentative) {
+                // هذا المساهم حصته المتبقية لا تكفي للقسمة المتساوية -> يأخذ المتبقي لديه فقط
+                p.allocCents += availLeft;
+                remainingToAllocate -= availLeft;
+                cappedSomeone = true;
+            }
+        }
+
+        if (cappedSomeone) {
+            // استبعاد من استنفدوا حصتهم المتبقية وتوزيع الباقي على أصحاب الحصص الأكبر
+            active = active.filter(p => (p.availCents - p.allocCents) > 0);
+        } else {
+            // الجميع لديهم رصيد كافٍ -> توزيع الحصة (مع إعطاء الكسر لصاحب الرصيد الأكبر)
+            for (let i = 0; i < k; i++) {
+                const p = active[i];
+                p.allocCents += baseShare + (i < remainder ? 1 : 0);
+            }
+            remainingToAllocate = 0;
+            break;
+        }
+    }
+
+    // المرحلة 2: إذا كان مبلغ المصروف أكبر من مجموع كل الحصص المتبقية للمحددين
+    if (remainingToAllocate > 0) {
+        payers.sort((a, b) => b.rem - a.rem);
+        const k = payers.length;
+        const baseExtra = Math.floor(remainingToAllocate / k);
+        const remExtra = remainingToAllocate % k;
+        for (let i = 0; i < k; i++) {
+            payers[i].allocCents += baseExtra + (i < remExtra ? 1 : 0);
+        }
+    }
+
+    // وضع القيم المحسوبة في الحقول
+    payers.forEach(p => {
+        p.row.querySelector('.mp-amount').value = (p.allocCents / 100).toFixed(2);
+    });
+};
+
 
         window.clearFilters = function() {
             document.getElementById('filter-from').value = '';
