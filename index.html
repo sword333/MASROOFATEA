@@ -187,15 +187,16 @@
             <div class="table-responsive">
                 <table>
                     <thead>
-                        <tr>
-                            <th>المعرف</th>
-                            <th>اسم المساهم</th>
-                            <th>الحصة المقررة لهذه الدورة</th>
-                            <th>المبلغ المدفوع</th>
-                            <th>المتبقي / العجز</th>
-                            <th>حالة السداد</th>
-                            <th>إجراءات</th>
-                        </tr>
+    <tr>
+        <th>المعرف</th>
+        <th>اسم المساهم</th>
+        <th>الحصة المقررة لهذه الدورة</th>
+        <th>المبلغ المدفوع</th>
+        <th>المتبقي / العجز</th>
+        <th>المتبقي من الحصة (الرصيد المتاح)</th> <!-- العمود الجديد -->
+        <th>حالة السداد</th>
+        <th>إجراءات</th>
+    </tr>
                     </thead>
                     <tbody id="shareholders-body"></tbody>
                 </table>
@@ -936,7 +937,35 @@
             document.getElementById('sh-paid').value = s.paid;
             openModal('modal-shareholder');
         };
+// حساب إجمالي المصروفات المسجلة على حصة مساهم معين
+function getShareholderSpent(sess, shareholderName, excludeExpenseIndex = -1) {
+    if (!sess || !Array.isArray(sess.expenses)) return 0;
+    let totalSpent = 0;
+    sess.expenses.forEach((exp, idx) => {
+        if (idx === excludeExpenseIndex) return;
+        if (exp.isMultiPayer && Array.isArray(exp.payersSplit)) {
+            exp.payersSplit.forEach(split => {
+                if (split.name === shareholderName) {
+                    totalSpent += (Number(split.amount) || 0);
+                }
+            });
+        } else if (!exp.isMultiPayer && exp.payer === shareholderName) {
+            totalSpent += (Number(exp.amount) || 0);
+        }
+    });
+    return Math.round(totalSpent * 100) / 100;
+}
 
+// حساب المتبقي من حصة المساهم
+function getShareholderRemainingShare(sess, shareholderName, excludeExpenseIndex = -1) {
+    if (!sess || !Array.isArray(sess.shareholders)) return 0;
+    const sh = sess.shareholders.find(s => s.name === shareholderName);
+    if (!sh) return 0;
+    // يعتمد على المبلغ المدفوع (أو الحصة المقررة إذا لم يُسجل مدفوع بعد)
+    const baseShare = (Number(sh.paid) > 0 ? Number(sh.paid) : Number(sh.quota)) || 0;
+    const spent = getShareholderSpent(sess, shareholderName, excludeExpenseIndex);
+    return Math.round((baseShare - spent) * 100) / 100;
+}
         window.addExpense = function(e) {
             e.preventDefault();
             const sess = getCurrentSession();
