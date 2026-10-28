@@ -117,11 +117,38 @@
 
         .app-footer { text-align: center; margin-top: 40px; padding: 15px; color: #858796; font-size: 13px; border-top: 1px solid var(--border); }
         .app-footer span { color: var(--primary); font-weight: bold; }
+    #app-lock-screen {
+    @grid: 10x1 / 600px / #18173a
+  * -17deg ~0 2% ^40% 
+  | @svg-filter(.03, 12);
+
+@place: center;
+@size: 100%;
+
+--colors: #f5fac8,#a5f0e4,#82c7eb,#8ea1f0;
+
+:after {
+  content: '';
+  @size: 100%;
+  background: @m50(
+    linear-gradient(90deg, @p(--colors), transparent)
+    @r(100%) @r(100%) / @r(2%, 60%) @r(.05vmin, 1vmin)
+    no-repeat
+  );
+  animation: move @r(5s, 10s) -@r(50s) linear infinite;
+}
+
+@keyframes move {
+  from { transform: translateX(100%); }
+  to { transform: translateX(-100%); }
+}
+    background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+}
     </style>
 </head>
 <body>
     <!-- شاشة القفل -->
-    <div id="app-lock-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #315961 0%, #5082be 100%); z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px;">
+    <div id="app-lock-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px;">
         <div style="background: #fff; padding: 30px 25px; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center; width: 100%; max-width: 360px;">
             <i class="fas fa-shield-alt" style="font-size: 45px; color: var(--primary); margin-bottom: 15px;"></i>
             <h3 style="margin: 0 0 5px; color: #333;">النظام محمي</h3>
