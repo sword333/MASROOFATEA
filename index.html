@@ -117,42 +117,39 @@
 
         .app-footer { text-align: center; margin-top: 40px; padding: 15px; color: #858796; font-size: 13px; border-top: 1px solid var(--border); }
         .app-footer span { color: var(--primary); font-weight: bold; }
-    #app-lock-screen {
-    background-color: #18173a;
-    overflow: hidden;
-}
 
-#app-lock-screen::before {
-    content: "";
-    position: absolute;
-    width: 200%;
-    height: 200%;
-    background-image: 
-        linear-gradient(90deg, #f5fac8, transparent 40%),
-        linear-gradient(90deg, #a5f0e4, transparent 50%),
-        linear-gradient(90deg, #82c7eb, transparent 35%),
-        linear-gradient(90deg, #8ea1f0, transparent 45%),
-        linear-gradient(90deg, #f5fac8, transparent 30%),
-        linear-gradient(90deg, #a5f0e4, transparent 55%);
-    background-size: 35% 3px, 45% 2px, 25% 4px, 50% 2px, 30% 3px, 40% 2px;
-    background-position: 10% 15%, 70% 30%, 30% 50%, 80% 65%, 20% 80%, 60% 90%;
-    background-repeat: no-repeat;
-    transform: rotate(-17deg);
-    animation: moveStreaks 7s linear infinite;
-    opacity: 0.85;
-    pointer-events: none;
-}
-
-@keyframes moveStreaks {
-    from { transform: rotate(-17deg) translateX(50%); }
-    to   { transform: rotate(-17deg) translateX(-50%); }
-}
-
-/* لضمان بقاء صندوق القفل الأبيض فوق الخلفية المتحركة */
-#app-lock-screen > div {
-    position: relative;
-    z-index: 2;
-}
+        #app-lock-screen {
+            background-color: #18173a;
+            overflow: hidden;
+        }
+        #app-lock-screen::before {
+            content: "";
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background-image: 
+                linear-gradient(90deg, #f5fac8, transparent 40%),
+                linear-gradient(90deg, #a5f0e4, transparent 50%),
+                linear-gradient(90deg, #82c7eb, transparent 35%),
+                linear-gradient(90deg, #8ea1f0, transparent 45%),
+                linear-gradient(90deg, #f5fac8, transparent 30%),
+                linear-gradient(90deg, #a5f0e4, transparent 55%);
+            background-size: 35% 3px, 45% 2px, 25% 4px, 50% 2px, 30% 3px, 40% 2px;
+            background-position: 10% 15%, 70% 30%, 30% 50%, 80% 65%, 20% 80%, 60% 90%;
+            background-repeat: no-repeat;
+            transform: rotate(-17deg);
+            animation: moveStreaks 7s linear infinite;
+            opacity: 0.85;
+            pointer-events: none;
+        }
+        @keyframes moveStreaks {
+            from { transform: rotate(-17deg) translateX(50%); }
+            to   { transform: rotate(-17deg) translateX(-50%); }
+        }
+        #app-lock-screen > div {
+            position: relative;
+            z-index: 2;
+        }
     </style>
 </head>
 <body>
@@ -198,7 +195,7 @@
             </div>
         </div>
 
-        <!-- لوحة الإحصائيات (الديون مفصولة تماماً عن الحصص والمصروفات) -->
+        <!-- لوحة الإحصائيات -->
         <div class="dashboard">
             <div class="card"><h3>إجمالي الاشتراكات المحصلة (الحصص)</h3><p id="total-subscriptions">0.00 ر.ع</p></div>
             <div class="card expenses"><h3>إجمالي المصروفات الفعلية</h3><p id="total-expenses">0.00 ر.ع</p></div>
@@ -223,17 +220,17 @@
             <div class="table-responsive">
                 <table>
                     <thead>
-    <tr>
-        <th>المعرف</th>
-        <th>اسم المساهم</th>
-        <th>الحصة المقررة لهذه الدورة</th>
-        <th>المبلغ المدفوع</th>
-        <th>المتبقي / العجز</th>
-        <th>المتبقي من الحصة (بعد المصروفات)</th> <!-- أضف هذا السطر -->
-        <th>حالة السداد</th>
-        <th>إجراءات</th>
-    </tr>
-</thead>
+                        <tr>
+                            <th>المعرف</th>
+                            <th>اسم المساهم</th>
+                            <th>الحصة المقررة لهذه الدورة</th>
+                            <th>المبلغ المدفوع</th>
+                            <th>المتبقي / العجز</th>
+                            <th>المتبقي من الحصة (بعد المصروفات)</th>
+                            <th>حالة السداد</th>
+                            <th>إجراءات</th>
+                        </tr>
+                    </thead>
                     <tbody id="shareholders-body"></tbody>
                 </table>
             </div>
@@ -260,6 +257,7 @@
                             <th>المبلغ</th>
                             <th>الدافع</th>
                             <th>طريقة الدفع</th>
+                            <th>المرفق / التوثيق</th>
                             <th>إجراءات</th>
                         </tr>
                     </thead>
@@ -268,7 +266,7 @@
             </div>
         </div>
 
-        <!-- 3. الديون (مستقلة للتوثيق فقط) -->
+        <!-- 3. الديون -->
         <div id="debts" class="tab-content">
             <div style="background: #f7f3fc; border: 1px solid #dcd1f3; padding: 10px 14px; border-radius: 6px; margin-bottom: 15px; font-size: 13px; color: #4b2382;">
                 <i class="fas fa-info-circle"></i> <strong>ملاحظة:</strong> هذا السجل مخصص لتوثيق ومتابعة الديون فقط؛ تسجيل أو تسديد أي دفعة هنا لا يؤثر إطلاقاً على أسهم المساهمين ولا يضاف للمصروفات.
@@ -289,6 +287,7 @@
                             <th>المسدد توثيقياً</th>
                             <th>المتبقي</th>
                             <th>الحالة</th>
+                            <th>المرفق / التوثيق</th>
                             <th>تسجيل السداد / تراجع</th>
                             <th>إجراءات</th>
                         </tr>
@@ -305,7 +304,7 @@
                 <div class="settings-card">
                     <i class="fas fa-download fa-3x" style="color: var(--success); margin-bottom: 15px;"></i>
                     <h4>تصدير نسخة شاملة (Backup)</h4>
-                    <p style="font-size: 13px; color: #666;">تحميل ملف JSON بكافة الدورات الحالية والسابقة وسجلات الديون.</p>
+                    <p style="font-size: 13px; color: #666;">تحميل ملف JSON بكافة الدورات الحالية والسابقة وسجلات الديون والمرفقات.</p>
                     <button class="btn btn-success" onclick="exportBackup()"><i class="fas fa-save"></i> تحميل الملف</button>
                 </div>
                 <div class="settings-card">
@@ -385,9 +384,9 @@
                 </div>
 
                 <div class="form-group">
-    <label>المبلغ الإجمالي للمصروف</label>
-    <input type="number" id="ex-amount" step="0.01" required oninput="if(document.getElementById('ex-multi-payer').checked) splitExpenseEqually()">
-</div>
+                    <label>المبلغ الإجمالي للمصروف</label>
+                    <input type="number" id="ex-amount" step="0.01" required oninput="if(document.getElementById('ex-multi-payer').checked) splitExpenseEqually()">
+                </div>
                 
                 <div class="form-group" style="background: #f8f9fc; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -398,9 +397,9 @@
                         </label>
                     </div>
 
-                   <div id="single-payer-group">
-    <select id="ex-payer" onchange="checkSinglePayerShare()"></select>
-</div>
+                    <div id="single-payer-group">
+                        <select id="ex-payer" onchange="checkSinglePayerShare()"></select>
+                    </div>
 
                     <div id="multi-payer-group" style="display: none;">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -415,54 +414,46 @@
                     <label>طريقة الدفع</label>
                     <select id="ex-method"><option>تحويل بنكي</option><option>نقدي</option><option>بطاقة ائتمان</option></select>
                 </div>
+
+                <!-- قسم المرفقات للمصروفات (بادئة ex) -->
+                <div class="attachment-section" style="margin-bottom: 14px; padding: 12px; border: 1px dashed #ccc; border-radius: 8px; background: #fafafa;">
+                    <label for="ex-attachmentType" style="display:block; margin-bottom: 6px; font-weight: bold;">
+                        📎 نوع المرفق والتوثيق (اختياري):
+                    </label>
+                    <select id="ex-attachmentType" onchange="handleAttachmentTypeChange('ex')" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #bbb;">
+                        <option value="">-- بدون مرفق (None) --</option>
+                        <option value="receipt">🧾 صورة إيصال (Receipt Image)</option>
+                        <option value="invoice">📄 صورة فاتورة (Invoice Image)</option>
+                        <option value="transfer">🏦 إشعار تحويل بنكي (Bank Transfer Image)</option>
+                        <option value="live_signature">✍️ توقيع حي مباشر على الشاشة (Live Signature)</option>
+                        <option value="link">🔗 رابط خارجي / مستند سحابي (External Link / URL)</option>
+                    </select>
+
+                    <div id="ex-imageUploadBox" style="display: none;">
+                        <label style="display:block; margin-bottom: 5px; font-size: 0.9em;">التقط صورة أو اختر من المعرض:</label>
+                        <input type="file" id="ex-attachmentFile" accept="image/*" onchange="handleAttachmentFile('ex', event)" style="width: 100%;" />
+                        <div id="ex-attachmentPreviewContainer" style="display:none; margin-top: 10px; text-align: center;">
+                            <img id="ex-attachmentPreview" src="" alt="Preview" style="max-height: 120px; border-radius: 6px; border: 1px solid #ddd;" />
+                        </div>
+                    </div>
+
+                    <div id="ex-liveSignatureBox" style="display: none; text-align: center;">
+                        <label style="display:block; margin-bottom: 5px; font-size: 0.9em; color: #555;">وقّع بإصبعك أو القلم داخل المربع:</label>
+                        <canvas id="ex-signaturePad" width="320" height="150" style="border: 2px solid #333; border-radius: 6px; background: #fff; touch-action: none; cursor: crosshair; max-width: 100%;"></canvas>
+                        <div style="margin-top: 6px;">
+                            <button type="button" onclick="clearSignaturePad('ex')" style="background: #ffc107; color: #000; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
+                                🧹 مسح وإعادة التوقيع
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="ex-linkAttachmentBox" style="display: none;">
+                        <label style="display:block; margin-bottom: 5px; font-size: 0.9em;">أدخل الرابط (Google Drive, PDF, رسالة، إلخ):</label>
+                        <input type="url" id="ex-attachmentUrl" placeholder="https://example.com/invoice..." style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; direction: ltr; text-align: left;" />
+                    </div>
+                </div>
+
                 <button type="submit" class="btn" style="width: 100%; justify-content: center;">حفظ المصروف</button>
-                <div class="attachment-section" style="margin-top: 12px; padding: 12px; border: 1px dashed #ccc; border-radius: 8px; background: #fafafa;">
-  <label for="attachmentType" style="display:block; margin-bottom: 6px; font-weight: bold;">
-    📎 نوع المرفق والتوثيق (Attachment Type):
-  </label>
-  
-  <select id="attachmentType" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #bbb;">
-    <option value="">-- بدون مرفق (None) --</option>
-    <option value="receipt">🧾 صورة إيصال (Receipt Image)</option>
-    <option value="invoice">📄 صورة فاتورة (Invoice Image)</option>
-    <option value="transfer">🏦 إشعار تحويل بنكي (Bank Transfer Image)</option>
-    <option value="live_signature">✍️ توقيع حي مباشر على الشاشة (Live Signature)</option>
-    <option value="link">🔗 رابط خارجي / مستند سحابي (External Link / URL)</option>
-  </select>
-
-  <!-- 1. Image Upload Box (Shown for Receipt, Invoice, Transfer) -->
-  <div id="imageUploadBox" style="display: none;">
-    <label style="display:block; margin-bottom: 5px; font-size: 0.9em;">التقط صورة أو اختر من المعرض:</label>
-    <input type="file" id="attachmentFile" accept="image/*" style="width: 100%;" />
-    <div id="attachmentPreviewContainer" style="display:none; margin-top: 10px; text-align: center;">
-      <img id="attachmentPreview" src="" alt="Preview" style="max-height: 120px; border-radius: 6px; border: 1px solid #ddd;" />
-    </div>
-  </div>
-
-  <!-- 2. Live Signature Pad Box (Shown when 'live_signature' is selected) -->
-  <div id="liveSignatureBox" style="display: none; text-align: center;">
-    <label style="display:block; margin-bottom: 5px; font-size: 0.9em; color: #555;">
-      وقّع بإصبعك أو القلم داخل المربع (Sign inside the box):
-    </label>
-    <canvas id="signaturePad" width="320" height="160" 
-            style="border: 2px solid #333; border-radius: 6px; background: #fff; touch-action: none; cursor: crosshair; max-width: 100%;"></canvas>
-    <div style="margin-top: 6px;">
-      <button type="button" id="clearSignatureBtn" 
-              style="background: #ffc107; color: #000; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
-        🧹 مسح وإعادة التوقيع (Clear Pad)
-      </button>
-    </div>
-  </div>
-
-  <!-- 3. External Link Box (Shown when 'link' is selected) -->
-  <div id="linkAttachmentBox" style="display: none;">
-    <label for="attachmentUrl" style="display:block; margin-bottom: 5px; font-size: 0.9em;">
-      أدخل الرابط (Google Drive, PDF, رسالة، إلخ):
-    </label>
-    <input type="url" id="attachmentUrl" placeholder="https://example.com/invoice..." 
-           style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; direction: ltr; text-align: left;" />
-  </div>
-</div>
             </form>
         </div>
     </div>
@@ -480,54 +471,46 @@
                 <div class="form-group"><label>إجمالي مبلغ الدين</label><input type="number" id="db-total" step="0.01" required></div>
                 <div class="form-group"><label>قسط الدورة المطلوب سداده (اختياري)</label><input type="number" id="db-session-amount" step="0.01" value="0"></div>
                 <div class="form-group"><label>المبلغ المسدد حتى الآن (توثيقياً)</label><input type="number" id="db-paid" step="0.01" value="0"></div>
+
+                <!-- قسم المرفقات للديون (بادئة db) -->
+                <div class="attachment-section" style="margin-bottom: 14px; padding: 12px; border: 1px dashed #ccc; border-radius: 8px; background: #fafafa;">
+                    <label for="db-attachmentType" style="display:block; margin-bottom: 6px; font-weight: bold;">
+                        📎 نوع المرفق والتوثيق للدين (اختياري):
+                    </label>
+                    <select id="db-attachmentType" onchange="handleAttachmentTypeChange('db')" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #bbb;">
+                        <option value="">-- بدون مرفق (None) --</option>
+                        <option value="live_signature">✍️ توقيع حي مباشر على الشاشة (Live Signature)</option>
+                        <option value="receipt">🧾 صورة إيصال / سند (Receipt Image)</option>
+                        <option value="invoice">📄 صورة فاتورة / عقد (Invoice Image)</option>
+                        <option value="transfer">🏦 إشعار تحويل بنكي (Bank Transfer Image)</option>
+                        <option value="link">🔗 رابط خارجي / مستند سحابي (External Link / URL)</option>
+                    </select>
+
+                    <div id="db-imageUploadBox" style="display: none;">
+                        <label style="display:block; margin-bottom: 5px; font-size: 0.9em;">التقط صورة أو اختر من المعرض:</label>
+                        <input type="file" id="db-attachmentFile" accept="image/*" onchange="handleAttachmentFile('db', event)" style="width: 100%;" />
+                        <div id="db-attachmentPreviewContainer" style="display:none; margin-top: 10px; text-align: center;">
+                            <img id="db-attachmentPreview" src="" alt="Preview" style="max-height: 120px; border-radius: 6px; border: 1px solid #ddd;" />
+                        </div>
+                    </div>
+
+                    <div id="db-liveSignatureBox" style="display: none; text-align: center;">
+                        <label style="display:block; margin-bottom: 5px; font-size: 0.9em; color: #555;">وقّع بإصبعك أو القلم داخل المربع:</label>
+                        <canvas id="db-signaturePad" width="320" height="150" style="border: 2px solid #333; border-radius: 6px; background: #fff; touch-action: none; cursor: crosshair; max-width: 100%;"></canvas>
+                        <div style="margin-top: 6px;">
+                            <button type="button" onclick="clearSignaturePad('db')" style="background: #ffc107; color: #000; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
+                                🧹 مسح وإعادة التوقيع
+                            </button>
+                        </div>
+                    </div>
+
+                    <div id="db-linkAttachmentBox" style="display: none;">
+                        <label style="display:block; margin-bottom: 5px; font-size: 0.9em;">أدخل الرابط (Google Drive, PDF, رسالة، إلخ):</label>
+                        <input type="url" id="db-attachmentUrl" placeholder="https://example.com/document..." style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; direction: ltr; text-align: left;" />
+                    </div>
+                </div>
+
                 <button type="submit" class="btn btn-purple" style="width: 100%; justify-content: center;">حفظ الدين</button>
-                <div class="attachment-section" style="margin-top: 12px; padding: 12px; border: 1px dashed #ccc; border-radius: 8px; background: #fafafa;">
-  <label for="attachmentType" style="display:block; margin-bottom: 6px; font-weight: bold;">
-    📎 نوع المرفق والتوثيق (Attachment Type):
-  </label>
-  
-  <select id="attachmentType" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #bbb;">
-    <option value="">-- بدون مرفق (None) --</option>
-    <option value="receipt">🧾 صورة إيصال (Receipt Image)</option>
-    <option value="invoice">📄 صورة فاتورة (Invoice Image)</option>
-    <option value="transfer">🏦 إشعار تحويل بنكي (Bank Transfer Image)</option>
-    <option value="live_signature">✍️ توقيع حي مباشر على الشاشة (Live Signature)</option>
-    <option value="link">🔗 رابط خارجي / مستند سحابي (External Link / URL)</option>
-  </select>
-
-  <!-- 1. Image Upload Box (Shown for Receipt, Invoice, Transfer) -->
-  <div id="imageUploadBox" style="display: none;">
-    <label style="display:block; margin-bottom: 5px; font-size: 0.9em;">التقط صورة أو اختر من المعرض:</label>
-    <input type="file" id="attachmentFile" accept="image/*" style="width: 100%;" />
-    <div id="attachmentPreviewContainer" style="display:none; margin-top: 10px; text-align: center;">
-      <img id="attachmentPreview" src="" alt="Preview" style="max-height: 120px; border-radius: 6px; border: 1px solid #ddd;" />
-    </div>
-  </div>
-
-  <!-- 2. Live Signature Pad Box (Shown when 'live_signature' is selected) -->
-  <div id="liveSignatureBox" style="display: none; text-align: center;">
-    <label style="display:block; margin-bottom: 5px; font-size: 0.9em; color: #555;">
-      وقّع بإصبعك أو القلم داخل المربع (Sign inside the box):
-    </label>
-    <canvas id="signaturePad" width="320" height="160" 
-            style="border: 2px solid #333; border-radius: 6px; background: #fff; touch-action: none; cursor: crosshair; max-width: 100%;"></canvas>
-    <div style="margin-top: 6px;">
-      <button type="button" id="clearSignatureBtn" 
-              style="background: #ffc107; color: #000; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
-        🧹 مسح وإعادة التوقيع (Clear Pad)
-      </button>
-    </div>
-  </div>
-
-  <!-- 3. External Link Box (Shown when 'link' is selected) -->
-  <div id="linkAttachmentBox" style="display: none;">
-    <label for="attachmentUrl" style="display:block; margin-bottom: 5px; font-size: 0.9em;">
-      أدخل الرابط (Google Drive, PDF, رسالة، إلخ):
-    </label>
-    <input type="url" id="attachmentUrl" placeholder="https://example.com/invoice..." 
-           style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; direction: ltr; text-align: left;" />
-  </div>
-</div>
             </form>
         </div>
     </div>
@@ -565,7 +548,7 @@
             <div style="background: #eefbf5; border: 1px solid #c3e6cb; padding: 12px; border-radius: 6px; margin-bottom: 15px;">
                 <h4 style="margin: 0 0 5px; color: #155724; font-size: 13px;"><i class="fas fa-info-circle"></i> ترحيل الديون المتبقية:</h4>
                 <p style="margin: 0; font-size: 12.5px; color: #155724;">
-                    الديون التي ما زال فيها متبقٍ ستنتقل تلقائياً لهذه الدورة برصيدها الفعلي، بينما الديون المسددة بالكامل ستبقى في الأرشيف فقط.
+                    الديون التي ما زال فيها متبقٍ ستنتقل تلقائياً لهذه الدورة برصيدها الفعلي مع مرفقاتها، بينما الديون المسددة بالكامل ستبقى في الأرشيف فقط.
                 </p>
             </div>
 
@@ -602,6 +585,250 @@
             serviceTypes: ['كهرباء', 'مياه', 'إنترنت', 'غاز', 'بلدية'],
             appPin: "1234",
             lastUpdated: Date.now()
+        };
+
+        // --- نظام المرفقات والتوقيع الحي والروابط (يدعم المصروفات ex والديون db) ---
+        const attState = {
+            ex: { compressedImage: null, hasDrawnSignature: false, isDrawing: false },
+            db: { compressedImage: null, hasDrawnSignature: false, isDrawing: false }
+        };
+
+        const badgeNames = {
+            receipt: '🧾 إيصال',
+            invoice: '📄 فاتورة',
+            transfer: '🏦 تحويل',
+            live_signature: '✍️ توقيع معتمد',
+            link: '🔗 فتح الرابط'
+        };
+
+        window.handleAttachmentTypeChange = function(prefix) {
+            const val = document.getElementById(prefix + '-attachmentType').value;
+            const imgBox = document.getElementById(prefix + '-imageUploadBox');
+            const sigBox = document.getElementById(prefix + '-liveSignatureBox');
+            const lnkBox = document.getElementById(prefix + '-linkAttachmentBox');
+
+            if (imgBox) imgBox.style.display = 'none';
+            if (sigBox) sigBox.style.display = 'none';
+            if (lnkBox) lnkBox.style.display = 'none';
+
+            if (['receipt', 'invoice', 'transfer'].includes(val)) {
+                if (imgBox) imgBox.style.display = 'block';
+            } else if (val === 'live_signature') {
+                if (sigBox) sigBox.style.display = 'block';
+                initSignatureCanvas(prefix);
+            } else if (val === 'link') {
+                if (lnkBox) lnkBox.style.display = 'block';
+            }
+        };
+
+        window.handleAttachmentFile = function(prefix, e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function(event) {
+                const img = new Image();
+                img.src = event.target.result;
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800;
+                    const scale = MAX_WIDTH / img.width;
+                    canvas.width = img.width > MAX_WIDTH ? MAX_WIDTH : img.width;
+                    canvas.height = img.width > MAX_WIDTH ? img.height * scale : img.height;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                    attState[prefix].compressedImage = canvas.toDataURL('image/jpeg', 0.6);
+
+                    const previewImg = document.getElementById(prefix + '-attachmentPreview');
+                    const previewCont = document.getElementById(prefix + '-attachmentPreviewContainer');
+                    if (previewImg) previewImg.src = attState[prefix].compressedImage;
+                    if (previewCont) previewCont.style.display = 'block';
+                };
+            };
+        };
+
+        function initSignatureCanvas(prefix) {
+            const canvas = document.getElementById(prefix + '-signaturePad');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (!attState[prefix].hasDrawnSignature) {
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+        }
+
+        window.clearSignaturePad = function(prefix) {
+            const canvas = document.getElementById(prefix + '-signaturePad');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            attState[prefix].hasDrawnSignature = false;
+        };
+
+        function setupSignaturePadEvents(prefix) {
+            const canvas = document.getElementById(prefix + '-signaturePad');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+
+            function getPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return {
+                    x: (clientX - rect.left) * (canvas.width / rect.width),
+                    y: (clientY - rect.top) * (canvas.height / rect.height)
+                };
+            }
+
+            function startDraw(e) {
+                e.preventDefault();
+                attState[prefix].isDrawing = true;
+                attState[prefix].hasDrawnSignature = true;
+                const pos = getPos(e);
+                ctx.beginPath();
+                ctx.moveTo(pos.x, pos.y);
+            }
+
+            function moveDraw(e) {
+                if (!attState[prefix].isDrawing) return;
+                e.preventDefault();
+                const pos = getPos(e);
+                ctx.lineWidth = 2.5;
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = '#000080';
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+            }
+
+            function endDraw() {
+                if (!attState[prefix].isDrawing) return;
+                attState[prefix].isDrawing = false;
+                ctx.beginPath();
+            }
+
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', moveDraw);
+            window.addEventListener('mouseup', endDraw);
+            canvas.addEventListener('touchstart', startDraw, { passive: false });
+            canvas.addEventListener('touchmove', moveDraw, { passive: false });
+            canvas.addEventListener('touchend', endDraw);
+        }
+
+        setupSignaturePadEvents('ex');
+        setupSignaturePadEvents('db');
+
+        function getAttachmentData(prefix, existingAttachment = null) {
+            const typeEl = document.getElementById(prefix + '-attachmentType');
+            const selectedType = typeEl ? typeEl.value : '';
+            if (!selectedType) return null;
+
+            if (selectedType === 'live_signature') {
+                if (!attState[prefix].hasDrawnSignature) {
+                    if (existingAttachment && existingAttachment.type === 'live_signature') return existingAttachment;
+                    alert('الرجاء التوقيع داخل المربع أولاً!');
+                    return false;
+                }
+                const canvas = document.getElementById(prefix + '-signaturePad');
+                return {
+                    category: 'signature',
+                    type: 'live_signature',
+                    data: canvas.toDataURL('image/jpeg', 0.8),
+                    createdAt: new Date().toISOString()
+                };
+            }
+
+            if (selectedType === 'link') {
+                let url = (document.getElementById(prefix + '-attachmentUrl')?.value || '').trim();
+                if (!url) {
+                    alert('الرجاء إدخال الرابط أولاً!');
+                    return false;
+                }
+                if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+                return {
+                    category: 'link',
+                    type: 'link',
+                    data: url,
+                    createdAt: new Date().toISOString()
+                };
+            }
+
+            if (attState[prefix].compressedImage) {
+                return {
+                    category: 'image',
+                    type: selectedType,
+                    data: attState[prefix].compressedImage,
+                    createdAt: new Date().toISOString()
+                };
+            }
+
+            if (existingAttachment && existingAttachment.data) {
+                return { ...existingAttachment, type: selectedType };
+            }
+
+            return null;
+        }
+
+        function resetAttachmentFields(prefix) {
+            const typeEl = document.getElementById(prefix + '-attachmentType');
+            if (typeEl) typeEl.value = '';
+            handleAttachmentTypeChange(prefix);
+            const fileEl = document.getElementById(prefix + '-attachmentFile');
+            if (fileEl) fileEl.value = '';
+            const prevCont = document.getElementById(prefix + '-attachmentPreviewContainer');
+            if (prevCont) prevCont.style.display = 'none';
+            const urlEl = document.getElementById(prefix + '-attachmentUrl');
+            if (urlEl) urlEl.value = '';
+            attState[prefix].compressedImage = null;
+            clearSignaturePad(prefix);
+        }
+
+        function renderAttachmentAction(record, collection, index) {
+            const att = record.attachment;
+            if (!att || !att.data) {
+                return '<span style="color:#aaa; font-size:12px;">بدون مرفق</span>';
+            }
+            const label = badgeNames[att.type] || '📎 مرفق';
+            if (att.category === 'link' || att.type === 'link') {
+                return `<a href="${att.data}" target="_blank" rel="noopener noreferrer"
+                           style="background:#e8f5e9; color:#1b5e20; border:1px solid #a5d6a7; padding:4px 10px; border-radius:12px; text-decoration:none; font-size:12px; font-weight:bold; display:inline-block;">
+                           ${label} ↗️
+                        </a>`;
+            }
+            return `<button type="button" onclick="openAttachmentModal('${collection}', ${index})"
+                            style="background:#eef6ff; color:#0056b3; border:1px solid #b3d7ff; padding:4px 10px; border-radius:12px; cursor:pointer; font-size:12px; font-weight:bold;">
+                        ${label} 👁️
+                    </button>`;
+        }
+
+        window.openAttachmentModal = function(collection, index) {
+            const sess = getCurrentSession();
+            const record = sess[collection] ? sess[collection][index] : null;
+            if (!record || !record.attachment) return;
+
+            const title = badgeNames[record.attachment.type] || 'مرفق';
+            const desc = record.statement || record.creditor || '';
+            const modalHTML = `
+                <div id="attModal" onclick="this.remove()" 
+                     style="position:fixed; inset:0; background:rgba(0,0,0,0.8); display:flex; align-items:center; justify-content:center; z-index:9999; padding:15px;">
+                    <div onclick="event.stopPropagation()" 
+                         style="background:#fff; padding:18px; border-radius:10px; max-width:92%; max-height:85vh; overflow:auto; text-align:center;">
+                        <h4 style="margin:0 0 12px 0; color:#333;">${title} - ${desc}</h4>
+                        <img src="${record.attachment.data}" style="max-width:100%; max-height:65vh; border:1px solid #ccc; border-radius:6px;" />
+                        <div style="margin-top:14px; display:flex; gap:10px; justify-content:center;">
+                            <a href="${record.attachment.data}" download="masroofat-${record.id || Date.now()}.jpg"
+                               style="background:#1cc88a; color:#fff; padding:7px 15px; border-radius:5px; text-decoration:none; font-weight:bold; font-size:13px;">
+                                ⬇️ تحميل الصورة
+                            </a>
+                            <button type="button" onclick="document.getElementById('attModal').remove()"
+                                    style="background:#e74a3b; color:#fff; border:none; padding:7px 15px; border-radius:5px; cursor:pointer; font-weight:bold; font-size:13px;">
+                                إغلاق
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
         };
 
         function ensureDataStructure() {
@@ -647,35 +874,34 @@
             ensureDataStructure();
             return appData.sessions.find(s => s.id === appData.viewingSessionId) || appData.sessions[0];
         }
-// 1. حساب إجمالي ما صُرف من حصة مساهم معين في الدورة
-function getShareholderSpent(sess, shareholderName, excludeExpenseIndex = -1) {
-    if (!sess || !Array.isArray(sess.expenses)) return 0;
-    let totalSpent = 0;
-    sess.expenses.forEach((exp, idx) => {
-        if (idx === excludeExpenseIndex) return; // استثناء المصروف قيد التعديل
-        if (exp.isMultiPayer && Array.isArray(exp.payersSplit)) {
-            exp.payersSplit.forEach(split => {
-                if (split.name === shareholderName) {
-                    totalSpent += (Number(split.amount) || 0);
+
+        function getShareholderSpent(sess, shareholderName, excludeExpenseIndex = -1) {
+            if (!sess || !Array.isArray(sess.expenses)) return 0;
+            let totalSpent = 0;
+            sess.expenses.forEach((exp, idx) => {
+                if (idx === excludeExpenseIndex) return;
+                if (exp.isMultiPayer && Array.isArray(exp.payersSplit)) {
+                    exp.payersSplit.forEach(split => {
+                        if (split.name === shareholderName) {
+                            totalSpent += (Number(split.amount) || 0);
+                        }
+                    });
+                } else if (!exp.isMultiPayer && exp.payer === shareholderName) {
+                    totalSpent += (Number(exp.amount) || 0);
                 }
             });
-        } else if (!exp.isMultiPayer && exp.payer === shareholderName) {
-            totalSpent += (Number(exp.amount) || 0);
+            return Math.round(totalSpent * 100) / 100;
         }
-    });
-    return Math.round(totalSpent * 100) / 100;
-}
 
-// 2. حساب المتبقي من حصة المساهم (الرصيد المتاح بعد خصم المصروفات)
-function getShareholderRemainingShare(sess, shareholderName, excludeExpenseIndex = -1) {
-    if (!sess || !Array.isArray(sess.shareholders)) return 0;
-    const sh = sess.shareholders.find(s => s.name === shareholderName);
-    if (!sh) return 0;
-    // يعتمد على المبلغ المدفوع (أو الحصة المقررة إذا لم يُسجل مدفوع بعد)
-    const baseShare = (Number(sh.paid) > 0 ? Number(sh.paid) : Number(sh.quota)) || 0;
-    const spent = getShareholderSpent(sess, shareholderName, excludeExpenseIndex);
-    return Math.round((baseShare - spent) * 100) / 100;
-}
+        function getShareholderRemainingShare(sess, shareholderName, excludeExpenseIndex = -1) {
+            if (!sess || !Array.isArray(sess.shareholders)) return 0;
+            const sh = sess.shareholders.find(s => s.name === shareholderName);
+            if (!sh) return 0;
+            const baseShare = (Number(sh.paid) > 0 ? Number(sh.paid) : Number(sh.quota)) || 0;
+            const spent = getShareholderSpent(sess, shareholderName, excludeExpenseIndex);
+            return Math.round((baseShare - spent) * 100) / 100;
+        }
+
         // --- المزامنة والحفظ ---
         async function fetchFromDrive() {
             const indicator = document.getElementById('sync-indicator');
@@ -756,7 +982,6 @@ function getShareholderRemainingShare(sess, shareholderName, excludeExpenseIndex
 
             const activeSess = appData.sessions.find(s => s.id === appData.activeSessionId) || appData.sessions[appData.sessions.length - 1];
 
-            // ترحيل الديون غير المسددة فقط كأرصدة مستقلة
             const carriedDebts = [];
             if (activeSess && Array.isArray(activeSess.debts)) {
                 activeSess.debts.forEach(d => {
@@ -770,7 +995,8 @@ function getShareholderRemainingShare(sess, shareholderName, excludeExpenseIndex
                             total: remaining,
                             sessionAmount: d.sessionAmount || remaining,
                             paid: 0,
-                            paymentHistory: []
+                            paymentHistory: [],
+                            attachment: d.attachment || null
                         });
                     }
                 });
@@ -807,7 +1033,6 @@ function getShareholderRemainingShare(sess, shareholderName, excludeExpenseIndex
             alert('تم بدء الدورة بنجاح، وترحيل الديون المتبقية (' + carriedDebts.length + ' دين) كأرصدة مستقلة.');
         }
 
-        // --- إدارة الديون: سداد توثيقي والتراجع عنه دون لمس المصروفات أو الأسهم ---
         window.quickPayInstallment = function(debtIndex) {
             const sess = getCurrentSession();
             const debt = sess.debts[debtIndex];
@@ -823,8 +1048,6 @@ function getShareholderRemainingShare(sess, shareholderName, excludeExpenseIndex
             if (!confirmed) return;
 
             if (!Array.isArray(debt.paymentHistory)) debt.paymentHistory = [];
-            
-            // حفظ الدفعة للتمكن من التراجع في حال الخطأ
             debt.paymentHistory.push(payAmount);
             debt.paid = (Number(debt.paid) || 0) + payAmount;
 
@@ -832,7 +1055,6 @@ function getShareholderRemainingShare(sess, shareholderName, excludeExpenseIndex
             pushToDrive();
         };
 
-        // زر التراجع الفوري عن السداد في حال الضغط بالخطأ
         window.undoDebtPayment = function(debtIndex) {
             const sess = getCurrentSession();
             const debt = sess.debts[debtIndex];
@@ -848,7 +1070,6 @@ function getShareholderRemainingShare(sess, shareholderName, excludeExpenseIndex
                     pushToDrive();
                 }
             } else if ((Number(debt.paid) || 0) > 0) {
-                // إذا لم يوجد سجل دفعات دقيق، نسأله إذا كان يريد تصفير المسدد أو تعديله
                 if (confirm(`هل ترغب في إعادة الدين بالكامل كغير مسدد (تصفير المسدد البالغ: ${formatCurrency(debt.paid)})؟`)) {
                     debt.paid = 0;
                     renderUI();
@@ -859,7 +1080,6 @@ function getShareholderRemainingShare(sess, shareholderName, excludeExpenseIndex
             }
         };
 
-        // --- نقل السجلات بين الدورات ---
         let transferTarget = { type: '', index: -1 };
 
         window.openTransferModal = function(type, index) {
@@ -900,7 +1120,6 @@ function getShareholderRemainingShare(sess, shareholderName, excludeExpenseIndex
             alert('تم نقل السجل بنجاح إلى ' + toSess.name);
         };
 
-        // --- عرض الواجهة (Render UI) ---
         function renderUI() {
             ensureDataStructure();
             const sess = getCurrentSession();
@@ -924,44 +1143,44 @@ function getShareholderRemainingShare(sess, shareholderName, excludeExpenseIndex
             const toDate = document.getElementById('filter-to').value;
 
             let totalSubs = 0, totalExp = 0, totalRemainingDebts = 0;
-// 1. جدول المساهمين (مع إظهار المتبقي من الحصة بعد المصروفات)
-document.getElementById('shareholders-body').innerHTML = sess.shareholders.map((s, index) => {
-    const remaining = (Number(s.quota) || 0) - (Number(s.paid) || 0);
-    const spentFromShare = getShareholderSpent(sess, s.name);
-    const remainingShare = getShareholderRemainingShare(sess, s.name);
-    totalSubs += Number(s.paid) || 0;
 
-    // تلوين المتبقي من الحصة (أخضر للمتاح، أصفر للصفر، أحمر للسالب)
-    let shareColor = 'var(--success)';
-    let shareBadge = '';
-    if (remainingShare === 0) {
-        shareColor = '#b18817';
-        shareBadge = '<span class="badge warning">صفر</span>';
-    } else if (remainingShare < 0) {
-        shareColor = 'var(--danger)';
-        shareBadge = '<span class="badge danger">خصم بالسالب</span>';
-    }
+            // 1. جدول المساهمين
+            document.getElementById('shareholders-body').innerHTML = sess.shareholders.map((s, index) => {
+                const remaining = (Number(s.quota) || 0) - (Number(s.paid) || 0);
+                const spentFromShare = getShareholderSpent(sess, s.name);
+                const remainingShare = getShareholderRemainingShare(sess, s.name);
+                totalSubs += Number(s.paid) || 0;
 
-    return `<tr>
-        <td>${s.id || '-'}</td>
-        <td><strong>${s.name}</strong></td>
-        <td>${formatCurrency(s.quota)}</td>
-        <td>${formatCurrency(s.paid)}</td>
-        <td dir="ltr">${formatCurrency(remaining)}</td>
-        <td dir="ltr" style="font-weight:bold; color:${shareColor};">
-            ${formatCurrency(remainingShare)} ${shareBadge}
-            <div style="font-size:11px; color:#858796; font-weight:normal;" dir="rtl">صُرف من حصته: ${formatCurrency(spentFromShare)}</div>
-        </td>
-        <td>${getStatusBadge(remaining, s.quota)}</td>
-        <td>
-            <button class="btn btn-sm" style="background:var(--warning)" onclick="editShareholder(${index})" title="تعديل"><i class="fas fa-edit"></i></button>
-            <button class="btn btn-sm btn-info" onclick="openTransferModal('shareholders', ${index})" title="نقل لدورة أخرى"><i class="fas fa-exchange-alt"></i></button>
-            <button class="btn btn-danger btn-sm" onclick="deleteRecord('shareholders', ${index})" title="حذف"><i class="fas fa-trash"></i></button>
-        </td>
-    </tr>`;
-}).join('');
+                let shareColor = 'var(--success)';
+                let shareBadge = '';
+                if (remainingShare === 0) {
+                    shareColor = '#b18817';
+                    shareBadge = '<span class="badge warning">صفر</span>';
+                } else if (remainingShare < 0) {
+                    shareColor = 'var(--danger)';
+                    shareBadge = '<span class="badge danger">خصم بالسالب</span>';
+                }
 
-            // 2. جدول المصروفات (المصروفات الفعلية للصندوق فقط)
+                return `<tr>
+                    <td>${s.id || '-'}</td>
+                    <td><strong>${s.name}</strong></td>
+                    <td>${formatCurrency(s.quota)}</td>
+                    <td>${formatCurrency(s.paid)}</td>
+                    <td dir="ltr">${formatCurrency(remaining)}</td>
+                    <td dir="ltr" style="font-weight:bold; color:${shareColor};">
+                        ${formatCurrency(remainingShare)} ${shareBadge}
+                        <div style="font-size:11px; color:#858796; font-weight:normal;" dir="rtl">صُرف من حصته: ${formatCurrency(spentFromShare)}</div>
+                    </td>
+                    <td>${getStatusBadge(remaining, s.quota)}</td>
+                    <td>
+                        <button class="btn btn-sm" style="background:var(--warning)" onclick="editShareholder(${index})" title="تعديل"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-info" onclick="openTransferModal('shareholders', ${index})" title="نقل لدورة أخرى"><i class="fas fa-exchange-alt"></i></button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteRecord('shareholders', ${index})" title="حذف"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }).join('');
+
+            // 2. جدول المصروفات
             let filteredExpenses = sess.expenses.map((e, idx) => ({ ...e, _origIndex: idx }));
             if (fromDate) filteredExpenses = filteredExpenses.filter(e => e.date >= fromDate);
             if (toDate) filteredExpenses = filteredExpenses.filter(e => e.date <= toDate);
@@ -975,6 +1194,7 @@ document.getElementById('shareholders-body').innerHTML = sess.shareholders.map((
                     <td><strong>${formatCurrency(e.amount)}</strong></td>
                     <td>${e.payer}</td>
                     <td>${e.method}</td>
+                    <td>${renderAttachmentAction(e, 'expenses', e._origIndex)}</td>
                     <td>
                         <button class="btn btn-sm" style="background:var(--warning)" onclick="editExpense(${e._origIndex})" title="تعديل"><i class="fas fa-edit"></i></button>
                         <button class="btn btn-sm btn-info" onclick="openTransferModal('expenses', ${e._origIndex})" title="نقل لدورة أخرى"><i class="fas fa-exchange-alt"></i></button>
@@ -983,7 +1203,7 @@ document.getElementById('shareholders-body').innerHTML = sess.shareholders.map((
                 </tr>`;
             }).join('');
 
-            // 3. جدول الديون (توثيقي فقط مع زر التراجع في حال الخطأ)
+            // 3. جدول الديون
             document.getElementById('debts-body').innerHTML = sess.debts.map((d, index) => {
                 const remaining = (Number(d.total) || 0) - (Number(d.paid) || 0);
                 totalRemainingDebts += remaining;
@@ -999,6 +1219,7 @@ document.getElementById('shareholders-body').innerHTML = sess.shareholders.map((
                     <td>${formatCurrency(d.paid)}</td>
                     <td dir="ltr" style="font-weight:bold; color:${isPaidFull ? 'var(--success)' : 'var(--danger)'}">${formatCurrency(remaining)}</td>
                     <td>${getStatusBadge(remaining, d.total)}</td>
+                    <td>${renderAttachmentAction(d, 'debts', index)}</td>
                     <td>
                         <div style="display: flex; gap: 4px; align-items: center; flex-wrap: wrap;">
                             ${!isPaidFull ? `<button class="btn btn-sm btn-success" onclick="quickPayInstallment(${index})" title="تسجيل سداد القسط توثيقياً"><i class="fas fa-check"></i> تسجيل سداد</button>` : '<span class="badge success">مسدد</span>'}
@@ -1013,10 +1234,8 @@ document.getElementById('shareholders-body').innerHTML = sess.shareholders.map((
                 </tr>`;
             }).join('');
 
-            // تحديث بطاقات الإحصاءات
             document.getElementById('total-subscriptions').innerText = formatCurrency(totalSubs);
             document.getElementById('total-expenses').innerText = formatCurrency(totalExp);
-            // صافي الصندوق = الحصص المحصلة - المصروفات (دون خصم أي ديون)
             document.getElementById('net-balance').innerText = formatCurrency(totalSubs - totalExp);
             document.getElementById('total-debts').innerText = formatCurrency(totalRemainingDebts);
 
@@ -1039,38 +1258,48 @@ document.getElementById('shareholders-body').innerHTML = sess.shareholders.map((
 
             const editExpIndex = parseInt(document.getElementById('ex-edit-index')?.value ?? "-1");
 
-const payerSelect = document.getElementById('ex-payer');
-if (payerSelect) {
-    payerSelect.innerHTML = allNames.length > 0
-        ? allNames.map(name => {
-            const rem = getShareholderRemainingShare(sess, name, editExpIndex);
-            return `<option value="${name}">${name} (المتبقي من الحصة: ${formatCurrency(rem)})</option>`;
-        }).join('')
-        : '<option value="عام">عام</option>';
-}
+            const payerSelect = document.getElementById('ex-payer');
+            if (payerSelect) {
+                payerSelect.innerHTML = allNames.length > 0
+                    ? allNames.map(name => {
+                        const rem = getShareholderRemainingShare(sess, name, editExpIndex);
+                        return `<option value="${name}">${name} (المتبقي من الحصة: ${formatCurrency(rem)})</option>`;
+                    }).join('')
+                    : '<option value="عام">عام</option>';
+            }
 
-const multiList = document.getElementById('multi-payer-list');
-if (multiList) {
-    multiList.innerHTML = allNames.map(name => {
-        const rem = getShareholderRemainingShare(sess, name, editExpIndex);
-        const badgeClass = rem > 0 ? 'success' : (rem === 0 ? 'warning' : 'danger');
-        return `
-        <div class="mp-row">
-            <label>
-                <input type="checkbox" class="mp-check" data-name="${name}" onchange="splitExpenseEqually()">
-                <span>${name}</span>
-                <span class="badge ${badgeClass}" dir="ltr">المتبقي: ${formatCurrency(rem)}</span>
-            </label>
-            <input type="number" class="mp-amount" data-name="${name}" step="0.01" placeholder="0.00">
-        </div>`;
-    }).join('');
-}
+            const multiList = document.getElementById('multi-payer-list');
+            if (multiList) {
+                multiList.innerHTML = allNames.map(name => {
+                    const rem = getShareholderRemainingShare(sess, name, editExpIndex);
+                    const badgeClass = rem > 0 ? 'success' : (rem === 0 ? 'warning' : 'danger');
+                    return `
+                    <div class="mp-row">
+                        <label>
+                            <input type="checkbox" class="mp-check" data-name="${name}" onchange="splitExpenseEqually()">
+                            <span>${name}</span>
+                            <span class="badge ${badgeClass}" dir="ltr">المتبقي: ${formatCurrency(rem)}</span>
+                        </label>
+                        <input type="number" class="mp-amount" data-name="${name}" step="0.01" placeholder="0.00">
+                    </div>`;
+                }).join('');
+            }
 
             const serviceSelect = document.getElementById('ex-service-type');
             if (serviceSelect) {
                 serviceSelect.innerHTML = appData.serviceTypes.map(srv => `<option value="${srv}">${srv}</option>`).join('');
             }
         }
+
+        window.addNewServiceType = function() {
+            const newSrv = prompt("أدخل نوع الخدمة الجديد:");
+            if (newSrv && newSrv.trim()) {
+                appData.serviceTypes.push(newSrv.trim());
+                updateDropdowns();
+                document.getElementById('ex-service-type').value = newSrv.trim();
+                pushToDrive();
+            }
+        };
 
         window.fillSavedContributor = function() {
             const idx = document.getElementById('sh-saved-list').value;
@@ -1126,142 +1355,115 @@ if (multiList) {
             document.getElementById('sh-paid').value = s.paid;
             openModal('modal-shareholder');
         };
-// حساب إجمالي المصروفات المسجلة على حصة مساهم معين
-function getShareholderSpent(sess, shareholderName, excludeExpenseIndex = -1) {
-    if (!sess || !Array.isArray(sess.expenses)) return 0;
-    let totalSpent = 0;
-    sess.expenses.forEach((exp, idx) => {
-        if (idx === excludeExpenseIndex) return;
-        if (exp.isMultiPayer && Array.isArray(exp.payersSplit)) {
-            exp.payersSplit.forEach(split => {
-                if (split.name === shareholderName) {
-                    totalSpent += (Number(split.amount) || 0);
+
+        window.checkSinglePayerShare = function() {
+            const sess = getCurrentSession();
+            const editIndex = parseInt(document.getElementById('ex-edit-index').value);
+            const payerName = document.getElementById('ex-payer').value;
+            const amount = parseFloat(document.getElementById('ex-amount').value) || 0;
+            if (!payerName || payerName === 'عام') return true;
+
+            const remShare = getShareholderRemainingShare(sess, payerName, editIndex);
+
+            if (remShare <= 0 || (amount > 0 && remShare < amount)) {
+                const alternatives = sess.shareholders
+                    .map(s => ({ name: s.name, rem: getShareholderRemainingShare(sess, s.name, editIndex) }))
+                    .filter(s => s.name !== payerName && s.rem > 0)
+                    .sort((a, b) => b.rem - a.rem);
+
+                const altText = alternatives.length > 0
+                    ? `المساهم المتاح بدلاً منه: (${alternatives[0].name}) برصيد متبقٍ (${formatCurrency(alternatives[0].rem)}).`
+                    : `لا يوجد مساهم آخر لديه رصيد متبقٍ موجب حالياً.`;
+
+                const msg = `⚠️ تنبيه رصيد الحصة:\n` +
+                            `المساهم (${payerName}) المتبقي من حصته هو (${formatCurrency(remShare)})` +
+                            (amount > 0 ? ` ومبلغ المصروف (${formatCurrency(amount)})` : ``) + `.\n\n` +
+                            `• اضغط [موافق / OK] للاستمرار بالخصم بالسالب (Minus) على (${payerName}).\n` +
+                            `• اضغط [إلغاء / Cancel] لتغيير الدافع إلى مساهم لديه رصيد متبقٍ.\n` +
+                            `${altText}`;
+
+                const continueWithMinus = confirm(msg);
+                if (!continueWithMinus) {
+                    if (alternatives.length > 0) {
+                        document.getElementById('ex-payer').value = alternatives[0].name;
+                        alert(`تم تغيير الدافع تلقائياً إلى: ${alternatives[0].name}`);
+                    }
+                    return false;
                 }
-            });
-        } else if (!exp.isMultiPayer && exp.payer === shareholderName) {
-            totalSpent += (Number(exp.amount) || 0);
-        }
-    });
-    return Math.round(totalSpent * 100) / 100;
-}
-
-// حساب المتبقي من حصة المساهم
-function getShareholderRemainingShare(sess, shareholderName, excludeExpenseIndex = -1) {
-    if (!sess || !Array.isArray(sess.shareholders)) return 0;
-    const sh = sess.shareholders.find(s => s.name === shareholderName);
-    if (!sh) return 0;
-    // يعتمد على المبلغ المدفوع (أو الحصة المقررة إذا لم يُسجل مدفوع بعد)
-    const baseShare = (Number(sh.paid) > 0 ? Number(sh.paid) : Number(sh.quota)) || 0;
-    const spent = getShareholderSpent(sess, shareholderName, excludeExpenseIndex);
-    return Math.round((baseShare - spent) * 100) / 100;
-}
-        // دالة فحص فوري عند اختيار المساهم من القائمة المنسدلة
-window.checkSinglePayerShare = function() {
-    const sess = getCurrentSession();
-    const editIndex = parseInt(document.getElementById('ex-edit-index').value);
-    const payerName = document.getElementById('ex-payer').value;
-    const amount = parseFloat(document.getElementById('ex-amount').value) || 0;
-    if (!payerName || payerName === 'عام') return true;
-
-    const remShare = getShareholderRemainingShare(sess, payerName, editIndex);
-
-    // إذا كان رصيد حصته صفر أو أقل من مبلغ المصروف
-    if (remShare <= 0 || (amount > 0 && remShare < amount)) {
-        // البحث عن مساهم آخر لديه حصة متبقية
-        const alternatives = sess.shareholders
-            .map(s => ({ name: s.name, rem: getShareholderRemainingShare(sess, s.name, editIndex) }))
-            .filter(s => s.name !== payerName && s.rem > 0)
-            .sort((a, b) => b.rem - a.rem);
-
-        const altText = alternatives.length > 0
-            ? `المساهم المتاح بدلاً منه: (${alternatives[0].name}) برصيد متبقٍ (${formatCurrency(alternatives[0].rem)}).`
-            : `لا يوجد مساهم آخر لديه رصيد متبقٍ موجب حالياً.`;
-
-        const msg = `⚠️ تنبيه رصيد الحصة:\n` +
-                    `المساهم (${payerName}) المتبقي من حصته هو (${formatCurrency(remShare)})` +
-                    (amount > 0 ? ` ومبلغ المصروف (${formatCurrency(amount)})` : ``) + `.\n\n` +
-                    `• اضغط [موافق / OK] للاستمرار بالخصم بالسالب (Minus) على (${payerName}).\n` +
-                    `• اضغط [إلغاء / Cancel] لتغيير الدافع إلى مساهم لديه رصيد متبقٍ.\n` +
-                    `${altText}`;
-
-        const continueWithMinus = confirm(msg);
-        if (!continueWithMinus) {
-            if (alternatives.length > 0) {
-                document.getElementById('ex-payer').value = alternatives[0].name;
-                alert(`تم تغيير الدافع تلقائياً إلى: ${alternatives[0].name}`);
             }
-            return false;
-        }
-    }
-    return true;
-};
+            return true;
+        };
 
-window.addExpense = function(e) {
-    e.preventDefault();
-    const sess = getCurrentSession();
-    const editIndex = parseInt(document.getElementById('ex-edit-index').value);
-    const category = document.getElementById('ex-category').value;
-    const totalAmount = parseFloat(document.getElementById('ex-amount').value) || 0;
+        window.addExpense = function(e) {
+            e.preventDefault();
+            const sess = getCurrentSession();
+            const editIndex = parseInt(document.getElementById('ex-edit-index').value);
+            const category = document.getElementById('ex-category').value;
+            const totalAmount = parseFloat(document.getElementById('ex-amount').value) || 0;
 
-    let statement = '';
-    if (category === 'طعام ومقاضي') statement = 'طعام: ' + (document.getElementById('ex-food-item').value.trim() || 'عام');
-    else if (category === 'فواتير وخدمات') statement = 'خدمة: ' + (document.getElementById('ex-service-type').value || 'عام');
-    else statement = document.getElementById('ex-statement').value.trim() || category;
+            let statement = '';
+            if (category === 'طعام ومقاضي') statement = 'طعام: ' + (document.getElementById('ex-food-item').value.trim() || 'عام');
+            else if (category === 'فواتير وخدمات') statement = 'خدمة: ' + (document.getElementById('ex-service-type').value || 'عام');
+            else statement = document.getElementById('ex-statement').value.trim() || category;
 
-    const isMulti = document.getElementById('ex-multi-payer').checked;
-    let payerDisplay = '';
-    let payersSplit = [];
+            const isMulti = document.getElementById('ex-multi-payer').checked;
+            let payerDisplay = '';
+            let payersSplit = [];
 
-    if (isMulti) {
-        let sumSplits = 0;
-        let minusPayers = [];
+            if (isMulti) {
+                let sumSplits = 0;
+                let minusPayers = [];
 
-        document.querySelectorAll('.mp-row').forEach(row => {
-            const chk = row.querySelector('.mp-check');
-            const name = chk.getAttribute('data-name');
-            const amt = parseFloat(row.querySelector('.mp-amount').value) || 0;
-            if (chk.checked && amt > 0) {
-                payersSplit.push({ name, amount: amt });
-                sumSplits += amt;
-                const rem = getShareholderRemainingShare(sess, name, editIndex);
-                if (amt > rem) minusPayers.push(`${name} (المتبقي: ${formatCurrency(rem)}، المطلوب: ${formatCurrency(amt)})`);
+                document.querySelectorAll('.mp-row').forEach(row => {
+                    const chk = row.querySelector('.mp-check');
+                    const name = chk.getAttribute('data-name');
+                    const amt = parseFloat(row.querySelector('.mp-amount').value) || 0;
+                    if (chk.checked && amt > 0) {
+                        payersSplit.push({ name, amount: amt });
+                        sumSplits += amt;
+                        const rem = getShareholderRemainingShare(sess, name, editIndex);
+                        if (amt > rem) minusPayers.push(`${name} (المتبقي: ${formatCurrency(rem)}، المطلوب: ${formatCurrency(amt)})`);
+                    }
+                });
+
+                if (payersSplit.length === 0) return alert('حدد المساهمين المشاركين بالدفع.');
+                if (Math.abs(sumSplits - totalAmount) > 0.05) {
+                    return alert(`مجموع التوزيع (${formatCurrency(sumSplits)}) لا يطابق مبلغ المصروف (${formatCurrency(totalAmount)})!`);
+                }
+                if (minusPayers.length > 0) {
+                    const ok = confirm(`⚠️ تنبيه: المساهمون التالية أسماؤهم ستنزل حصتهم بالسالب:\n- ${minusPayers.join('\n- ')}\n\nهل تريد الاستمرار بالخصم بالسالب؟`);
+                    if (!ok) return;
+                }
+                payerDisplay = payersSplit.map(p => `${p.name} (${p.amount})`).join(' ، ');
+            } else {
+                payerDisplay = document.getElementById('ex-payer').value || 'عام';
+                if (!checkSinglePayerShare()) return;
             }
-        });
 
-        if (payersSplit.length === 0) return alert('حدد المساهمين المشاركين بالدفع.');
-        if (Math.abs(sumSplits - totalAmount) > 0.05) {
-            return alert(`مجموع التوزيع (${formatCurrency(sumSplits)}) لا يطابق مبلغ المصروف (${formatCurrency(totalAmount)})!`);
-        }
-        if (minusPayers.length > 0) {
-            const ok = confirm(`⚠️ تنبيه: المساهمون التالية أسماؤهم ستنزل حصتهم بالسالب:\n- ${minusPayers.join('\n- ')}\n\nهل تريد الاستمرار بالخصم بالسالب؟`);
-            if (!ok) return;
-        }
-        payerDisplay = payersSplit.map(p => `${p.name} (${p.amount})`).join(' ، ');
-    } else {
-        payerDisplay = document.getElementById('ex-payer').value || 'عام';
-        // فحص رصيد المساهم المنفرد قبل الحفظ
-        if (!checkSinglePayerShare()) return;
-    }
+            const existingAtt = (editIndex > -1 && sess.expenses[editIndex]) ? sess.expenses[editIndex].attachment : null;
+            const attachmentData = getAttachmentData('ex', existingAtt);
+            if (attachmentData === false) return;
 
-    const expenseObj = {
-        id: (editIndex > -1 && sess.expenses[editIndex]) ? sess.expenses[editIndex].id : 'EXP-' + Date.now().toString().slice(-4),
-        date: document.getElementById('ex-date').value,
-        statement: statement,
-        category: category,
-        amount: totalAmount,
-        payer: payerDisplay,
-        isMultiPayer: isMulti,
-        payersSplit: payersSplit,
-        method: document.getElementById('ex-method').value
-    };
+            const expenseObj = {
+                id: (editIndex > -1 && sess.expenses[editIndex]) ? sess.expenses[editIndex].id : 'EXP-' + Date.now().toString().slice(-4),
+                date: document.getElementById('ex-date').value,
+                statement: statement,
+                category: category,
+                amount: totalAmount,
+                payer: payerDisplay,
+                isMultiPayer: isMulti,
+                payersSplit: payersSplit,
+                method: document.getElementById('ex-method').value,
+                attachment: attachmentData
+            };
 
-    if (editIndex > -1 && sess.expenses[editIndex]) sess.expenses[editIndex] = expenseObj;
-    else sess.expenses.push(expenseObj);
+            if (editIndex > -1 && sess.expenses[editIndex]) sess.expenses[editIndex] = expenseObj;
+            else sess.expenses.push(expenseObj);
 
-    closeModal('modal-expense');
-    renderUI();
-    pushToDrive();
-};
+            closeModal('modal-expense');
+            renderUI();
+            pushToDrive();
+        };
 
         window.editExpense = function(index) {
             const e = getCurrentSession().expenses[index];
@@ -1273,6 +1475,18 @@ window.addExpense = function(e) {
             document.getElementById('ex-statement').value = e.statement;
             document.getElementById('ex-amount').value = e.amount;
             document.getElementById('ex-method').value = e.method;
+
+            if (e.attachment) {
+                document.getElementById('ex-attachmentType').value = e.attachment.type || '';
+                handleAttachmentTypeChange('ex');
+                if (e.attachment.type === 'link') {
+                    document.getElementById('ex-attachmentUrl').value = e.attachment.data || '';
+                } else if (e.attachment.data && e.attachment.type !== 'live_signature') {
+                    document.getElementById('ex-attachmentPreview').src = e.attachment.data;
+                    document.getElementById('ex-attachmentPreviewContainer').style.display = 'block';
+                }
+            }
+
             openModal('modal-expense');
         };
 
@@ -1280,6 +1494,10 @@ window.addExpense = function(e) {
             e.preventDefault();
             const sess = getCurrentSession();
             const editIndex = parseInt(document.getElementById('db-edit-index').value);
+
+            const existingAtt = (editIndex > -1 && sess.debts[editIndex]) ? sess.debts[editIndex].attachment : null;
+            const attachmentData = getAttachmentData('db', existingAtt);
+            if (attachmentData === false) return;
 
             const debtObj = {
                 id: (editIndex > -1 && sess.debts[editIndex]) ? sess.debts[editIndex].id : 'DBT-' + Date.now().toString().slice(-4),
@@ -1289,7 +1507,8 @@ window.addExpense = function(e) {
                 total: parseFloat(document.getElementById('db-total').value) || 0,
                 sessionAmount: parseFloat(document.getElementById('db-session-amount').value) || 0,
                 paid: parseFloat(document.getElementById('db-paid').value) || 0,
-                paymentHistory: (editIndex > -1 && sess.debts[editIndex]) ? (sess.debts[editIndex].paymentHistory || []) : []
+                paymentHistory: (editIndex > -1 && sess.debts[editIndex]) ? (sess.debts[editIndex].paymentHistory || []) : [],
+                attachment: attachmentData
             };
 
             if (editIndex > -1 && sess.debts[editIndex]) sess.debts[editIndex] = debtObj;
@@ -1310,6 +1529,18 @@ window.addExpense = function(e) {
             document.getElementById('db-total').value = d.total;
             document.getElementById('db-session-amount').value = d.sessionAmount || 0;
             document.getElementById('db-paid').value = d.paid;
+
+            if (d.attachment) {
+                document.getElementById('db-attachmentType').value = d.attachment.type || '';
+                handleAttachmentTypeChange('db');
+                if (d.attachment.type === 'link') {
+                    document.getElementById('db-attachmentUrl').value = d.attachment.data || '';
+                } else if (d.attachment.data && d.attachment.type !== 'live_signature') {
+                    document.getElementById('db-attachmentPreview').src = d.attachment.data;
+                    document.getElementById('db-attachmentPreviewContainer').style.display = 'block';
+                }
+            }
+
             openModal('modal-debt');
         };
 
@@ -1321,7 +1552,6 @@ window.addExpense = function(e) {
             }
         };
 
-        // --- النوافذ والمساعدات ---
         window.openModal = function(id) {
             document.getElementById(id).classList.add('active');
             if (id === 'modal-expense' && document.getElementById('ex-edit-index').value === "-1") {
@@ -1341,6 +1571,8 @@ window.addExpense = function(e) {
             if (document.getElementById('sh-edit-index')) document.getElementById('sh-edit-index').value = "-1";
             if (document.getElementById('ex-edit-index')) document.getElementById('ex-edit-index').value = "-1";
             if (document.getElementById('db-edit-index')) document.getElementById('db-edit-index').value = "-1";
+            if (id === 'modal-expense') resetAttachmentFields('ex');
+            if (id === 'modal-debt') resetAttachmentFields('db');
         };
 
         window.openTab = function(tabId, ev) {
@@ -1358,122 +1590,108 @@ window.addExpense = function(e) {
         };
 
         window.toggleMultiPayer = function() {
-    const isMulti = document.getElementById('ex-multi-payer').checked;
-    document.getElementById('single-payer-group').style.display = isMulti ? 'none' : 'block';
-    document.getElementById('multi-payer-group').style.display = isMulti ? 'block' : 'none';
+            const isMulti = document.getElementById('ex-multi-payer').checked;
+            document.getElementById('single-payer-group').style.display = isMulti ? 'none' : 'block';
+            document.getElementById('multi-payer-group').style.display = isMulti ? 'block' : 'none';
 
-    if (isMulti) {
-        // تحديد جميع المساهمين الذين لديهم رصيد متبقٍ موجب تلقائياً عند تفعيل الدفع المشترك
-        const sess = getCurrentSession();
-        const editIndex = parseInt(document.getElementById('ex-edit-index').value);
-        const rows = document.querySelectorAll('.mp-row');
-        const anyChecked = Array.from(rows).some(r => r.querySelector('.mp-check').checked);
+            if (isMulti) {
+                const sess = getCurrentSession();
+                const editIndex = parseInt(document.getElementById('ex-edit-index').value);
+                const rows = document.querySelectorAll('.mp-row');
+                const anyChecked = Array.from(rows).some(r => r.querySelector('.mp-check').checked);
 
-        if (!anyChecked) {
-            rows.forEach(row => {
-                const chk = row.querySelector('.mp-check');
-                const rem = getShareholderRemainingShare(sess, chk.getAttribute('data-name'), editIndex);
-                chk.checked = (rem > 0);
-            });
-            // إذا كان الجميع رصيدهم 0، نحدد الجميع
-            if (!Array.from(rows).some(r => r.querySelector('.mp-check').checked)) {
-                rows.forEach(r => r.querySelector('.mp-check').checked = true);
+                if (!anyChecked) {
+                    rows.forEach(row => {
+                        const chk = row.querySelector('.mp-check');
+                        const rem = getShareholderRemainingShare(sess, chk.getAttribute('data-name'), editIndex);
+                        chk.checked = (rem > 0);
+                    });
+                    if (!Array.from(rows).some(r => r.querySelector('.mp-check').checked)) {
+                        rows.forEach(r => r.querySelector('.mp-check').checked = true);
+                    }
+                }
+                splitExpenseEqually();
             }
-        }
-        splitExpenseEqually();
-    }
-};
-
-// تقسيم المبلغ بالتساوي إن أمكن، وإلا تحميل صاحب الحصة المتبقية الأكبر المبلغ الأكبر
-window.splitExpenseEqually = function() {
-    const total = parseFloat(document.getElementById('ex-amount').value) || 0;
-    const sess = getCurrentSession();
-    const editIndex = parseInt(document.getElementById('ex-edit-index').value);
-    const allRows = Array.from(document.querySelectorAll('.mp-row'));
-    if (allRows.length === 0) return;
-
-    // تصفير غير المحددين
-    allRows.forEach(row => {
-        if (!row.querySelector('.mp-check').checked) {
-            row.querySelector('.mp-amount').value = '';
-        }
-    });
-
-    const selectedRows = allRows.filter(row => row.querySelector('.mp-check').checked);
-    if (selectedRows.length === 0 || total <= 0) return;
-
-    // تحويل المبلغ إلى بيسات/سنتات لتجنب كسور الفاصلة العائمة
-    const totalCents = Math.round(total * 100);
-    const payers = selectedRows.map(row => {
-        const name = row.querySelector('.mp-check').getAttribute('data-name');
-        const rem = getShareholderRemainingShare(sess, name, editIndex);
-        return {
-            name: name,
-            row: row,
-            rem: rem,
-            availCents: Math.max(0, Math.round(rem * 100)),
-            allocCents: 0
         };
-    });
 
-    let remainingToAllocate = totalCents;
-    let active = [...payers];
+        window.splitExpenseEqually = function() {
+            const total = parseFloat(document.getElementById('ex-amount').value) || 0;
+            const sess = getCurrentSession();
+            const editIndex = parseInt(document.getElementById('ex-edit-index').value);
+            const allRows = Array.from(document.querySelectorAll('.mp-row'));
+            if (allRows.length === 0) return;
 
-    // المرحلة 1: التوزيع المتساوي مع سقف الحصة المتبقية لكل مساهم
-    // وتوجيه الفروقات والكسور لصاحب الحصة المتبقية الأكبر
-    while (active.length > 0 && remainingToAllocate > 0) {
-        // ترتيب تنازلي حسب المتبقي الفعلي من الحصة (الأكبر رصيداً أولاً)
-        active.sort((a, b) => ((b.availCents - b.allocCents) - (a.availCents - a.allocCents)) || (b.rem - a.rem));
+            allRows.forEach(row => {
+                if (!row.querySelector('.mp-check').checked) {
+                    row.querySelector('.mp-amount').value = '';
+                }
+            });
 
-        const k = active.length;
-        const baseShare = Math.floor(remainingToAllocate / k);
-        const remainder = remainingToAllocate % k;
+            const selectedRows = allRows.filter(row => row.querySelector('.mp-check').checked);
+            if (selectedRows.length === 0 || total <= 0) return;
 
-        let cappedSomeone = false;
-        for (let i = 0; i < k; i++) {
-            const p = active[i];
-            const tentative = baseShare + (i < remainder ? 1 : 0);
-            const availLeft = p.availCents - p.allocCents;
+            const totalCents = Math.round(total * 100);
+            const payers = selectedRows.map(row => {
+                const name = row.querySelector('.mp-check').getAttribute('data-name');
+                const rem = getShareholderRemainingShare(sess, name, editIndex);
+                return {
+                    name: name,
+                    row: row,
+                    rem: rem,
+                    availCents: Math.max(0, Math.round(rem * 100)),
+                    allocCents: 0
+                };
+            });
 
-            if (availLeft < tentative) {
-                // هذا المساهم حصته المتبقية لا تكفي للقسمة المتساوية -> يأخذ المتبقي لديه فقط
-                p.allocCents += availLeft;
-                remainingToAllocate -= availLeft;
-                cappedSomeone = true;
+            let remainingToAllocate = totalCents;
+            let active = [...payers];
+
+            while (active.length > 0 && remainingToAllocate > 0) {
+                active.sort((a, b) => ((b.availCents - b.allocCents) - (a.availCents - a.allocCents)) || (b.rem - a.rem));
+
+                const k = active.length;
+                const baseShare = Math.floor(remainingToAllocate / k);
+                const remainder = remainingToAllocate % k;
+
+                let cappedSomeone = false;
+                for (let i = 0; i < k; i++) {
+                    const p = active[i];
+                    const tentative = baseShare + (i < remainder ? 1 : 0);
+                    const availLeft = p.availCents - p.allocCents;
+
+                    if (availLeft < tentative) {
+                        p.allocCents += availLeft;
+                        remainingToAllocate -= availLeft;
+                        cappedSomeone = true;
+                    }
+                }
+
+                if (cappedSomeone) {
+                    active = active.filter(p => (p.availCents - p.allocCents) > 0);
+                } else {
+                    for (let i = 0; i < k; i++) {
+                        const p = active[i];
+                        p.allocCents += baseShare + (i < remainder ? 1 : 0);
+                    }
+                    remainingToAllocate = 0;
+                    break;
+                }
             }
-        }
 
-        if (cappedSomeone) {
-            // استبعاد من استنفدوا حصتهم المتبقية وتوزيع الباقي على أصحاب الحصص الأكبر
-            active = active.filter(p => (p.availCents - p.allocCents) > 0);
-        } else {
-            // الجميع لديهم رصيد كافٍ -> توزيع الحصة (مع إعطاء الكسر لصاحب الرصيد الأكبر)
-            for (let i = 0; i < k; i++) {
-                const p = active[i];
-                p.allocCents += baseShare + (i < remainder ? 1 : 0);
+            if (remainingToAllocate > 0) {
+                payers.sort((a, b) => b.rem - a.rem);
+                const k = payers.length;
+                const baseExtra = Math.floor(remainingToAllocate / k);
+                const remExtra = remainingToAllocate % k;
+                for (let i = 0; i < k; i++) {
+                    payers[i].allocCents += baseExtra + (i < remExtra ? 1 : 0);
+                }
             }
-            remainingToAllocate = 0;
-            break;
-        }
-    }
 
-    // المرحلة 2: إذا كان مبلغ المصروف أكبر من مجموع كل الحصص المتبقية للمحددين
-    if (remainingToAllocate > 0) {
-        payers.sort((a, b) => b.rem - a.rem);
-        const k = payers.length;
-        const baseExtra = Math.floor(remainingToAllocate / k);
-        const remExtra = remainingToAllocate % k;
-        for (let i = 0; i < k; i++) {
-            payers[i].allocCents += baseExtra + (i < remExtra ? 1 : 0);
-        }
-    }
-
-    // وضع القيم المحسوبة في الحقول
-    payers.forEach(p => {
-        p.row.querySelector('.mp-amount').value = (p.allocCents / 100).toFixed(2);
-    });
-};
-
+            payers.forEach(p => {
+                p.row.querySelector('.mp-amount').value = (p.allocCents / 100).toFixed(2);
+            });
+        };
 
         window.clearFilters = function() {
             document.getElementById('filter-from').value = '';
@@ -1509,212 +1727,8 @@ window.splitExpenseEqually = function() {
             };
             reader.readAsText(file);
         };
-// State variables
-let currentCompressedImage = null;
-let hasDrawnSignature = false;
 
-const typeSelect = document.getElementById('attachmentType');
-const imageBox = document.getElementById('imageUploadBox');
-const signatureBox = document.getElementById('liveSignatureBox');
-const linkBox = document.getElementById('linkAttachmentBox');
-
-const fileInput = document.getElementById('attachmentFile');
-const previewContainer = document.getElementById('attachmentPreviewContainer');
-const previewImage = document.getElementById('attachmentPreview');
-const urlInput = document.getElementById('attachmentUrl');
-
-// --- A. Toggle UI based on selected Attachment Type ---
-typeSelect.addEventListener('change', function () {
-  const val = this.value;
-  imageBox.style.display = 'none';
-  signatureBox.style.display = 'none';
-  linkBox.style.display = 'none';
-
-  if (['receipt', 'invoice', 'transfer'].includes(val)) {
-    imageBox.style.display = 'block';
-  } else if (val === 'live_signature') {
-    signatureBox.style.display = 'block';
-    initWhiteCanvas(); // Fill white background so saved PNG isn't transparent on dark mode
-  } else if (val === 'link') {
-    linkBox.style.display = 'block';
-  }
-});
-
-// --- B. Live Signature Pad Logic (Mouse + Mobile Touch) ---
-const sigCanvas = document.getElementById('signaturePad');
-const sigCtx = sigCanvas.getContext('2d');
-let isDrawing = false;
-
-function initWhiteCanvas() {
-  if (!hasDrawnSignature) {
-    sigCtx.fillStyle = '#ffffff';
-    sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height);
-  }
-}
-
-function getPointerPos(e) {
-  const rect = sigCanvas.getBoundingClientRect();
-  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
-  return {
-    x: (clientX - rect.left) * (sigCanvas.width / rect.width),
-    y: (clientY - rect.top) * (sigCanvas.height / rect.height)
-  };
-}
-
-function startPosition(e) {
-  e.preventDefault();
-  isDrawing = true;
-  hasDrawnSignature = true;
-  const pos = getPointerPos(e);
-  sigCtx.beginPath();
-  sigCtx.moveTo(pos.x, pos.y);
-}
-
-function draw(e) {
-  if (!isDrawing) return;
-  e.preventDefault();
-  const pos = getPointerPos(e);
-  sigCtx.lineWidth = 2.5;
-  sigCtx.lineCap = 'round';
-  sigCtx.strokeStyle = '#000080'; // Classic blue-black ink color
-  sigCtx.lineTo(pos.x, pos.y);
-  sigCtx.stroke();
-}
-
-function endPosition() {
-  isDrawing = false;
-  sigCtx.beginPath();
-}
-
-// Mouse Events
-sigCanvas.addEventListener('mousedown', startPosition);
-sigCanvas.addEventListener('mousemove', draw);
-window.addEventListener('mouseup', endPosition);
-
-// Touch Events (Mobile)
-sigCanvas.addEventListener('touchstart', startPosition, { passive: false });
-sigCanvas.addEventListener('touchmove', draw, { passive: false });
-sigCanvas.addEventListener('touchend', endPosition);
-
-// Clear Signature Button
-document.getElementById('clearSignatureBtn').addEventListener('click', function () {
-  sigCtx.fillStyle = '#ffffff';
-  sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height);
-  hasDrawnSignature = false;
-});
-
-// --- C. Image Upload & Compression Logic ---
-fileInput.addEventListener('change', function (e) {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onload = function (event) {
-    const img = new Image();
-    img.src = event.target.result;
-    img.onload = function () {
-      const canvas = document.createElement('canvas');
-      const MAX_WIDTH = 800;
-      const scale = MAX_WIDTH / img.width;
-      canvas.width = img.width > MAX_WIDTH ? MAX_WIDTH : img.width;
-      canvas.height = img.width > MAX_WIDTH ? img.height * scale : img.height;
-
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      currentCompressedImage = canvas.toDataURL('image/jpeg', 0.6);
-
-      previewImage.src = currentCompressedImage;
-      previewContainer.style.display = 'block';
-    };
-  };
-});
-
-// 2. Allow removing the attachment before saving
-removeBtn.addEventListener('click', function () {
-  fileInput.value = '';
-  currentCompressedAttachment = null;
-  previewContainer.style.display = 'none';
-  attachmentTypeSelect.value = '';
-});
-function saveTransaction(type, title, amount, date) {
-  const attachmentType = document.getElementById('attachmentType').value;
-
-  const newRecord = {
-    id: Date.now(),
-    recordCategory: type, // 'expense' or 'debt'
-    title: title,
-    amount: parseFloat(amount),
-    date: date,
-    // Add the attachment metadata:
-    attachment: currentCompressedAttachment ? {
-      type: attachmentType || 'other', // 'receipt', 'invoice', 'signature', etc.
-      dataUrl: currentCompressedAttachment,
-      uploadedAt: new Date().toISOString()
-    } : null
-  };
-
-  // Save to your existing localStorage array
-  const existingRecords = JSON.parse(localStorage.getItem('masroofatea_records') || '[]');
-  existingRecords.push(newRecord);
-  localStorage.setItem('masroofatea_records', JSON.stringify(existingRecords));
-
-  // Reset attachment state after saving
-  fileInput.value = '';
-  currentCompressedAttachment = null;
-  previewContainer.style.display = 'none';
-  attachmentTypeSelect.value = '';
-}
-        // Helper to translate attachment types into Arabic badges
-const attachmentLabels = {
-  receipt: '🧾 إيصال (Receipt)',
-  invoice: '📄 فاتورة (Invoice)',
-  signature: '✍️ توقيع (Signature)',
-  transfer: '🏦 تحويل (Transfer)',
-  other: '📎 مرفق (Attachment)'
-};
-
-function renderAttachmentBadge(record) {
-  if (!record.attachment || !record.attachment.dataUrl) {
-    return '<span style="color:#999; font-size: 0.85em;">لا يوجد مرفق</span>';
-  }
-  const label = attachmentLabels[record.attachment.type] || attachmentLabels.other;
-  return `
-    <button onclick="viewAttachment('${record.id}')" 
-            style="background:#eef6ff; color:#0066cc; border:1px solid #b3d7ff; padding:4px 8px; border-radius:12px; cursor:pointer; font-size:0.85em;">
-      ${label} 👁️
-    </button>
-  `;
-}
-
-// Function to pop up the full image when clicked
-function viewAttachment(recordId) {
-  const records = JSON.parse(localStorage.getItem('masroofatea_records') || '[]');
-  const record = records.find(r => String(r.id) === String(recordId));
-  if (!record || !record.attachment) return;
-
-  const modalHtml = `
-    <div id="attachmentModal" onclick="this.remove()" 
-         style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; padding:20px;">
-      <div style="background:#fff; padding:15px; border-radius:10px; max-width:90%; max-height:85%; overflow:auto; text-align:center;" onclick="event.stopPropagation()">
-        <h4 style="margin-top:0;">${attachmentLabels[record.attachment.type]} - ${record.title}</h4>
-        <img src="${record.attachment.dataUrl}" style="max-width:100%; max-height:65vh; border-radius:6px;" />
-        <div style="margin-top:12px; display:flex; gap:10px; justify-content:center;">
-          <a href="${record.attachment.dataUrl}" download="masroofatea-${record.id}.jpg" 
-             style="background:#28a745; color:#fff; padding:6px 14px; border-radius:5px; text-decoration:none;">
-            ⬇️ تحميل (Download)
-          </a>
-          <button onclick="document.getElementById('attachmentModal').remove()" 
-                  style="background:#dc3545; color:#fff; border:none; padding:6px 14px; border-radius:5px; cursor:pointer;">
-            إغلاق (Close)
-          </button>
-        </div>
-      </div>
-    </div>
-  `;
-  document.body.insertAdjacentHTML('beforeend', modalHtml);
-}
+        // --- القفل والحماية ---
         function checkLockState() {
             const isUnlocked = sessionStorage.getItem('masroofat_unlocked');
             const screen = document.getElementById('app-lock-screen');
@@ -1723,10 +1737,11 @@ function viewAttachment(recordId) {
 
         window.unlockApp = function() {
             const pin = document.getElementById('pin-input').value.trim();
-            const savedPin = (appData && appData.appPin) ? appData.appPin : "1234";
+            const savedPin = (appData && appData.appPin) ? String(appData.appPin) : "1234";
             if (pin === savedPin) {
                 sessionStorage.setItem('masroofat_unlocked', 'true');
                 document.getElementById('app-lock-screen').style.display = 'none';
+                document.getElementById('lock-error').style.display = 'none';
             } else {
                 document.getElementById('lock-error').style.display = 'block';
             }
@@ -1734,12 +1749,13 @@ function viewAttachment(recordId) {
 
         window.lockAppNow = function() {
             sessionStorage.removeItem('masroofat_unlocked');
+            document.getElementById('pin-input').value = '';
             document.getElementById('app-lock-screen').style.display = 'flex';
         };
 
         window.changeAppPin = function() {
             const oldPin = prompt("أدخل رمز المرور الحالي:");
-            if (oldPin !== (appData.appPin || "1234")) return alert("الرمز غير صحيح!");
+            if (oldPin !== String(appData.appPin || "1234")) return alert("الرمز غير صحيح!");
             const newPin = prompt("أدخل رمز المرور الجديد (أرقام):");
             if (newPin && newPin.trim().length >= 3) {
                 appData.appPin = newPin.trim();
@@ -1750,130 +1766,6 @@ function viewAttachment(recordId) {
 
         checkLockState();
         fetchFromDrive();
-        function getAttachmentData() {
-  const selectedType = typeSelect.value;
-  if (!selectedType) return null;
-
-  // Case 1: Live Signature
-  if (selectedType === 'live_signature') {
-    if (!hasDrawnSignature) {
-      alert('الرجاء التوقيع داخل المربع أولاً (Please sign inside the box)');
-      return null;
-    }
-    return {
-      category: 'signature',
-      type: 'live_signature',
-      data: sigCanvas.toDataURL('image/jpeg', 0.8), // Very lightweight (~10KB)
-      createdAt: new Date().toISOString()
-    };
-  }
-
-  // Case 2: External Link
-  if (selectedType === 'link') {
-    let url = urlInput.value.trim();
-    if (!url) return null;
-    // Ensure link starts with http:// or https:// so it opens properly
-    if (!/^https?:\/\//i.test(url)) {
-      url = 'https://' + url;
-    }
-    return {
-      category: 'link',
-      type: 'link',
-      data: url,
-      createdAt: new Date().toISOString()
-    };
-  }
-
-  // Case 3: Uploaded Photo (Receipt, Invoice, Transfer)
-  if (currentCompressedImage) {
-    return {
-      category: 'image',
-      type: selectedType,
-      data: currentCompressedImage,
-      createdAt: new Date().toISOString()
-    };
-  }
-
-  return null;
-}
-
-// Helper to reset the attachment fields after saving the Expense/Debt
-function resetAttachmentFields() {
-  typeSelect.value = '';
-  imageBox.style.display = 'none';
-  signatureBox.style.display = 'none';
-  linkBox.style.display = 'none';
-  fileInput.value = '';
-  previewContainer.style.display = 'none';
-  currentCompressedImage = null;
-  urlInput.value = '';
-  hasDrawnSignature = false;
-  sigCtx.fillStyle = '#ffffff';
-  sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height);
-}
-        const badgeNames = {
-  receipt: '🧾 إيصال',
-  invoice: '📄 فاتورة',
-  transfer: '🏦 تحويل',
-  live_signature: '✍️ توقيع معتمد',
-  link: '🔗 فتح الرابط'
-};
-
-function renderAttachmentAction(record) {
-  const att = record.attachment;
-  if (!att || !att.data) {
-    return '<span style="color:#aaa; font-size:0.8em;">بدون مرفق</span>';
-  }
-
-  const label = badgeNames[att.type] || '📎 مرفق';
-
-  // If it's a Link, render a direct clickable external link button
-  if (att.category === 'link' || att.type === 'link') {
-    return `
-      <a href="${att.data}" target="_blank" rel="noopener noreferrer"
-         style="background:#e8f5e9; color:#1b5e20; border:1px solid #a5d6a7; padding:4px 10px; border-radius:12px; text-decoration:none; font-size:0.85em; display:inline-block;">
-        ${label} ↗️
-      </a>
-    `;
-  }
-
-  // If it's an Image or Live Signature, open the popup modal
-  return `
-    <button onclick="openAttachmentModal('${record.id}')"
-            style="background:#eef6ff; color:#0056b3; border:1px solid #b3d7ff; padding:4px 10px; border-radius:12px; cursor:pointer; font-size:0.85em;">
-      ${label} 👁️
-    </button>
-  `;
-}
-
-function openAttachmentModal(recordId) {
-  const records = JSON.parse(localStorage.getItem('MASROOFATEA_DB') || '[]');
-  const record = records.find(r => String(r.id) === String(recordId));
-  if (!record || !record.attachment) return;
-
-  const title = badgeNames[record.attachment.type] || 'مرفق';
-  const modalHTML = `
-    <div id="attModal" onclick="this.remove()" 
-         style="position:fixed; inset:0; background:rgba(0,0,0,0.8); display:flex; align-items:center; justify-content:center; z-index:9999; padding:15px;">
-      <div onclick="event.stopPropagation()" 
-           style="background:#fff; padding:16px; border-radius:10px; max-width:92%; max-height:85vh; overflow:auto; text-align:center;">
-        <h4 style="margin:0 0 10px 0;">${title} - ${record.title || ''}</h4>
-        <img src="${record.attachment.data}" style="max-width:100%; max-height:65vh; border:1px solid #ccc; border-radius:6px;" />
-        <div style="margin-top:12px; display:flex; gap:10px; justify-content:center;">
-          <a href="${record.attachment.data}" download="masroofatea-${record.id}.jpg"
-             style="background:#28a745; color:#fff; padding:6px 14px; border-radius:5px; text-decoration:none;">
-            ⬇️ حفظ الصورة
-          </a>
-          <button onclick="document.getElementById('attModal').remove()"
-                  style="background:#dc3545; color:#fff; border:none; padding:6px 14px; border-radius:5px; cursor:pointer;">
-            إغلاق
-          </button>
-        </div>
-      </div>
-    </div>
-  `;
-  document.body.insertAdjacentHTML('beforeend', modalHTML);
-}
     </script>
 </body>
 </html>
