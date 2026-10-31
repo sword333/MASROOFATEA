@@ -150,6 +150,41 @@
             position: relative;
             z-index: 2;
         }
+        /* تنسيقات مخصصة لكل نوع من المصروفات */
+.cat-badge {
+    padding: 5px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* 1. طعام ومقاضي (أخضر زمردي) */
+.cat-food { background: #e6f9f0; color: #13855c; border: 1px solid #b8ebd6; }
+tr.row-food { border-right: 4px solid #1cc88a; }
+tr.row-food:hover { background-color: #f4fcf8; }
+
+/* 2. فواتير وخدمات (أزرق سماوي) */
+.cat-bills { background: #e8f7fa; color: #1c7c8c; border: 1px solid #b6e6f0; }
+tr.row-bills { border-right: 4px solid #36b9cc; }
+tr.row-bills:hover { background-color: #f2fbfd; }
+
+/* 3. صيانة (برتقالي / كهرماني) */
+.cat-maint { background: #fff4e5; color: #b75c00; border: 1px solid #ffd8a8; }
+tr.row-maint { border-right: 4px solid #fd7e14; }
+tr.row-maint:hover { background-color: #fffaf2; }
+
+/* 4. مستلزمات (بنفسجي) */
+.cat-supplies { background: #f3ebff; color: #5a32a3; border: 1px solid #d8c2ff; }
+tr.row-supplies { border-right: 4px solid #6f42c1; }
+tr.row-supplies:hover { background-color: #f9f5ff; }
+
+/* 5. أخرى (رمادي داكن) */
+.cat-other { background: #eaecf4; color: #4a4b53; border: 1px solid #d1d3e2; }
+tr.row-other { border-right: 4px solid #858796; }
+tr.row-other:hover { background-color: #f8f9fc; }
     </style>
 </head>
 <body>
@@ -357,12 +392,12 @@
                 <div class="form-group">
                     <label>التصنيف</label>
                     <select id="ex-category" onchange="handleCategoryChange()">
-                        <option value="طعام ومقاضي">طعام ومقاضي</option>
-                        <option value="فواتير وخدمات">فواتير وخدمات</option>
-                        <option value="صيانة">صيانة</option>
-                        <option value="مستلزمات">مستلزمات</option>
-                        <option value="أخرى">أخرى (بيان مخصص)</option>
-                    </select>
+    <option value="طعام ومقاضي">🍖 طعام ومقاضي</option>
+    <option value="فواتير وخدمات">⚡ فواتير وخدمات</option>
+    <option value="صيانة">🛠️ صيانة</option>
+    <option value="مستلزمات">📦 مستلزمات</option>
+    <option value="أخرى">🏷️ أخرى (بيان مخصص)</option>
+</select>
                 </div>
 
                 <div class="form-group" id="food-group">
@@ -1119,7 +1154,36 @@
             pushToDrive();
             alert('تم نقل السجل بنجاح إلى ' + toSess.name);
         };
-
+function getExpenseCategoryStyle(category) {
+    const styles = {
+        'طعام ومقاضي': {
+            badgeClass: 'cat-food',
+            rowClass: 'row-food',
+            icon: 'fa-utensils' // أيقونة طعام
+        },
+        'فواتير وخدمات': {
+            badgeClass: 'cat-bills',
+            rowClass: 'row-bills',
+            icon: 'fa-bolt' // أيقونة كهرباء/فواتير
+        },
+        'صيانة': {
+            badgeClass: 'cat-maint',
+            rowClass: 'row-maint',
+            icon: 'fa-tools' // أيقونة عدة صيانة
+        },
+        'مستلزمات': {
+            badgeClass: 'cat-supplies',
+            rowClass: 'row-supplies',
+            icon: 'fa-box-open' // أيقونة صندوق مستلزمات
+        },
+        'أخرى': {
+            badgeClass: 'cat-other',
+            rowClass: 'row-other',
+            icon: 'fa-tag' // أيقونة عامة
+        }
+    };
+    return styles[category] || styles['أخرى'];
+}
         function renderUI() {
             ensureDataStructure();
             const sess = getCurrentSession();
@@ -1186,23 +1250,28 @@
             if (toDate) filteredExpenses = filteredExpenses.filter(e => e.date <= toDate);
 
             document.getElementById('expenses-body').innerHTML = filteredExpenses.map(e => {
-                totalExp += Number(e.amount) || 0;
-                return `<tr>
-                    <td>${e.date}</td>
-                    <td>${e.statement}</td>
-                    <td><span class="badge info">${e.category}</span></td>
-                    <td><strong>${formatCurrency(e.amount)}</strong></td>
-                    <td>${e.payer}</td>
-                    <td>${e.method}</td>
-                    <td>${renderAttachmentAction(e, 'expenses', e._origIndex)}</td>
-                    <td>
-                        <button class="btn btn-sm" style="background:var(--warning)" onclick="editExpense(${e._origIndex})" title="تعديل"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-sm btn-info" onclick="openTransferModal('expenses', ${e._origIndex})" title="نقل لدورة أخرى"><i class="fas fa-exchange-alt"></i></button>
-                        <button class="btn btn-danger btn-sm" onclick="deleteRecord('expenses', ${e._origIndex})" title="حذف"><i class="fas fa-trash"></i></button>
-                    </td>
-                </tr>`;
-            }).join('');
+    totalExp += Number(e.amount) || 0;
+    const catStyle = getExpenseCategoryStyle(e.category); // <-- جلب ستايل وأيقونة التصنيف
 
+    return `<tr class="${catStyle.rowClass}">
+        <td>${e.date}</td>
+        <td><strong>${e.statement}</strong></td>
+        <td>
+            <span class="cat-badge ${catStyle.badgeClass}">
+                <i class="fas ${catStyle.icon}"></i> ${e.category}
+            </span>
+        </td>
+        <td><strong>${formatCurrency(e.amount)}</strong></td>
+        <td>${e.payer}</td>
+        <td>${e.method}</td>
+        <td>${renderAttachmentAction(e, 'expenses', e._origIndex)}</td>
+        <td>
+            <button class="btn btn-sm" style="background:var(--warning)" onclick="editExpense(${e._origIndex})" title="تعديل"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-sm btn-info" onclick="openTransferModal('expenses', ${e._origIndex})" title="نقل لدورة أخرى"><i class="fas fa-exchange-alt"></i></button>
+            <button class="btn btn-danger btn-sm" onclick="deleteRecord('expenses', ${e._origIndex})" title="حذف"><i class="fas fa-trash"></i></button>
+        </td>
+    </tr>`;
+}).join('');
             // 3. جدول الديون
             document.getElementById('debts-body').innerHTML = sess.debts.map((d, index) => {
                 const remaining = (Number(d.total) || 0) - (Number(d.paid) || 0);
