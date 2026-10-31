@@ -416,38 +416,57 @@
                     <select id="ex-method"><option>تحويل بنكي</option><option>نقدي</option><option>بطاقة ائتمان</option></select>
                 </div>
                 <button type="submit" class="btn" style="width: 100%; justify-content: center;">حفظ المصروف</button>
+                <div class="attachment-section" style="margin-top: 12px; padding: 12px; border: 1px dashed #ccc; border-radius: 8px; background: #fafafa;">
+  <label for="attachmentType" style="display:block; margin-bottom: 6px; font-weight: bold;">
+    📎 نوع المرفق والتوثيق (Attachment Type):
+  </label>
+  
+  <select id="attachmentType" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #bbb;">
+    <option value="">-- بدون مرفق (None) --</option>
+    <option value="receipt">🧾 صورة إيصال (Receipt Image)</option>
+    <option value="invoice">📄 صورة فاتورة (Invoice Image)</option>
+    <option value="transfer">🏦 إشعار تحويل بنكي (Bank Transfer Image)</option>
+    <option value="live_signature">✍️ توقيع حي مباشر على الشاشة (Live Signature)</option>
+    <option value="link">🔗 رابط خارجي / مستند سحابي (External Link / URL)</option>
+  </select>
+
+  <!-- 1. Image Upload Box (Shown for Receipt, Invoice, Transfer) -->
+  <div id="imageUploadBox" style="display: none;">
+    <label style="display:block; margin-bottom: 5px; font-size: 0.9em;">التقط صورة أو اختر من المعرض:</label>
+    <input type="file" id="attachmentFile" accept="image/*" style="width: 100%;" />
+    <div id="attachmentPreviewContainer" style="display:none; margin-top: 10px; text-align: center;">
+      <img id="attachmentPreview" src="" alt="Preview" style="max-height: 120px; border-radius: 6px; border: 1px solid #ddd;" />
+    </div>
+  </div>
+
+  <!-- 2. Live Signature Pad Box (Shown when 'live_signature' is selected) -->
+  <div id="liveSignatureBox" style="display: none; text-align: center;">
+    <label style="display:block; margin-bottom: 5px; font-size: 0.9em; color: #555;">
+      وقّع بإصبعك أو القلم داخل المربع (Sign inside the box):
+    </label>
+    <canvas id="signaturePad" width="320" height="160" 
+            style="border: 2px solid #333; border-radius: 6px; background: #fff; touch-action: none; cursor: crosshair; max-width: 100%;"></canvas>
+    <div style="margin-top: 6px;">
+      <button type="button" id="clearSignatureBtn" 
+              style="background: #ffc107; color: #000; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
+        🧹 مسح وإعادة التوقيع (Clear Pad)
+      </button>
+    </div>
+  </div>
+
+  <!-- 3. External Link Box (Shown when 'link' is selected) -->
+  <div id="linkAttachmentBox" style="display: none;">
+    <label for="attachmentUrl" style="display:block; margin-bottom: 5px; font-size: 0.9em;">
+      أدخل الرابط (Google Drive, PDF, رسالة، إلخ):
+    </label>
+    <input type="url" id="attachmentUrl" placeholder="https://example.com/invoice..." 
+           style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; direction: ltr; text-align: left;" />
+  </div>
+</div>
             </form>
         </div>
     </div>
-<!-- Add this inside your Expense Form and Debt Form -->
-<div class="attachment-section" style="margin-top: 12px; padding: 10px; border: 1px dashed #ccc; border-radius: 8px;">
-  <label for="attachmentType" style="display:block; margin-bottom: 5px; font-weight: bold;">
-    نوع المرفق (Attachment Type):
-  </label>
-  <select id="attachmentType" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 4px;">
-    <option value="">-- بدون مرفق (None) --</option>
-    <option value="receipt">إيصال (Receipt)</option>
-    <option value="invoice">فاتورة (Invoice)</option>
-    <option value="signature">توقيع / إقرار دين (Signature / IOU)</option>
-    <option value="transfer">إشعار تحويل بنكي (Bank Transfer)</option>
-    <option value="other">أخرى (Other)</option>
-  </select>
 
-  <label for="attachmentFile" style="display:block; margin-bottom: 5px; font-weight: bold;">
-    إرفاق صورة أو مستند (Upload Image/Receipt):
-  </label>
-  <!-- accept="image/*" allows mobile users to either take a live photo or pick from gallery -->
-  <input type="file" id="attachmentFile" accept="image/*" style="width: 100%;" />
-
-  <!-- Live Preview before saving -->
-  <div id="attachmentPreviewContainer" style="display:none; margin-top: 10px; text-align: center;">
-    <img id="attachmentPreview" src="" alt="Preview" style="max-height: 120px; border-radius: 6px; border: 1px solid #ddd;" />
-    <br/>
-    <button type="button" id="removeAttachmentBtn" style="margin-top: 5px; color: red; background: none; border: none; cursor: pointer;">
-      ❌ حذف المرفق (Remove)
-    </button>
-  </div>
-</div>
     <!-- نافذة تسجيل دين -->
     <div id="modal-debt" class="modal">
         <div class="modal-content">
@@ -462,6 +481,53 @@
                 <div class="form-group"><label>قسط الدورة المطلوب سداده (اختياري)</label><input type="number" id="db-session-amount" step="0.01" value="0"></div>
                 <div class="form-group"><label>المبلغ المسدد حتى الآن (توثيقياً)</label><input type="number" id="db-paid" step="0.01" value="0"></div>
                 <button type="submit" class="btn btn-purple" style="width: 100%; justify-content: center;">حفظ الدين</button>
+                <div class="attachment-section" style="margin-top: 12px; padding: 12px; border: 1px dashed #ccc; border-radius: 8px; background: #fafafa;">
+  <label for="attachmentType" style="display:block; margin-bottom: 6px; font-weight: bold;">
+    📎 نوع المرفق والتوثيق (Attachment Type):
+  </label>
+  
+  <select id="attachmentType" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #bbb;">
+    <option value="">-- بدون مرفق (None) --</option>
+    <option value="receipt">🧾 صورة إيصال (Receipt Image)</option>
+    <option value="invoice">📄 صورة فاتورة (Invoice Image)</option>
+    <option value="transfer">🏦 إشعار تحويل بنكي (Bank Transfer Image)</option>
+    <option value="live_signature">✍️ توقيع حي مباشر على الشاشة (Live Signature)</option>
+    <option value="link">🔗 رابط خارجي / مستند سحابي (External Link / URL)</option>
+  </select>
+
+  <!-- 1. Image Upload Box (Shown for Receipt, Invoice, Transfer) -->
+  <div id="imageUploadBox" style="display: none;">
+    <label style="display:block; margin-bottom: 5px; font-size: 0.9em;">التقط صورة أو اختر من المعرض:</label>
+    <input type="file" id="attachmentFile" accept="image/*" style="width: 100%;" />
+    <div id="attachmentPreviewContainer" style="display:none; margin-top: 10px; text-align: center;">
+      <img id="attachmentPreview" src="" alt="Preview" style="max-height: 120px; border-radius: 6px; border: 1px solid #ddd;" />
+    </div>
+  </div>
+
+  <!-- 2. Live Signature Pad Box (Shown when 'live_signature' is selected) -->
+  <div id="liveSignatureBox" style="display: none; text-align: center;">
+    <label style="display:block; margin-bottom: 5px; font-size: 0.9em; color: #555;">
+      وقّع بإصبعك أو القلم داخل المربع (Sign inside the box):
+    </label>
+    <canvas id="signaturePad" width="320" height="160" 
+            style="border: 2px solid #333; border-radius: 6px; background: #fff; touch-action: none; cursor: crosshair; max-width: 100%;"></canvas>
+    <div style="margin-top: 6px;">
+      <button type="button" id="clearSignatureBtn" 
+              style="background: #ffc107; color: #000; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
+        🧹 مسح وإعادة التوقيع (Clear Pad)
+      </button>
+    </div>
+  </div>
+
+  <!-- 3. External Link Box (Shown when 'link' is selected) -->
+  <div id="linkAttachmentBox" style="display: none;">
+    <label for="attachmentUrl" style="display:block; margin-bottom: 5px; font-size: 0.9em;">
+      أدخل الرابط (Google Drive, PDF, رسالة، إلخ):
+    </label>
+    <input type="url" id="attachmentUrl" placeholder="https://example.com/invoice..." 
+           style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; direction: ltr; text-align: left;" />
+  </div>
+</div>
             </form>
         </div>
     </div>
@@ -1443,45 +1509,123 @@ window.splitExpenseEqually = function() {
             };
             reader.readAsText(file);
         };
-        let currentCompressedAttachment = null; // Holds the Base64 image string temporarily
+// State variables
+let currentCompressedImage = null;
+let hasDrawnSignature = false;
+
+const typeSelect = document.getElementById('attachmentType');
+const imageBox = document.getElementById('imageUploadBox');
+const signatureBox = document.getElementById('liveSignatureBox');
+const linkBox = document.getElementById('linkAttachmentBox');
 
 const fileInput = document.getElementById('attachmentFile');
 const previewContainer = document.getElementById('attachmentPreviewContainer');
 const previewImage = document.getElementById('attachmentPreview');
-const removeBtn = document.getElementById('removeAttachmentBtn');
-const attachmentTypeSelect = document.getElementById('attachmentType');
+const urlInput = document.getElementById('attachmentUrl');
 
-// 1. Compress image using Canvas when user selects/takes a photo
-fileInput.addEventListener('change', function (event) {
-  const file = event.target.files[0];
-  if (!file) return;
+// --- A. Toggle UI based on selected Attachment Type ---
+typeSelect.addEventListener('change', function () {
+  const val = this.value;
+  imageBox.style.display = 'none';
+  signatureBox.style.display = 'none';
+  linkBox.style.display = 'none';
 
-  // Auto-select "Receipt" if the user forgot to pick a type
-  if (!attachmentTypeSelect.value) {
-    attachmentTypeSelect.value = 'receipt';
+  if (['receipt', 'invoice', 'transfer'].includes(val)) {
+    imageBox.style.display = 'block';
+  } else if (val === 'live_signature') {
+    signatureBox.style.display = 'block';
+    initWhiteCanvas(); // Fill white background so saved PNG isn't transparent on dark mode
+  } else if (val === 'link') {
+    linkBox.style.display = 'block';
   }
+});
+
+// --- B. Live Signature Pad Logic (Mouse + Mobile Touch) ---
+const sigCanvas = document.getElementById('signaturePad');
+const sigCtx = sigCanvas.getContext('2d');
+let isDrawing = false;
+
+function initWhiteCanvas() {
+  if (!hasDrawnSignature) {
+    sigCtx.fillStyle = '#ffffff';
+    sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height);
+  }
+}
+
+function getPointerPos(e) {
+  const rect = sigCanvas.getBoundingClientRect();
+  const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+  const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+  return {
+    x: (clientX - rect.left) * (sigCanvas.width / rect.width),
+    y: (clientY - rect.top) * (sigCanvas.height / rect.height)
+  };
+}
+
+function startPosition(e) {
+  e.preventDefault();
+  isDrawing = true;
+  hasDrawnSignature = true;
+  const pos = getPointerPos(e);
+  sigCtx.beginPath();
+  sigCtx.moveTo(pos.x, pos.y);
+}
+
+function draw(e) {
+  if (!isDrawing) return;
+  e.preventDefault();
+  const pos = getPointerPos(e);
+  sigCtx.lineWidth = 2.5;
+  sigCtx.lineCap = 'round';
+  sigCtx.strokeStyle = '#000080'; // Classic blue-black ink color
+  sigCtx.lineTo(pos.x, pos.y);
+  sigCtx.stroke();
+}
+
+function endPosition() {
+  isDrawing = false;
+  sigCtx.beginPath();
+}
+
+// Mouse Events
+sigCanvas.addEventListener('mousedown', startPosition);
+sigCanvas.addEventListener('mousemove', draw);
+window.addEventListener('mouseup', endPosition);
+
+// Touch Events (Mobile)
+sigCanvas.addEventListener('touchstart', startPosition, { passive: false });
+sigCanvas.addEventListener('touchmove', draw, { passive: false });
+sigCanvas.addEventListener('touchend', endPosition);
+
+// Clear Signature Button
+document.getElementById('clearSignatureBtn').addEventListener('click', function () {
+  sigCtx.fillStyle = '#ffffff';
+  sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height);
+  hasDrawnSignature = false;
+});
+
+// --- C. Image Upload & Compression Logic ---
+fileInput.addEventListener('change', function (e) {
+  const file = e.target.files[0];
+  if (!file) return;
 
   const reader = new FileReader();
   reader.readAsDataURL(file);
-  reader.onload = function (e) {
+  reader.onload = function (event) {
     const img = new Image();
-    img.src = e.target.result;
+    img.src = event.target.result;
     img.onload = function () {
       const canvas = document.createElement('canvas');
-      const MAX_WIDTH = 800; // Good balance between readability and small storage size
-      const scaleSize = MAX_WIDTH / img.width;
-      
+      const MAX_WIDTH = 800;
+      const scale = MAX_WIDTH / img.width;
       canvas.width = img.width > MAX_WIDTH ? MAX_WIDTH : img.width;
-      canvas.height = img.width > MAX_WIDTH ? img.height * scaleSize : img.height;
+      canvas.height = img.width > MAX_WIDTH ? img.height * scale : img.height;
 
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      currentCompressedImage = canvas.toDataURL('image/jpeg', 0.6);
 
-      // Compress to JPEG at 60% quality (~30KB - 60KB per image)
-      currentCompressedAttachment = canvas.toDataURL('image/jpeg', 0.6);
-
-      // Show preview
-      previewImage.src = currentCompressedAttachment;
+      previewImage.src = currentCompressedImage;
       previewContainer.style.display = 'block';
     };
   };
@@ -1606,6 +1750,130 @@ function viewAttachment(recordId) {
 
         checkLockState();
         fetchFromDrive();
+        function getAttachmentData() {
+  const selectedType = typeSelect.value;
+  if (!selectedType) return null;
+
+  // Case 1: Live Signature
+  if (selectedType === 'live_signature') {
+    if (!hasDrawnSignature) {
+      alert('الرجاء التوقيع داخل المربع أولاً (Please sign inside the box)');
+      return null;
+    }
+    return {
+      category: 'signature',
+      type: 'live_signature',
+      data: sigCanvas.toDataURL('image/jpeg', 0.8), // Very lightweight (~10KB)
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  // Case 2: External Link
+  if (selectedType === 'link') {
+    let url = urlInput.value.trim();
+    if (!url) return null;
+    // Ensure link starts with http:// or https:// so it opens properly
+    if (!/^https?:\/\//i.test(url)) {
+      url = 'https://' + url;
+    }
+    return {
+      category: 'link',
+      type: 'link',
+      data: url,
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  // Case 3: Uploaded Photo (Receipt, Invoice, Transfer)
+  if (currentCompressedImage) {
+    return {
+      category: 'image',
+      type: selectedType,
+      data: currentCompressedImage,
+      createdAt: new Date().toISOString()
+    };
+  }
+
+  return null;
+}
+
+// Helper to reset the attachment fields after saving the Expense/Debt
+function resetAttachmentFields() {
+  typeSelect.value = '';
+  imageBox.style.display = 'none';
+  signatureBox.style.display = 'none';
+  linkBox.style.display = 'none';
+  fileInput.value = '';
+  previewContainer.style.display = 'none';
+  currentCompressedImage = null;
+  urlInput.value = '';
+  hasDrawnSignature = false;
+  sigCtx.fillStyle = '#ffffff';
+  sigCtx.fillRect(0, 0, sigCanvas.width, sigCanvas.height);
+}
+        const badgeNames = {
+  receipt: '🧾 إيصال',
+  invoice: '📄 فاتورة',
+  transfer: '🏦 تحويل',
+  live_signature: '✍️ توقيع معتمد',
+  link: '🔗 فتح الرابط'
+};
+
+function renderAttachmentAction(record) {
+  const att = record.attachment;
+  if (!att || !att.data) {
+    return '<span style="color:#aaa; font-size:0.8em;">بدون مرفق</span>';
+  }
+
+  const label = badgeNames[att.type] || '📎 مرفق';
+
+  // If it's a Link, render a direct clickable external link button
+  if (att.category === 'link' || att.type === 'link') {
+    return `
+      <a href="${att.data}" target="_blank" rel="noopener noreferrer"
+         style="background:#e8f5e9; color:#1b5e20; border:1px solid #a5d6a7; padding:4px 10px; border-radius:12px; text-decoration:none; font-size:0.85em; display:inline-block;">
+        ${label} ↗️
+      </a>
+    `;
+  }
+
+  // If it's an Image or Live Signature, open the popup modal
+  return `
+    <button onclick="openAttachmentModal('${record.id}')"
+            style="background:#eef6ff; color:#0056b3; border:1px solid #b3d7ff; padding:4px 10px; border-radius:12px; cursor:pointer; font-size:0.85em;">
+      ${label} 👁️
+    </button>
+  `;
+}
+
+function openAttachmentModal(recordId) {
+  const records = JSON.parse(localStorage.getItem('MASROOFATEA_DB') || '[]');
+  const record = records.find(r => String(r.id) === String(recordId));
+  if (!record || !record.attachment) return;
+
+  const title = badgeNames[record.attachment.type] || 'مرفق';
+  const modalHTML = `
+    <div id="attModal" onclick="this.remove()" 
+         style="position:fixed; inset:0; background:rgba(0,0,0,0.8); display:flex; align-items:center; justify-content:center; z-index:9999; padding:15px;">
+      <div onclick="event.stopPropagation()" 
+           style="background:#fff; padding:16px; border-radius:10px; max-width:92%; max-height:85vh; overflow:auto; text-align:center;">
+        <h4 style="margin:0 0 10px 0;">${title} - ${record.title || ''}</h4>
+        <img src="${record.attachment.data}" style="max-width:100%; max-height:65vh; border:1px solid #ccc; border-radius:6px;" />
+        <div style="margin-top:12px; display:flex; gap:10px; justify-content:center;">
+          <a href="${record.attachment.data}" download="masroofatea-${record.id}.jpg"
+             style="background:#28a745; color:#fff; padding:6px 14px; border-radius:5px; text-decoration:none;">
+            ⬇️ حفظ الصورة
+          </a>
+          <button onclick="document.getElementById('attModal').remove()"
+                  style="background:#dc3545; color:#fff; border:none; padding:6px 14px; border-radius:5px; cursor:pointer;">
+            إغلاق
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHTML);
+}
     </script>
 </body>
 </html>
