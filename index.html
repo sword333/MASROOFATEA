@@ -419,7 +419,35 @@
             </form>
         </div>
     </div>
+<!-- Add this inside your Expense Form and Debt Form -->
+<div class="attachment-section" style="margin-top: 12px; padding: 10px; border: 1px dashed #ccc; border-radius: 8px;">
+  <label for="attachmentType" style="display:block; margin-bottom: 5px; font-weight: bold;">
+    نوع المرفق (Attachment Type):
+  </label>
+  <select id="attachmentType" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 4px;">
+    <option value="">-- بدون مرفق (None) --</option>
+    <option value="receipt">إيصال (Receipt)</option>
+    <option value="invoice">فاتورة (Invoice)</option>
+    <option value="signature">توقيع / إقرار دين (Signature / IOU)</option>
+    <option value="transfer">إشعار تحويل بنكي (Bank Transfer)</option>
+    <option value="other">أخرى (Other)</option>
+  </select>
 
+  <label for="attachmentFile" style="display:block; margin-bottom: 5px; font-weight: bold;">
+    إرفاق صورة أو مستند (Upload Image/Receipt):
+  </label>
+  <!-- accept="image/*" allows mobile users to either take a live photo or pick from gallery -->
+  <input type="file" id="attachmentFile" accept="image/*" style="width: 100%;" />
+
+  <!-- Live Preview before saving -->
+  <div id="attachmentPreviewContainer" style="display:none; margin-top: 10px; text-align: center;">
+    <img id="attachmentPreview" src="" alt="Preview" style="max-height: 120px; border-radius: 6px; border: 1px solid #ddd;" />
+    <br/>
+    <button type="button" id="removeAttachmentBtn" style="margin-top: 5px; color: red; background: none; border: none; cursor: pointer;">
+      ❌ حذف المرفق (Remove)
+    </button>
+  </div>
+</div>
     <!-- نافذة تسجيل دين -->
     <div id="modal-debt" class="modal">
         <div class="modal-content">
@@ -1415,7 +1443,134 @@ window.splitExpenseEqually = function() {
             };
             reader.readAsText(file);
         };
+        let currentCompressedAttachment = null; // Holds the Base64 image string temporarily
 
+const fileInput = document.getElementById('attachmentFile');
+const previewContainer = document.getElementById('attachmentPreviewContainer');
+const previewImage = document.getElementById('attachmentPreview');
+const removeBtn = document.getElementById('removeAttachmentBtn');
+const attachmentTypeSelect = document.getElementById('attachmentType');
+
+// 1. Compress image using Canvas when user selects/takes a photo
+fileInput.addEventListener('change', function (event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  // Auto-select "Receipt" if the user forgot to pick a type
+  if (!attachmentTypeSelect.value) {
+    attachmentTypeSelect.value = 'receipt';
+  }
+
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = function (e) {
+    const img = new Image();
+    img.src = e.target.result;
+    img.onload = function () {
+      const canvas = document.createElement('canvas');
+      const MAX_WIDTH = 800; // Good balance between readability and small storage size
+      const scaleSize = MAX_WIDTH / img.width;
+      
+      canvas.width = img.width > MAX_WIDTH ? MAX_WIDTH : img.width;
+      canvas.height = img.width > MAX_WIDTH ? img.height * scaleSize : img.height;
+
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      // Compress to JPEG at 60% quality (~30KB - 60KB per image)
+      currentCompressedAttachment = canvas.toDataURL('image/jpeg', 0.6);
+
+      // Show preview
+      previewImage.src = currentCompressedAttachment;
+      previewContainer.style.display = 'block';
+    };
+  };
+});
+
+// 2. Allow removing the attachment before saving
+removeBtn.addEventListener('click', function () {
+  fileInput.value = '';
+  currentCompressedAttachment = null;
+  previewContainer.style.display = 'none';
+  attachmentTypeSelect.value = '';
+});
+function saveTransaction(type, title, amount, date) {
+  const attachmentType = document.getElementById('attachmentType').value;
+
+  const newRecord = {
+    id: Date.now(),
+    recordCategory: type, // 'expense' or 'debt'
+    title: title,
+    amount: parseFloat(amount),
+    date: date,
+    // Add the attachment metadata:
+    attachment: currentCompressedAttachment ? {
+      type: attachmentType || 'other', // 'receipt', 'invoice', 'signature', etc.
+      dataUrl: currentCompressedAttachment,
+      uploadedAt: new Date().toISOString()
+    } : null
+  };
+
+  // Save to your existing localStorage array
+  const existingRecords = JSON.parse(localStorage.getItem('masroofatea_records') || '[]');
+  existingRecords.push(newRecord);
+  localStorage.setItem('masroofatea_records', JSON.stringify(existingRecords));
+
+  // Reset attachment state after saving
+  fileInput.value = '';
+  currentCompressedAttachment = null;
+  previewContainer.style.display = 'none';
+  attachmentTypeSelect.value = '';
+}
+        // Helper to translate attachment types into Arabic badges
+const attachmentLabels = {
+  receipt: '🧾 إيصال (Receipt)',
+  invoice: '📄 فاتورة (Invoice)',
+  signature: '✍️ توقيع (Signature)',
+  transfer: '🏦 تحويل (Transfer)',
+  other: '📎 مرفق (Attachment)'
+};
+
+function renderAttachmentBadge(record) {
+  if (!record.attachment || !record.attachment.dataUrl) {
+    return '<span style="color:#999; font-size: 0.85em;">لا يوجد مرفق</span>';
+  }
+  const label = attachmentLabels[record.attachment.type] || attachmentLabels.other;
+  return `
+    <button onclick="viewAttachment('${record.id}')" 
+            style="background:#eef6ff; color:#0066cc; border:1px solid #b3d7ff; padding:4px 8px; border-radius:12px; cursor:pointer; font-size:0.85em;">
+      ${label} 👁️
+    </button>
+  `;
+}
+
+// Function to pop up the full image when clicked
+function viewAttachment(recordId) {
+  const records = JSON.parse(localStorage.getItem('masroofatea_records') || '[]');
+  const record = records.find(r => String(r.id) === String(recordId));
+  if (!record || !record.attachment) return;
+
+  const modalHtml = `
+    <div id="attachmentModal" onclick="this.remove()" 
+         style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); display:flex; flex-direction:column; align-items:center; justify-content:center; z-index:9999; padding:20px;">
+      <div style="background:#fff; padding:15px; border-radius:10px; max-width:90%; max-height:85%; overflow:auto; text-align:center;" onclick="event.stopPropagation()">
+        <h4 style="margin-top:0;">${attachmentLabels[record.attachment.type]} - ${record.title}</h4>
+        <img src="${record.attachment.dataUrl}" style="max-width:100%; max-height:65vh; border-radius:6px;" />
+        <div style="margin-top:12px; display:flex; gap:10px; justify-content:center;">
+          <a href="${record.attachment.dataUrl}" download="masroofatea-${record.id}.jpg" 
+             style="background:#28a745; color:#fff; padding:6px 14px; border-radius:5px; text-decoration:none;">
+            ⬇️ تحميل (Download)
+          </a>
+          <button onclick="document.getElementById('attachmentModal').remove()" 
+                  style="background:#dc3545; color:#fff; border:none; padding:6px 14px; border-radius:5px; cursor:pointer;">
+            إغلاق (Close)
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+  document.body.insertAdjacentHTML('beforeend', modalHtml);
+}
         function checkLockState() {
             const isUnlocked = sessionStorage.getItem('masroofat_unlocked');
             const screen = document.getElementById('app-lock-screen');
