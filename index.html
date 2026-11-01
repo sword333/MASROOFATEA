@@ -265,6 +265,98 @@ tr.row-other:hover { background-color: #f8f9fc; }
     background-image: linear-gradient(163deg, #00642f 0%, #13034b 100%);
     color: rgb(0, 255, 200);
 }
+        /* --- أيقونة الدرع المتحرك من Uiverse --- */
+.loader {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.loader .container {
+  overflow: visible;
+}
+
+/* Shield background */
+.loader .shield-track {
+  fill: none;
+  stroke: #d0d0d0;
+  stroke-width: 2.5;
+}
+
+/* Animated shield border */
+.loader .shield {
+  fill: none;
+  stroke: #4f8cff;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+  stroke-dasharray: 30 70;
+  animation: shieldMove 2s linear infinite;
+}
+
+/* Lock */
+.loader .lock-body {
+  fill: #4f8cff;
+  animation: lockPulse 1.5s ease-in-out infinite;
+}
+
+.loader .lock {
+  fill: none;
+  stroke: #666;
+  stroke-width: 2.5;
+  stroke-linecap: round;
+}
+
+/* Keyhole */
+.loader .keyhole {
+  fill: #fff;
+  animation: keyPulse 1.5s ease-in-out infinite;
+}
+
+.loader .keyhole-line {
+  stroke: #fff;
+  stroke-width: 2;
+  stroke-linecap: round;
+}
+
+/* Scanning line */
+.loader .scan {
+  stroke: #4f8cff;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  opacity: 0;
+  animation: scan 1.8s ease-in-out infinite;
+}
+
+@keyframes shieldMove {
+  from { stroke-dashoffset: 100; }
+  to   { stroke-dashoffset: 0; }
+}
+
+@keyframes lockPulse {
+  0%, 100% {
+    opacity: 0.65;
+    transform: scale(1);
+    transform-origin: center;
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+    transform-origin: center;
+  }
+}
+
+@keyframes keyPulse {
+  0%, 100% { opacity: 0.5; }
+  50%      { opacity: 1; }
+}
+
+@keyframes scan {
+  0%   { opacity: 0; transform: translateY(-5px); }
+  20%  { opacity: 1; }
+  80%  { opacity: 1; }
+  100% { opacity: 0; transform: translateY(35px); }
+}
     </style>
 </head>
 <body>
@@ -276,7 +368,25 @@ tr.row-other:hover { background-color: #f8f9fc; }
         <div class="uiverse-lock-box2">
             <div class="uiverse-form">
                 <p id="heading">
-                    <i class="fas fa-shield-alt" style="font-size: 32px; display: block; margin-bottom: 8px; color: #00ff75;"></i>
+                    <!-- ضع هذا الكود مكان سطر الأيقونة القديم -->
+<div class="loader">
+    <svg class="container" width="75" height="75" viewBox="0 0 64 64">
+        <!-- مسار الدرع الخلفي والمتحرك -->
+        <path class="shield-track" d="M32 6 L52 14 V30 C52 44 43 53 32 58 C21 53 12 44 12 30 V14 Z" />
+        <path class="shield" pathLength="100" d="M32 6 L52 14 V30 C52 44 43 53 32 58 C21 53 12 44 12 30 V14 Z" />
+        
+        <!-- حلقة وجسم القفل الداخلي -->
+        <path class="lock" d="M26 28 V23 C26 19.5 28.5 17 32 17 C35.5 17 38 19.5 38 23 V28" />
+        <rect class="lock-body" x="22" y="28" width="20" height="16" rx="3" />
+        
+        <!-- فتحة المفتاح -->
+        <circle class="keyhole" cx="32" cy="34.5" r="2" />
+        <line class="keyhole-line" x1="32" y1="36" x2="32" y2="40" />
+        
+        <!-- خط المسح الضوئي المتحرك (Scanner) -->
+        <line class="scan" x1="16" y1="16" x2="48" y2="16" />
+    </svg>
+</div>
                     النظام محمي
                 </p>
                 <p style="margin: 0 0 10px; font-size: 12px; color: #94a3b8; text-align: center;">أدخل رمز المرور (الافتراضي: 1234)</p>
