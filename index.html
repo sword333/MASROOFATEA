@@ -1473,9 +1473,9 @@ function getExpenseCategoryStyle(category) {
                 const remainingShare = getShareholderRemainingShare(sess, s.name);
                 totalSubs += Number(s.paid) || 0;
                 const carriedShare = Number(s.carriedShare) || 0;
-const carriedBadge = carriedShare > 0
-    ? `<div style="margin-top:4px;"><span class="badge info"><i class="fas fa-level-up-alt"></i> متبقي من الدورة السابقة: ${formatCurrency(carriedShare)}</span></div>`
-    : '';
+                const carriedBadge = carriedShare > 0
+                    ? `<div style="margin-top:4px;"><span class="badge info"><i class="fas fa-level-up-alt"></i> متبقي من الدورة السابقة: ${formatCurrency(carriedShare)}</span></div>`
+                    : '';
 
                 let shareColor = 'var(--success)';
                 let shareBadge = '';
@@ -1512,41 +1512,36 @@ const carriedBadge = carriedShare > 0
             if (toDate) filteredExpenses = filteredExpenses.filter(e => e.date <= toDate);
 
             document.getElementById('expenses-body').innerHTML = filteredExpenses.map(e => {
-    totalExp += Number(e.amount) || 0;
+                totalExp += Number(e.amount) || 0;
 
-    // عرض الأصناف المتعددة إن وجدت
-    const itemsHtml = (Array.isArray(e.items) && e.items.length > 1)
-        ? `<div style="font-size:11.5px; color:#666; margin-top:4px;">` +
-          e.items.map(it => `<span class="badge" style="background:#eef2f7; color:#333; margin:2px;">${it.category}: ${it.name} (${formatCurrency(it.price)})</span>`).join(' ') +
-          `</div>`
-        : '';
+                const itemsHtml = (Array.isArray(e.items) && e.items.length > 1)
+                    ? `<div style="font-size:11.5px; color:#666; margin-top:4px;">` +
+                      e.items.map(it => `<span class="badge" style="background:#eef2f7; color:#333; margin:2px;">${it.category}: ${it.name} (${formatCurrency(it.price)})</span>`).join(' ') +
+                      `</div>`
+                    : '';
 
-    // زر عرض المرفقات إن وجدت
-    const attCount = Array.isArray(e.attachments) ? e.attachments.length : 0;
-    const attBtn = attCount > 0
-        ? `<button class="btn btn-sm btn-purple" onclick="viewExpenseAttachments(${e._origIndex})" title="عرض المرفقات"><i class="fas fa-paperclip"></i> (${attCount})</button>`
-        : '';
+                const attCount = Array.isArray(e.attachments) ? e.attachments.length : 0;
+                const attBtn = attCount > 0
+                    ? `<button class="btn btn-sm btn-purple" onclick="viewExpenseAttachments(${e._origIndex})" title="عرض المرفقات"><i class="fas fa-paperclip"></i> (${attCount})</button>`
+                    : '';
 
-    return `<tr>
-        <td>${e.date}</td>
-        <td><strong>${e.statement}</strong>${itemsHtml}</td>
-        <td><span class="badge info">${e.category}</span></td>
-        <td><strong>${formatCurrency(e.amount)}</strong></td>
-        <td>${e.payer}</td>
-        <td>${e.method}</td>
-        <td>
-            ${attBtn}
-            <button class="btn btn-sm" style="background:var(--warning)" onclick="editExpense(${e._origIndex})" title="تعديل"><i class="fas fa-edit"></i></button>
-            <button class="btn btn-sm btn-info" onclick="openTransferModal('expenses', ${e._origIndex})" title="نقل لدورة أخرى"><i class="fas fa-exchange-alt"></i></button>
-            <button class="btn btn-danger btn-sm" onclick="deleteRecord('expenses', ${e._origIndex})" title="حذف"><i class="fas fa-trash"></i></button>
-        </td>
-    </tr>`;
-}).join('');
-         
+                return `<tr>
+                    <td>${e.date}</td>
+                    <td><strong>${e.statement}</strong>${itemsHtml}</td>
+                    <td><span class="badge info">${e.category}</span></td>
+                    <td><strong>${formatCurrency(e.amount)}</strong></td>
+                    <td>${e.payer}</td>
+                    <td>${e.method}</td>
+                    <td>${attBtn || renderAttachmentAction(e, 'expenses', e._origIndex)}</td>
+                    <td>
+                        <button class="btn btn-sm" style="background:var(--warning)" onclick="editExpense(${e._origIndex})" title="تعديل"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-sm btn-info" onclick="openTransferModal('expenses', ${e._origIndex})" title="نقل لدورة أخرى"><i class="fas fa-exchange-alt"></i></button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteRecord('expenses', ${e._origIndex})" title="حذف"><i class="fas fa-trash"></i></button>
+                    </td>
+                </tr>`;
+            }).join('');
+
             // 3. جدول الديون
-           
-            document.getElementById('debts-body').innerHTML = sess.debts.map((d, index) => {
-                c// 3. جدول الديون
             const showPaidDebts = document.getElementById('show-paid-debts')?.checked || false;
             if (document.getElementById('debt-notify-email') && appData.notificationEmail) {
                 document.getElementById('debt-notify-email').value = appData.notificationEmail;
@@ -1557,7 +1552,6 @@ const carriedBadge = carriedShare > 0
                 const isPaidFull = remaining <= 0;
                 totalRemainingDebts += Math.max(0, remaining);
 
-                // إخفاء الدين المسدد بالكامل إلا إذا تم تحديد خيار "إظهار الديون المسددة"
                 if (isPaidFull && !showPaidDebts) return '';
 
                 const hasPaidAmount = (Number(d.paid) || 0) > 0;
@@ -1592,7 +1586,7 @@ const carriedBadge = carriedShare > 0
             document.getElementById('total-debts').innerText = formatCurrency(totalRemainingDebts);
 
             updateDropdowns();
-
+        }
         function updateDropdowns() {
             ensureDataStructure();
             const sess = getCurrentSession();
