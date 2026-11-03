@@ -1546,24 +1546,20 @@ const carriedBadge = carriedShare > 0
             // 3. جدول الديون
            
             document.getElementById('debts-body').innerHTML = sess.debts.map((d, index) => {
-                const showPaidDebts = document.getElementById('show-paid-debts')?.checked || false;
-if (document.getElementById('debt-notify-email') && appData.notificationEmail) {
-    document.getElementById('debt-notify-email').value = appData.notificationEmail;
-}
+                c// 3. جدول الديون
+            const showPaidDebts = document.getElementById('show-paid-debts')?.checked || false;
+            if (document.getElementById('debt-notify-email') && appData.notificationEmail) {
+                document.getElementById('debt-notify-email').value = appData.notificationEmail;
+            }
 
-document.getElementById('debts-body').innerHTML = sess.debts.map((d, index) => {
-    const remaining = (Number(d.total) || 0) - (Number(d.paid) || 0);
-    const isPaidFull = remaining <= 0;
-    totalRemainingDebts += Math.max(0, remaining);
-
-    // إخفاء الدين المسدد بالكامل إلا إذا تم تحديد خيار "إظهار الديون المسددة"
-    if (isPaidFull && !showPaidDebts) return '';
-
-    const hasPaidAmount = (Number(d.paid) || 0) > 0;
-    
+            document.getElementById('debts-body').innerHTML = sess.debts.map((d, index) => {
                 const remaining = (Number(d.total) || 0) - (Number(d.paid) || 0);
-                totalRemainingDebts += remaining;
                 const isPaidFull = remaining <= 0;
+                totalRemainingDebts += Math.max(0, remaining);
+
+                // إخفاء الدين المسدد بالكامل إلا إذا تم تحديد خيار "إظهار الديون المسددة"
+                if (isPaidFull && !showPaidDebts) return '';
+
                 const hasPaidAmount = (Number(d.paid) || 0) > 0;
 
                 return `<tr>
@@ -1596,7 +1592,6 @@ document.getElementById('debts-body').innerHTML = sess.debts.map((d, index) => {
             document.getElementById('total-debts').innerText = formatCurrency(totalRemainingDebts);
 
             updateDropdowns();
-        }
 
         function updateDropdowns() {
             ensureDataStructure();
@@ -1848,8 +1843,12 @@ window.viewExpenseAttachments = function(expIndex) {
 // تحديث openModal لتهيئة صف صنف افتراضي عند فتح نافذة المصروف
 const origOpenModal = window.openModal;
 window.openModal = function(id) {
-    origOpenModal(id);
+    const m = document.getElementById(id);
+    if (!m) return;
+    m.classList.add('active');
+
     if (id === 'modal-expense' && document.getElementById('ex-edit-index').value === "-1") {
+        document.getElementById('ex-date').value = new Date().toISOString().split('T')[0];
         tempAttachments = [];
         renderAttachmentsPreview();
         const container = document.getElementById('ex-items-container');
@@ -1857,6 +1856,58 @@ window.openModal = function(id) {
             container.innerHTML = '';
             addExpenseItemRow();
         }
+    }
+    if (id === 'modal-debt' && document.getElementById('db-edit-index').value === "-1") {
+        document.getElementById('db-date').value = new Date().toISOString().split('T')[0];
+    }
+};
+
+window.addDebt = function(e) {
+    e.preventDefault();
+    const sess = getCurrentSession();
+    const editIndex = parseInt(document.getElementById('db-edit-index').value);
+    const existingAtt = (editIndex > -1 && sess.debts[editIndex]) ? sess.debts[editIndex].attachment : null;
+    const attachmentData = getAttachmentData('db', existingAtt);
+    if (attachmentData === false) return;
+
+    const debtObj = {
+        id: (editIndex > -1 && sess.debts[editIndex]) ? sess.debts[editIndex].id : 'DBT-' + Date.now().toString().slice(-4),
+        creditor: document.getElementById('db-creditor').value.trim(),
+        date: document.getElementById('db-date').value,
+        deadline: document.getElementById('db-deadline').value,
+        total: parseFloat(document.getElementById('db-total').value) || 0,
+        sessionAmount: parseFloat(document.getElementById('db-session-amount').value) || 0,
+        paid: parseFloat(document.getElementById('db-paid').value) || 0,
+        paymentHistory: (editIndex > -1 && sess.debts[editIndex]) ? (sess.debts[editIndex].paymentHistory || []) : [],
+        attachment: attachmentData
+    };
+
+    if (editIndex > -1 && sess.debts[editIndex]) sess.debts[editIndex] = debtObj;
+    else sess.debts.push(debtObj);
+
+    closeModal('modal-debt');
+    renderUI();
+    pushToDrive();
+};
+
+window.editDebt = function(index) {
+    const d = getCurrentSession().debts[index];
+    if (!d) return;
+    document.getElementById('db-edit-index').value = index;
+    document.getElementById('db-creditor').value = d.creditor;
+    document.getElementById('db-date').value = d.date;
+    document.getElementById('db-deadline').value = d.deadline;
+    document.getElementById('db-total').value = d.total;
+    document.getElementById('db-session-amount').value = d.sessionAmount || 0;
+    document.getElementById('db-paid').value = d.paid;
+    openModal('modal-debt');
+};
+
+window.deleteRecord = function(collection, index) {
+    if (confirm('هل أنت متأكد من حذف هذا السجل نهائياً؟')) {
+        getCurrentSession()[collection].splice(index, 1);
+        renderUI();
+        pushToDrive();
     }
 };
 
@@ -2010,12 +2061,7 @@ window.sendDebtCycleEmail = async function() {
             if (ev && ev.currentTarget) ev.currentTarget.classList.add('active');
         };
 
-        window.handleCategoryChange = function() {
-            const val = document.getElementById('ex-category').value;
-            document.getElementById('food-group').style.display = (val === 'طعام ومقاضي') ? 'block' : 'none';
-            document.getElementById('service-group').style.display = (val === 'فواتير وخدمات') ? 'block' : 'none';
-            document.getElementById('statement-group').style.display = (val !== 'طعام ومقاضي' && val !== 'فواتير وخدمات') ? 'block' : 'none';
-        };
+        window.handleCategoryChange = function() {};
 
         window.toggleMultiPayer = function() {
             const isMulti = document.getElementById('ex-multi-payer').checked;
