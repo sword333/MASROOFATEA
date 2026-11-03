@@ -517,9 +517,28 @@ tr.row-other:hover { background-color: #f8f9fc; }
                 <i class="fas fa-info-circle"></i> <strong>ملاحظة:</strong> هذا السجل مخصص لتوثيق ومتابعة الديون فقط؛ تسجيل أو تسديد أي دفعة هنا لا يؤثر إطلاقاً على أسهم المساهمين ولا يضاف للمصروفات.
             </div>
             <div class="controls">
-                <h3 style="margin:0">سجل الديون والالتزامات</h3>
-                <button class="btn btn-purple" onclick="openModal('modal-debt')"><i class="fas fa-plus"></i> تسجيل دين جديد</button>
-            </div>
+    <h3 style="margin:0">سجل الديون والالتزامات</h3>
+    
+    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+        <!-- 1. خيار إظهار الديون المسددة -->
+        <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px; font-weight:bold; background:#f8f9fc; padding:6px 12px; border-radius:6px; border:1px solid var(--border);">
+            <input type="checkbox" id="show-paid-debts" onchange="renderUI()">
+            <span>إظهار الديون المسددة</span>
+        </label>
+
+        <!-- 2. حقل وزر إرسال إشعارات الديون عبر الإيميل -->
+        <div style="display:flex; gap:5px; align-items:center;">
+            <input type="email" id="debt-notify-email" placeholder="البريد الإلكتروني للإشعارات..." 
+                   style="padding:6px 10px; border:1px solid var(--border); border-radius:5px; font-size:13px; width:210px;"
+                   onchange="saveNotificationEmail(this.value)">
+            <button class="btn btn-info btn-sm" onclick="sendDebtCycleEmail()" title="إرسال تذكير بالديون المستحقة في هذه الدورة">
+                <i class="fas fa-envelope"></i> إرسال إشعار الدورة
+            </button>
+        </div>
+
+        <button class="btn btn-purple" onclick="openModal('modal-debt')"><i class="fas fa-plus"></i> تسجيل دين جديد</button>
+    </div>
+</div>
             <div class="table-responsive">
                 <table>
                     <thead>
@@ -610,28 +629,29 @@ tr.row-other:hover { background-color: #f8f9fc; }
 </select>
                 </div>
 
-                <div class="form-group" id="food-group">
-                    <label>ما هو الصنف / المقاضي؟</label>
-                    <input type="text" id="ex-food-item" placeholder="مثال: ذبيحة، فواكه...">
-                </div>
+               <!-- قسم الأصناف المتعددة داخل المصروف الواحد -->
+<div class="form-group" style="background: #f1f5ff; padding: 12px; border-radius: 8px; border: 1px solid #d0dfff;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+        <label style="margin: 0; color: var(--primary);"><i class="fas fa-list-ul"></i> أصناف المصروف (يمكنك إضافة أكثر من صنف ونوع):</label>
+        <button type="button" class="btn btn-sm" onclick="addExpenseItemRow()">
+            <i class="fas fa-plus"></i> إضافة صنف آخر
+        </button>
+    </div>
+    <div id="ex-items-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto;"></div>
+</div>
 
-                <div class="form-group" id="service-group" style="display: none;">
-                    <label>نوع الخدمة</label>
-                    <div style="display: flex; gap: 5px;">
-                        <select id="ex-service-type"></select>
-                        <button type="button" class="btn btn-sm" onclick="addNewServiceType()"><i class="fas fa-plus"></i></button>
-                    </div>
-                </div>
+<!-- المبلغ الإجمالي (يُحسب تلقائياً من مجموع الأصناف أو يُكتب يدوياً) -->
+<div class="form-group">
+    <label>المبلغ الإجمالي للمصروف</label>
+    <input type="number" id="ex-amount" step="0.01" required oninput="if(document.getElementById('ex-multi-payer').checked) splitExpenseEqually()">
+</div>
 
-                <div class="form-group" id="statement-group" style="display: none;">
-                    <label>بيان المصروف</label>
-                    <input type="text" id="ex-statement" placeholder="تفاصيل المصروف...">
-                </div>
-
-                <div class="form-group">
-                    <label>المبلغ الإجمالي للمصروف</label>
-                    <input type="number" id="ex-amount" step="0.01" required oninput="if(document.getElementById('ex-multi-payer').checked) splitExpenseEqually()">
-                </div>
+<!-- قسم المرفقات المتعددة (فواتير / إيصالات) -->
+<div class="form-group" style="background: #f8f9fc; padding: 10px 12px; border-radius: 8px; border: 1px dashed var(--primary);">
+    <label style="margin-bottom: 6px;"><i class="fas fa-paperclip"></i> إرفاق صور الفواتير / الإيصالات (متعدد):</label>
+    <input type="file" id="ex-attachments" multiple accept="image/*,.pdf" onchange="handleAttachmentsUpload(event)">
+    <div id="ex-attachments-preview" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;"></div>
+</div>
                 
                 <div class="form-group" style="background: #f8f9fc; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
@@ -1139,13 +1159,15 @@ tr.row-other:hover { background-color: #f8f9fc; }
         }
 
         function getShareholderRemainingShare(sess, shareholderName, excludeExpenseIndex = -1) {
-            if (!sess || !Array.isArray(sess.shareholders)) return 0;
-            const sh = sess.shareholders.find(s => s.name === shareholderName);
-            if (!sh) return 0;
-            const baseShare = (Number(sh.paid) > 0 ? Number(sh.paid) : Number(sh.quota)) || 0;
-            const spent = getShareholderSpent(sess, shareholderName, excludeExpenseIndex);
-            return Math.round((baseShare - spent) * 100) / 100;
-        }
+    if (!sess || !Array.isArray(sess.shareholders)) return 0;
+    const sh = sess.shareholders.find(s => s.name === shareholderName);
+    if (!sh) return 0;
+    // الحصة الأساسية للدورة الحالية + الرصيد المرحّل من الدورة السابقة (إن وجد)
+    const currentBase = (Number(sh.paid) > 0 ? Number(sh.paid) : Number(sh.quota)) || 0;
+    const carriedFromPrev = Number(sh.carriedShare) || 0;
+    const spent = getShareholderSpent(sess, shareholderName, excludeExpenseIndex);
+    return Math.round((currentBase + carriedFromPrev - spent) * 100) / 100;
+}
 
         // --- المزامنة والحفظ ---
         async function fetchFromDrive() {
@@ -1247,17 +1269,43 @@ tr.row-other:hover { background-color: #f8f9fc; }
                 });
             }
 
-            const newShareholders = [];
-            if (importContributors && appData.permanentContributors.length > 0) {
-                appData.permanentContributors.forEach((c, idx) => {
-                    newShareholders.push({
-                        id: 'SH-' + (idx + 1).toString().padStart(3, '0'),
-                        name: c.name,
-                        quota: c.quota,
-                        paid: 0
-                    });
-                });
-            }
+            // فحص ما إذا كان هناك مساهمون لديهم رصيد متبقٍ من حصصهم في الدورة السابقة
+const remainingSharesMap = {};
+const remainingListText = [];
+
+if (activeSess && Array.isArray(activeSess.shareholders)) {
+    activeSess.shareholders.forEach(s => {
+        const remShare = getShareholderRemainingShare(activeSess, s.name);
+        if (remShare > 0) {
+            remainingSharesMap[s.name] = remShare;
+            remainingListText.push(`• ${s.name}: ${formatCurrency(remShare)}`);
+        }
+    });
+}
+
+let shouldTransferShares = false;
+if (remainingListText.length > 0) {
+    shouldTransferShares = confirm(
+        `💰 يوجد مساهمون لديهم رصيد متبقٍ من حصصهم في الدورة السابقة (${activeSess.name}):\n\n` +
+        remainingListText.join('\n') +
+        `\n\nهل تريد ترحيل هذه الأرصدة المتبقية وإضافتها إلى حصصهم في الدورة الجديدة؟`
+    );
+}
+
+const newShareholders = [];
+if (importContributors && appData.permanentContributors.length > 0) {
+    appData.permanentContributors.forEach((c, idx) => {
+        const carriedAmount = (shouldTransferShares && remainingSharesMap[c.name]) ? remainingSharesMap[c.name] : 0;
+        newShareholders.push({
+            id: 'SH-' + (idx + 1).toString().padStart(3, '0'),
+            name: c.name,
+            quota: c.quota,
+            paid: 0,
+            carriedShare: carriedAmount, // الرصيد المرحّل من الدورة السابقة
+            carriedFromSession: carriedAmount > 0 ? activeSess.name : ''
+        });
+    });
+}
 
             const newSessionObj = {
                 id: 'sess_' + Date.now(),
@@ -1424,6 +1472,10 @@ function getExpenseCategoryStyle(category) {
                 const spentFromShare = getShareholderSpent(sess, s.name);
                 const remainingShare = getShareholderRemainingShare(sess, s.name);
                 totalSubs += Number(s.paid) || 0;
+                const carriedShare = Number(s.carriedShare) || 0;
+const carriedBadge = carriedShare > 0
+    ? `<div style="margin-top:4px;"><span class="badge info"><i class="fas fa-level-up-alt"></i> متبقي من الدورة السابقة: ${formatCurrency(carriedShare)}</span></div>`
+    : '';
 
                 let shareColor = 'var(--success)';
                 let shareBadge = '';
@@ -1438,7 +1490,7 @@ function getExpenseCategoryStyle(category) {
                 return `<tr>
                     <td>${s.id || '-'}</td>
                     <td><strong>${s.name}</strong></td>
-                    <td>${formatCurrency(s.quota)}</td>
+                    <td>${formatCurrency(s.quota)} ${carriedBadge}</td>
                     <td>${formatCurrency(s.paid)}</td>
                     <td dir="ltr">${formatCurrency(remaining)}</td>
                     <td dir="ltr" style="font-weight:bold; color:${shareColor};">
@@ -1461,29 +1513,54 @@ function getExpenseCategoryStyle(category) {
 
             document.getElementById('expenses-body').innerHTML = filteredExpenses.map(e => {
     totalExp += Number(e.amount) || 0;
-    const catStyle = getExpenseCategoryStyle(e.category); // <-- جلب ستايل وأيقونة التصنيف
 
-    return `<tr class="${catStyle.rowClass}">
+    // عرض الأصناف المتعددة إن وجدت
+    const itemsHtml = (Array.isArray(e.items) && e.items.length > 1)
+        ? `<div style="font-size:11.5px; color:#666; margin-top:4px;">` +
+          e.items.map(it => `<span class="badge" style="background:#eef2f7; color:#333; margin:2px;">${it.category}: ${it.name} (${formatCurrency(it.price)})</span>`).join(' ') +
+          `</div>`
+        : '';
+
+    // زر عرض المرفقات إن وجدت
+    const attCount = Array.isArray(e.attachments) ? e.attachments.length : 0;
+    const attBtn = attCount > 0
+        ? `<button class="btn btn-sm btn-purple" onclick="viewExpenseAttachments(${e._origIndex})" title="عرض المرفقات"><i class="fas fa-paperclip"></i> (${attCount})</button>`
+        : '';
+
+    return `<tr>
         <td>${e.date}</td>
-        <td><strong>${e.statement}</strong></td>
-        <td>
-            <span class="cat-badge ${catStyle.badgeClass}">
-                <i class="fas ${catStyle.icon}"></i> ${e.category}
-            </span>
-        </td>
+        <td><strong>${e.statement}</strong>${itemsHtml}</td>
+        <td><span class="badge info">${e.category}</span></td>
         <td><strong>${formatCurrency(e.amount)}</strong></td>
         <td>${e.payer}</td>
         <td>${e.method}</td>
-        <td>${renderAttachmentAction(e, 'expenses', e._origIndex)}</td>
         <td>
+            ${attBtn}
             <button class="btn btn-sm" style="background:var(--warning)" onclick="editExpense(${e._origIndex})" title="تعديل"><i class="fas fa-edit"></i></button>
             <button class="btn btn-sm btn-info" onclick="openTransferModal('expenses', ${e._origIndex})" title="نقل لدورة أخرى"><i class="fas fa-exchange-alt"></i></button>
             <button class="btn btn-danger btn-sm" onclick="deleteRecord('expenses', ${e._origIndex})" title="حذف"><i class="fas fa-trash"></i></button>
         </td>
     </tr>`;
 }).join('');
+         
             // 3. جدول الديون
+           
             document.getElementById('debts-body').innerHTML = sess.debts.map((d, index) => {
+                const showPaidDebts = document.getElementById('show-paid-debts')?.checked || false;
+if (document.getElementById('debt-notify-email') && appData.notificationEmail) {
+    document.getElementById('debt-notify-email').value = appData.notificationEmail;
+}
+
+document.getElementById('debts-body').innerHTML = sess.debts.map((d, index) => {
+    const remaining = (Number(d.total) || 0) - (Number(d.paid) || 0);
+    const isPaidFull = remaining <= 0;
+    totalRemainingDebts += Math.max(0, remaining);
+
+    // إخفاء الدين المسدد بالكامل إلا إذا تم تحديد خيار "إظهار الديون المسددة"
+    if (isPaidFull && !showPaidDebts) return '';
+
+    const hasPaidAmount = (Number(d.paid) || 0) > 0;
+    
                 const remaining = (Number(d.total) || 0) - (Number(d.paid) || 0);
                 totalRemainingDebts += remaining;
                 const isPaidFull = remaining <= 0;
@@ -1673,174 +1750,246 @@ function getExpenseCategoryStyle(category) {
             return true;
         };
 
-        window.addExpense = function(e) {
-            e.preventDefault();
-            const sess = getCurrentSession();
-            const editIndex = parseInt(document.getElementById('ex-edit-index').value);
-            const category = document.getElementById('ex-category').value;
-            const totalAmount = parseFloat(document.getElementById('ex-amount').value) || 0;
+        // --- 1. إدارة الأصناف المتعددة والمرفقات داخل المصروف ---
+let tempAttachments = [];
 
-            let statement = '';
-            if (category === 'طعام ومقاضي') statement = 'طعام: ' + (document.getElementById('ex-food-item').value.trim() || 'عام');
-            else if (category === 'فواتير وخدمات') statement = 'خدمة: ' + (document.getElementById('ex-service-type').value || 'عام');
-            else statement = document.getElementById('ex-statement').value.trim() || category;
+window.addExpenseItemRow = function(cat = 'طعام ومقاضي', name = '', price = '') {
+    const container = document.getElementById('ex-items-container');
+    if (!container) return;
+    const row = document.createElement('div');
+    row.className = 'ex-item-row';
+    row.style.cssText = 'display:flex; gap:6px; align-items:center; background:#fff; padding:6px; border-radius:6px; border:1px solid var(--border);';
+    row.innerHTML = `
+        <select class="item-cat" style="width:32%; padding:5px; font-size:12.5px;">
+            <option value="طعام ومقاضي" ${cat==='طعام ومقاضي'?'selected':''}>طعام ومقاضي</option>
+            <option value="فواتير وخدمات" ${cat==='فواتير وخدمات'?'selected':''}>فواتير وخدمات</option>
+            <option value="صيانة" ${cat==='صيانة'?'selected':''}>صيانة</option>
+            <option value="مستلزمات" ${cat==='مستلزمات'?'selected':''}>مستلزمات</option>
+            <option value="أخرى" ${cat==='أخرى'?'selected':''}>أخرى</option>
+        </select>
+        <input type="text" class="item-name" placeholder="اسم الصنف / البيان..." value="${name}" required style="flex:1; padding:5px; font-size:13px;">
+        <input type="number" class="item-price" placeholder="السعر" step="0.01" value="${price}" required oninput="recalcItemsTotal()" style="width:95px; padding:5px; font-size:13px; text-align:center;">
+        <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove(); recalcItemsTotal();"><i class="fas fa-times"></i></button>
+    `;
+    container.appendChild(row);
+};
 
-            const isMulti = document.getElementById('ex-multi-payer').checked;
-            let payerDisplay = '';
-            let payersSplit = [];
+window.recalcItemsTotal = function() {
+    let sum = 0;
+    document.querySelectorAll('.ex-item-row .item-price').forEach(inp => {
+        sum += parseFloat(inp.value) || 0;
+    });
+    document.getElementById('ex-amount').value = sum > 0 ? sum.toFixed(2) : '';
+    if (document.getElementById('ex-multi-payer').checked) splitExpenseEqually();
+};
 
-            if (isMulti) {
-                let sumSplits = 0;
-                let minusPayers = [];
-
-                document.querySelectorAll('.mp-row').forEach(row => {
-                    const chk = row.querySelector('.mp-check');
-                    const name = chk.getAttribute('data-name');
-                    const amt = parseFloat(row.querySelector('.mp-amount').value) || 0;
-                    if (chk.checked && amt > 0) {
-                        payersSplit.push({ name, amount: amt });
-                        sumSplits += amt;
-                        const rem = getShareholderRemainingShare(sess, name, editIndex);
-                        if (amt > rem) minusPayers.push(`${name} (المتبقي: ${formatCurrency(rem)}، المطلوب: ${formatCurrency(amt)})`);
-                    }
-                });
-
-                if (payersSplit.length === 0) return alert('حدد المساهمين المشاركين بالدفع.');
-                if (Math.abs(sumSplits - totalAmount) > 0.05) {
-                    return alert(`مجموع التوزيع (${formatCurrency(sumSplits)}) لا يطابق مبلغ المصروف (${formatCurrency(totalAmount)})!`);
-                }
-                if (minusPayers.length > 0) {
-                    const ok = confirm(`⚠️ تنبيه: المساهمون التالية أسماؤهم ستنزل حصتهم بالسالب:\n- ${minusPayers.join('\n- ')}\n\nهل تريد الاستمرار بالخصم بالسالب؟`);
-                    if (!ok) return;
-                }
-                payerDisplay = payersSplit.map(p => `${p.name} (${p.amount})`).join(' ، ');
+// رفع وضغط المرفقات المتعددة
+window.handleAttachmentsUpload = function(e) {
+    const files = Array.from(e.target.files);
+    files.forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+            if (file.type.startsWith('image/')) {
+                // ضغط الصورة لتوفير المساحة في السحابة
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const maxW = 800;
+                    const scale = img.width > maxW ? maxW / img.width : 1;
+                    canvas.width = img.width * scale;
+                    canvas.height = img.height * scale;
+                    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                    tempAttachments.push({ name: file.name, data: canvas.toDataURL('image/jpeg', 0.7) });
+                    renderAttachmentsPreview();
+                };
+                img.src = evt.target.result;
             } else {
-                payerDisplay = document.getElementById('ex-payer').value || 'عام';
-                if (!checkSinglePayerShare()) return;
-            }
-
-            const existingAtt = (editIndex > -1 && sess.expenses[editIndex]) ? sess.expenses[editIndex].attachment : null;
-            const attachmentData = getAttachmentData('ex', existingAtt);
-            if (attachmentData === false) return;
-
-            const expenseObj = {
-                id: (editIndex > -1 && sess.expenses[editIndex]) ? sess.expenses[editIndex].id : 'EXP-' + Date.now().toString().slice(-4),
-                date: document.getElementById('ex-date').value,
-                statement: statement,
-                category: category,
-                amount: totalAmount,
-                payer: payerDisplay,
-                isMultiPayer: isMulti,
-                payersSplit: payersSplit,
-                method: document.getElementById('ex-method').value,
-                attachment: attachmentData
-            };
-
-            if (editIndex > -1 && sess.expenses[editIndex]) sess.expenses[editIndex] = expenseObj;
-            else sess.expenses.push(expenseObj);
-
-            closeModal('modal-expense');
-            renderUI();
-            pushToDrive();
-        };
-
-        window.editExpense = function(index) {
-            const e = getCurrentSession().expenses[index];
-            if (!e) return;
-            document.getElementById('ex-edit-index').value = index;
-            document.getElementById('ex-date').value = e.date;
-            document.getElementById('ex-category').value = e.category;
-            handleCategoryChange();
-            document.getElementById('ex-statement').value = e.statement;
-            document.getElementById('ex-amount').value = e.amount;
-            document.getElementById('ex-method').value = e.method;
-
-            if (e.attachment) {
-                document.getElementById('ex-attachmentType').value = e.attachment.type || '';
-                handleAttachmentTypeChange('ex');
-                if (e.attachment.type === 'link') {
-                    document.getElementById('ex-attachmentUrl').value = e.attachment.data || '';
-                } else if (e.attachment.data && e.attachment.type !== 'live_signature') {
-                    document.getElementById('ex-attachmentPreview').src = e.attachment.data;
-                    document.getElementById('ex-attachmentPreviewContainer').style.display = 'block';
-                }
-            }
-
-            openModal('modal-expense');
-        };
-
-        window.addDebt = function(e) {
-            e.preventDefault();
-            const sess = getCurrentSession();
-            const editIndex = parseInt(document.getElementById('db-edit-index').value);
-
-            const existingAtt = (editIndex > -1 && sess.debts[editIndex]) ? sess.debts[editIndex].attachment : null;
-            const attachmentData = getAttachmentData('db', existingAtt);
-            if (attachmentData === false) return;
-
-            const debtObj = {
-                id: (editIndex > -1 && sess.debts[editIndex]) ? sess.debts[editIndex].id : 'DBT-' + Date.now().toString().slice(-4),
-                creditor: document.getElementById('db-creditor').value.trim(),
-                date: document.getElementById('db-date').value,
-                deadline: document.getElementById('db-deadline').value,
-                total: parseFloat(document.getElementById('db-total').value) || 0,
-                sessionAmount: parseFloat(document.getElementById('db-session-amount').value) || 0,
-                paid: parseFloat(document.getElementById('db-paid').value) || 0,
-                paymentHistory: (editIndex > -1 && sess.debts[editIndex]) ? (sess.debts[editIndex].paymentHistory || []) : [],
-                attachment: attachmentData
-            };
-
-            if (editIndex > -1 && sess.debts[editIndex]) sess.debts[editIndex] = debtObj;
-            else sess.debts.push(debtObj);
-
-            closeModal('modal-debt');
-            renderUI();
-            pushToDrive();
-        };
-
-        window.editDebt = function(index) {
-            const d = getCurrentSession().debts[index];
-            if (!d) return;
-            document.getElementById('db-edit-index').value = index;
-            document.getElementById('db-creditor').value = d.creditor;
-            document.getElementById('db-date').value = d.date;
-            document.getElementById('db-deadline').value = d.deadline;
-            document.getElementById('db-total').value = d.total;
-            document.getElementById('db-session-amount').value = d.sessionAmount || 0;
-            document.getElementById('db-paid').value = d.paid;
-
-            if (d.attachment) {
-                document.getElementById('db-attachmentType').value = d.attachment.type || '';
-                handleAttachmentTypeChange('db');
-                if (d.attachment.type === 'link') {
-                    document.getElementById('db-attachmentUrl').value = d.attachment.data || '';
-                } else if (d.attachment.data && d.attachment.type !== 'live_signature') {
-                    document.getElementById('db-attachmentPreview').src = d.attachment.data;
-                    document.getElementById('db-attachmentPreviewContainer').style.display = 'block';
-                }
-            }
-
-            openModal('modal-debt');
-        };
-
-        window.deleteRecord = function(collection, index) {
-            if (confirm('هل أنت متأكد من حذف هذا السجل نهائياً؟')) {
-                getCurrentSession()[collection].splice(index, 1);
-                renderUI();
-                pushToDrive();
+                tempAttachments.push({ name: file.name, data: evt.target.result });
+                renderAttachmentsPreview();
             }
         };
+        reader.readAsDataURL(file);
+    });
+    e.target.value = '';
+};
 
-        window.openModal = function(id) {
-            document.getElementById(id).classList.add('active');
-            if (id === 'modal-expense' && document.getElementById('ex-edit-index').value === "-1") {
-                document.getElementById('ex-date').value = new Date().toISOString().split('T')[0];
-            }
-            if (id === 'modal-debt' && document.getElementById('db-edit-index').value === "-1") {
-                document.getElementById('db-date').value = new Date().toISOString().split('T')[0];
-            }
-        };
+function renderAttachmentsPreview() {
+    const box = document.getElementById('ex-attachments-preview');
+    if (!box) return;
+    box.innerHTML = tempAttachments.map((att, idx) => `
+        <div style="position:relative; border:1px solid var(--border); padding:4px 8px; border-radius:6px; background:#fff; font-size:12px; display:flex; align-items:center; gap:6px;">
+            <i class="fas fa-file-image" style="color:var(--primary)"></i>
+            <span style="max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${att.name}</span>
+            <span style="cursor:pointer; color:var(--danger); font-weight:bold;" onclick="tempAttachments.splice(${idx},1); renderAttachmentsPreview();">&times;</span>
+        </div>
+    `).join('');
+}
 
+window.viewExpenseAttachments = function(expIndex) {
+    const exp = getCurrentSession().expenses[expIndex];
+    if (!exp || !Array.isArray(exp.attachments) || exp.attachments.length === 0) return;
+    const win = window.open('', '_blank');
+    win.document.write(`
+        <html dir="rtl"><head><title>مرفقات: ${exp.statement}</title></head>
+        <body style="font-family:sans-serif; text-align:center; background:#f4f6f9; padding:20px;">
+            <h3>مرفقات المصروف: ${exp.statement} (${formatCurrency(exp.amount)})</h3>
+            ${exp.attachments.map(a => `
+                <div style="background:#fff; padding:15px; margin:15px auto; max-width:650px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+                    <p><strong>${a.name}</strong></p>
+                    ${a.data.startsWith('data:image') 
+                        ? `<img src="${a.data}" style="max-width:100%; border-radius:6px;">` 
+                        : `<a href="${a.data}" download="${a.name}">تحميل الملف (${a.name})</a>`}
+                </div>
+            `).join('')}
+        </body></html>
+    `);
+};
+
+// تحديث openModal لتهيئة صف صنف افتراضي عند فتح نافذة المصروف
+const origOpenModal = window.openModal;
+window.openModal = function(id) {
+    origOpenModal(id);
+    if (id === 'modal-expense' && document.getElementById('ex-edit-index').value === "-1") {
+        tempAttachments = [];
+        renderAttachmentsPreview();
+        const container = document.getElementById('ex-items-container');
+        if (container) {
+            container.innerHTML = '';
+            addExpenseItemRow();
+        }
+    }
+};
+
+// حفظ المصروف مع الأصناف المتعددة والمرفقات
+window.addExpense = function(e) {
+    e.preventDefault();
+    const sess = getCurrentSession();
+    const editIndex = parseInt(document.getElementById('ex-edit-index').value);
+    const totalAmount = parseFloat(document.getElementById('ex-amount').value) || 0;
+
+    // جمع الأصناف المتعددة
+    const items = [];
+    document.querySelectorAll('.ex-item-row').forEach(row => {
+        const cat = row.querySelector('.item-cat').value;
+        const name = row.querySelector('.item-name').value.trim();
+        const price = parseFloat(row.querySelector('.item-price').value) || 0;
+        if (name || price > 0) items.push({ category: cat, name: name || cat, price });
+    });
+
+    if (items.length === 0) return alert('الرجاء إضافة صنف واحد على الأقل.');
+
+    const uniqueCats = [...new Set(items.map(i => i.category))];
+    const mainCategory = uniqueCats.length === 1 ? uniqueCats[0] : 'متعدد (' + uniqueCats.length + ' أنواع)';
+    const statement = items.map(i => i.name).join(' + ');
+
+    const isMulti = document.getElementById('ex-multi-payer').checked;
+    let payerDisplay = '';
+    let payersSplit = [];
+
+    if (isMulti) {
+        let sumSplits = 0;
+        let minusPayers = [];
+        document.querySelectorAll('.mp-row').forEach(row => {
+            const chk = row.querySelector('.mp-check');
+            const name = chk.getAttribute('data-name');
+            const amt = parseFloat(row.querySelector('.mp-amount').value) || 0;
+            if (chk.checked && amt > 0) {
+                payersSplit.push({ name, amount: amt });
+                sumSplits += amt;
+                const rem = getShareholderRemainingShare(sess, name, editIndex);
+                if (amt > rem) minusPayers.push(`${name} (المتبقي: ${formatCurrency(rem)}، المطلوب: ${formatCurrency(amt)})`);
+            }
+        });
+        if (payersSplit.length === 0) return alert('حدد المساهمين المشاركين بالدفع.');
+        if (Math.abs(sumSplits - totalAmount) > 0.05) return alert('مجموع التوزيع لا يطابق إجمالي المصروف!');
+        if (minusPayers.length > 0 && !confirm(`⚠️ المساهمون التالية أسماؤهم ستنزل حصتهم بالسالب:\n- ${minusPayers.join('\n- ')}\nهل تريد الاستمرار؟`)) return;
+        payerDisplay = payersSplit.map(p => `${p.name} (${p.amount})`).join(' ، ');
+    } else {
+        payerDisplay = document.getElementById('ex-payer').value || 'عام';
+        if (typeof checkSinglePayerShare === 'function' && !checkSinglePayerShare()) return;
+    }
+
+    const expenseObj = {
+        id: (editIndex > -1 && sess.expenses[editIndex]) ? sess.expenses[editIndex].id : 'EXP-' + Date.now().toString().slice(-4),
+        date: document.getElementById('ex-date').value,
+        statement: statement,
+        category: mainCategory,
+        items: items,
+        attachments: [...tempAttachments],
+        amount: totalAmount,
+        payer: payerDisplay,
+        isMultiPayer: isMulti,
+        payersSplit: payersSplit,
+        method: document.getElementById('ex-method').value
+    };
+
+    if (editIndex > -1 && sess.expenses[editIndex]) sess.expenses[editIndex] = expenseObj;
+    else sess.expenses.push(expenseObj);
+
+    closeModal('modal-expense');
+    renderUI();
+    pushToDrive();
+};
+
+window.editExpense = function(index) {
+    const e = getCurrentSession().expenses[index];
+    if (!e) return;
+    document.getElementById('ex-edit-index').value = index;
+    document.getElementById('ex-date').value = e.date;
+    document.getElementById('ex-amount').value = e.amount;
+    document.getElementById('ex-method').value = e.method;
+
+    const container = document.getElementById('ex-items-container');
+    container.innerHTML = '';
+    if (Array.isArray(e.items) && e.items.length > 0) {
+        e.items.forEach(it => addExpenseItemRow(it.category, it.name, it.price));
+    } else {
+        addExpenseItemRow(e.category, e.statement, e.amount);
+    }
+
+    tempAttachments = Array.isArray(e.attachments) ? [...e.attachments] : [];
+    renderAttachmentsPreview();
+    openModal('modal-expense');
+};
+
+// --- 2. نظام إشعارات البريد الإلكتروني للديون في كل دورة ---
+window.saveNotificationEmail = function(val) {
+    appData.notificationEmail = val.trim();
+    pushToDrive();
+};
+
+window.sendDebtCycleEmail = async function() {
+    const sess = getCurrentSession();
+    const email = (document.getElementById('debt-notify-email')?.value || appData.notificationEmail || '').trim();
+    if (!email) return alert('الرجاء إدخال البريد الإلكتروني أولاً في حقل الإشعارات.');
+
+    const unpaidDebts = sess.debts.filter(d => ((Number(d.total) || 0) - (Number(d.paid) || 0)) > 0);
+    if (unpaidDebts.length === 0) return alert('لا توجد ديون غير مسددة في هذه الدورة لإرسال إشعار بها!');
+
+    const subject = `إشعار ديون والتزامات: ${sess.name} - تطبيق مصروفاتي`;
+    const bodyLines = [
+        `مرحباً،`,
+        `إليك ملخص الديون والالتزامات المستحقة في (${sess.name}):`,
+        `----------------------------------------`,
+        ...unpaidDebts.map((d, i) => {
+            const rem = (Number(d.total) || 0) - (Number(d.paid) || 0);
+            return `${i+1}. الدائن: ${d.creditor} | قسط الدورة: ${formatCurrency(d.sessionAmount || rem)} | المتبقي الكلي: ${formatCurrency(rem)} | الاستحقاق: ${d.deadline || 'غير محدد'}`;
+        }),
+        `----------------------------------------`,
+        `تم الإرسال من نظام مصروفاتي.`
+    ].join('\n');
+
+    // محاولة الإرسال التلقائي عبر Google Apps Script إن كان مفعلاً، أو فتح البريد الجاهز
+    try {
+        await fetch(GOOGLE_SCRIPT_URL, {
+            method: 'POST',
+            headers: { "Content-Type": "text/plain;charset=utf-8" },
+            body: JSON.stringify({ ...appData, emailAction: { to: email, subject, body: bodyLines } })
+        });
+    } catch (err) {}
+
+    window.location.href = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines)}`;
+};
         window.closeModal = function(id) {
             const m = document.getElementById(id);
             if (!m) return;
