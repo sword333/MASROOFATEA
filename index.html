@@ -115,6 +115,16 @@
         .mp-row label { margin: 0; display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 600; flex: 1; }
         .mp-row input[type="number"] { width: 120px; padding: 5px 8px; text-align: center; border: 1px solid var(--primary); border-radius: 5px; font-weight: bold; }
 
+        .ex-att-row {
+            background: #fff;
+            border: 1px solid #d1d3e2;
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+        .ex-att-row:last-child { margin-bottom: 0; }
+
         .app-footer { text-align: center; margin-top: 40px; padding: 15px; color: #858796; font-size: 13px; border-top: 1px solid var(--border); }
         .app-footer span { color: var(--primary); font-weight: bold; }
 
@@ -150,270 +160,219 @@
             position: relative;
             z-index: 2;
         }
-        /* تنسيقات مخصصة لكل نوع من المصروفات */
-.cat-badge {
-    padding: 5px 10px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: bold;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-}
 
-/* 1. طعام ومقاضي (أخضر زمردي) */
-.cat-food { background: #e6f9f0; color: #13855c; border: 1px solid #b8ebd6; }
-tr.row-food { border-right: 4px solid #1cc88a; }
-tr.row-food:hover { background-color: #f4fcf8; }
+        .cat-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .cat-food { background: #e6f9f0; color: #13855c; border: 1px solid #b8ebd6; }
+        tr.row-food { border-right: 4px solid #1cc88a; }
+        tr.row-food:hover { background-color: #f4fcf8; }
 
-/* 2. فواتير وخدمات (أزرق سماوي) */
-.cat-bills { background: #e8f7fa; color: #1c7c8c; border: 1px solid #b6e6f0; }
-tr.row-bills { border-right: 4px solid #36b9cc; }
-tr.row-bills:hover { background-color: #f2fbfd; }
+        .cat-bills { background: #e8f7fa; color: #1c7c8c; border: 1px solid #b6e6f0; }
+        tr.row-bills { border-right: 4px solid #36b9cc; }
+        tr.row-bills:hover { background-color: #f2fbfd; }
 
-/* 3. صيانة (برتقالي / كهرماني) */
-.cat-maint { background: #fff4e5; color: #b75c00; border: 1px solid #ffd8a8; }
-tr.row-maint { border-right: 4px solid #fd7e14; }
-tr.row-maint:hover { background-color: #fffaf2; }
+        .cat-maint { background: #fff4e5; color: #b75c00; border: 1px solid #ffd8a8; }
+        tr.row-maint { border-right: 4px solid #fd7e14; }
+        tr.row-maint:hover { background-color: #fffaf2; }
 
-/* 4. مستلزمات (بنفسجي) */
-.cat-supplies { background: #f3ebff; color: #5a32a3; border: 1px solid #d8c2ff; }
-tr.row-supplies { border-right: 4px solid #6f42c1; }
-tr.row-supplies:hover { background-color: #f9f5ff; }
+        .cat-supplies { background: #f3ebff; color: #5a32a3; border: 1px solid #d8c2ff; }
+        tr.row-supplies { border-right: 4px solid #6f42c1; }
+        tr.row-supplies:hover { background-color: #f9f5ff; }
 
-/* 5. أخرى (رمادي داكن) */
-.cat-other { background: #eaecf4; color: #4a4b53; border: 1px solid #d1d3e2; }
-tr.row-other { border-right: 4px solid #858796; }
-tr.row-other:hover { background-color: #f8f9fc; }
-        /* --- تصميم صندوق القفل من Uiverse --- */
-.uiverse-lock-box {
-    background-image: linear-gradient(163deg, #00ff75 0%, #3700ff 100%);
-    border-radius: 22px;
-    transition: all .3s;
-    width: 100%;
-    max-width: 360px;
-}
-.uiverse-lock-box:hover {
-    box-shadow: 0px 0px 30px 1px rgba(0, 255, 117, 0.30);
-}
-.uiverse-lock-box2 {
-    border-radius: 0;
-    transition: all .2s;
-}
-.uiverse-lock-box2:hover {
-    transform: scale(0.98);
-    border-radius: 20px;
-}
-.uiverse-form {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 2em;
-    background-color: #171717;
-    border-radius: 20px;
-}
-#heading {
-    text-align: center;
-    margin: 0.5em 0 0.2em;
-    color: rgb(255, 255, 255);
-    font-size: 1.3em;
-    font-weight: bold;
-}
-.uiverse-field {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5em;
-    border-radius: 25px;
-    padding: 0.6em 1em;
-    border: none;
-    outline: none;
-    color: white;
-    background-color: #171717;
-    box-shadow: inset 2px 5px 10px rgb(5, 5, 5);
-}
-.uiverse-input {
-    background: none;
-    border: none;
-    outline: none;
-    width: 100%;
-    color: #00ff75;
-    font-size: 22px;
-    text-align: center;
-    letter-spacing: 8px;
-    font-weight: bold;
-}
-.uiverse-btn-group {
-    display: flex;
-    justify-content: center;
-    margin-top: 1em;
-}
-.uiverse-button1 {
-    padding: 0.8em 1.5em;
-    border-radius: 10px;
-    border: none;
-    outline: none;
-    transition: .4s ease-in-out;
-    background-image: linear-gradient(163deg, #00ff75 0%, #3700ff 100%);
-    color: #000;
-    font-weight: bold;
-    font-size: 15px;
-    width: 100%;
-    cursor: pointer;
-}
-.uiverse-button1:hover {
-    background-image: linear-gradient(163deg, #00642f 0%, #13034b 100%);
-    color: rgb(0, 255, 200);
-}
-        /* --- أيقونة الدرع المتحرك من Uiverse --- */
-.loader {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  margin-bottom: 12px;
-}
+        .cat-other { background: #eaecf4; color: #4a4b53; border: 1px solid #d1d3e2; }
+        tr.row-other { border-right: 4px solid #858796; }
+        tr.row-other:hover { background-color: #f8f9fc; }
 
-.loader .container {
-  overflow: visible;
-}
-
-/* Shield background */
-.loader .shield-track {
-  fill: none;
-  stroke: #d0d0d0;
-  stroke-width: 2.5;
-}
-
-/* Animated shield border */
-.loader .shield {
-  fill: none;
-  stroke: #4f8cff;
-  stroke-width: 2.5;
-  stroke-linecap: round;
-  stroke-dasharray: 30 70;
-  animation: shieldMove 2s linear infinite;
-}
-
-/* Lock */
-.loader .lock-body {
-  fill: #4f8cff;
-  animation: lockPulse 1.5s ease-in-out infinite;
-}
-
-.loader .lock {
-  fill: none;
-  stroke: #666;
-  stroke-width: 2.5;
-  stroke-linecap: round;
-}
-
-/* Keyhole */
-.loader .keyhole {
-  fill: #fff;
-  animation: keyPulse 1.5s ease-in-out infinite;
-}
-
-.loader .keyhole-line {
-  stroke: #fff;
-  stroke-width: 2;
-  stroke-linecap: round;
-}
-
-/* Scanning line */
-.loader .scan {
-  stroke: #4f8cff;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  opacity: 0;
-  animation: scan 1.8s ease-in-out infinite;
-}
-
-@keyframes shieldMove {
-  from { stroke-dashoffset: 100; }
-  to   { stroke-dashoffset: 0; }
-}
-
-@keyframes lockPulse {
-  0%, 100% {
-    opacity: 0.65;
-    transform: scale(1);
-    transform-origin: center;
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.08);
-    transform-origin: center;
-  }
-}
-
-@keyframes keyPulse {
-  0%, 100% { opacity: 0.5; }
-  50%      { opacity: 1; }
-}
-
-@keyframes scan {
-  0%   { opacity: 0; transform: translateY(-5px); }
-  20%  { opacity: 1; }
-  80%  { opacity: 1; }
-  100% { opacity: 0; transform: translateY(35px); }
-}
+        .uiverse-lock-box {
+            background-image: linear-gradient(163deg, #00ff75 0%, #3700ff 100%);
+            border-radius: 22px;
+            transition: all .3s;
+            width: 100%;
+            max-width: 360px;
+        }
+        .uiverse-lock-box:hover {
+            box-shadow: 0px 0px 30px 1px rgba(0, 255, 117, 0.30);
+        }
+        .uiverse-lock-box2 {
+            border-radius: 0;
+            transition: all .2s;
+        }
+        .uiverse-lock-box2:hover {
+            transform: scale(0.98);
+            border-radius: 20px;
+        }
+        .uiverse-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 2em;
+            background-color: #171717;
+            border-radius: 20px;
+        }
+        #heading {
+            text-align: center;
+            margin: 0.5em 0 0.2em;
+            color: rgb(255, 255, 255);
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+        .uiverse-field {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5em;
+            border-radius: 25px;
+            padding: 0.6em 1em;
+            border: none;
+            outline: none;
+            color: white;
+            background-color: #171717;
+            box-shadow: inset 2px 5px 10px rgb(5, 5, 5);
+        }
+        .uiverse-input {
+            background: none;
+            border: none;
+            outline: none;
+            width: 100%;
+            color: #00ff75;
+            font-size: 22px;
+            text-align: center;
+            letter-spacing: 8px;
+            font-weight: bold;
+        }
+        .uiverse-btn-group {
+            display: flex;
+            justify-content: center;
+            margin-top: 1em;
+        }
+        .uiverse-button1 {
+            padding: 0.8em 1.5em;
+            border-radius: 10px;
+            border: none;
+            outline: none;
+            transition: .4s ease-in-out;
+            background-image: linear-gradient(163deg, #00ff75 0%, #3700ff 100%);
+            color: #000;
+            font-weight: bold;
+            font-size: 15px;
+            width: 100%;
+            cursor: pointer;
+        }
+        .uiverse-button1:hover {
+            background-image: linear-gradient(163deg, #00642f 0%, #13034b 100%);
+            color: rgb(0, 255, 200);
+        }
+        .loader {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .loader .container { overflow: visible; }
+        .loader .shield-track { fill: none; stroke: #d0d0d0; stroke-width: 2.5; }
+        .loader .shield {
+            fill: none;
+            stroke: #4f8cff;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+            stroke-dasharray: 30 70;
+            animation: shieldMove 2s linear infinite;
+        }
+        .loader .lock-body {
+            fill: #4f8cff;
+            animation: lockPulse 1.5s ease-in-out infinite;
+        }
+        .loader .lock {
+            fill: none;
+            stroke: #666;
+            stroke-width: 2.5;
+            stroke-linecap: round;
+        }
+        .loader .keyhole {
+            fill: #fff;
+            animation: keyPulse 1.5s ease-in-out infinite;
+        }
+        .loader .keyhole-line {
+            stroke: #fff;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+        .loader .scan {
+            stroke: #4f8cff;
+            stroke-width: 1.5;
+            stroke-linecap: round;
+            opacity: 0;
+            animation: scan 1.8s ease-in-out infinite;
+        }
+        @keyframes shieldMove {
+            from { stroke-dashoffset: 100; }
+            to   { stroke-dashoffset: 0; }
+        }
+        @keyframes lockPulse {
+            0%, 100% { opacity: 0.65; transform: scale(1); transform-origin: center; }
+            50% { opacity: 1; transform: scale(1.08); transform-origin: center; }
+        }
+        @keyframes keyPulse {
+            0%, 100% { opacity: 0.5; }
+            50%      { opacity: 1; }
+        }
+        @keyframes scan {
+            0%   { opacity: 0; transform: translateY(-5px); }
+            20%  { opacity: 1; }
+            80%  { opacity: 1; }
+            100% { opacity: 0; transform: translateY(35px); }
+        }
     </style>
 </head>
 <body>
     <!-- شاشة القفل -->
     <div id="app-lock-screen" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #0f172a; z-index: 9999; display: flex; justify-content: center; align-items: center; padding: 20px;">
-    
-    <!-- هذا هو تصميم الصندوق المنسوخ من Uiverse -->
-    <div class="uiverse-lock-box">
-        <div class="uiverse-lock-box2">
-            <div class="uiverse-form">
-                <p id="heading">
-                    <!-- ضع هذا الكود مكان سطر الأيقونة القديم -->
-<div class="loader">
-    <svg class="container" width="75" height="75" viewBox="0 0 64 64">
-        <!-- مسار الدرع الخلفي والمتحرك -->
-        <path class="shield-track" d="M32 6 L52 14 V30 C52 44 43 53 32 58 C21 53 12 44 12 30 V14 Z" />
-        <path class="shield" pathLength="100" d="M32 6 L52 14 V30 C52 44 43 53 32 58 C21 53 12 44 12 30 V14 Z" />
-        
-        <!-- حلقة وجسم القفل الداخلي -->
-        <path class="lock" d="M26 28 V23 C26 19.5 28.5 17 32 17 C35.5 17 38 19.5 38 23 V28" />
-        <rect class="lock-body" x="22" y="28" width="20" height="16" rx="3" />
-        
-        <!-- فتحة المفتاح -->
-        <circle class="keyhole" cx="32" cy="34.5" r="2" />
-        <line class="keyhole-line" x1="32" y1="36" x2="32" y2="40" />
-        
-        <!-- خط المسح الضوئي المتحرك (Scanner) -->
-        <line class="scan" x1="16" y1="16" x2="48" y2="16" />
-    </svg>
-</div>
- النظام محمي
-                </p>
-                <p style="margin: 0 0 10px; font-size: 12px; color: #94a3b8; text-align: center;">أدخل رمز المرور (الافتراضي: 1234)</p>
-                
-                <!-- 1. وضعنا id="pin-input" و onkeydown على حقل الإدخال -->
-                <div class="uiverse-field">
-                    <i class="fas fa-lock" style="color: #00ff75;"></i>
-                    <input type="password" id="pin-input" class="uiverse-input" placeholder="••••" inputmode="numeric"
-                           onkeydown="if(event.key === 'Enter') unlockApp()">
-                </div>
+        <div class="uiverse-lock-box">
+            <div class="uiverse-lock-box2">
+                <div class="uiverse-form">
+                    <div id="heading">
+                        <div class="loader">
+                            <svg class="container" width="75" height="75" viewBox="0 0 64 64">
+                                <path class="shield-track" d="M32 6 L52 14 V30 C52 44 43 53 32 58 C21 53 12 44 12 30 V14 Z" />
+                                <path class="shield" pathLength="100" d="M32 6 L52 14 V30 C52 44 43 53 32 58 C21 53 12 44 12 30 V14 Z" />
+                                <path class="lock" d="M26 28 V23 C26 19.5 28.5 17 32 17 C35.5 17 38 19.5 38 23 V28" />
+                                <rect class="lock-body" x="22" y="28" width="20" height="16" rx="3" />
+                                <circle class="keyhole" cx="32" cy="34.5" r="2" />
+                                <line class="keyhole-line" x1="32" y1="36" x2="32" y2="40" />
+                                <line class="scan" x1="16" y1="16" x2="48" y2="16" />
+                            </svg>
+                        </div>
+                        النظام محمي
+                    </div>
+                    <p style="margin: 0 0 10px; font-size: 12px; color: #94a3b8; text-align: center;">أدخل رمز المرور (الافتراضي: 1234)</p>
+                    
+                    <div class="uiverse-field">
+                        <i class="fas fa-lock" style="color: #00ff75;"></i>
+                        <input type="password" id="pin-input" class="uiverse-input" placeholder="••••" inputmode="numeric"
+                               onkeydown="if(event.key === 'Enter') unlockApp()">
+                    </div>
 
-                <!-- 2. وضعنا id="lock-error" لرسالة الخطأ -->
-                <p id="lock-error" style="color: #ff4d4d; font-size: 13px; margin: 5px 0; display: none; text-align: center; font-weight: bold;">
-                    رمز المرور غير صحيح!
-                </p>
+                    <p id="lock-error" style="color: #ff4d4d; font-size: 13px; margin: 5px 0; display: none; text-align: center; font-weight: bold;">
+                        رمز المرور غير صحيح!
+                    </p>
 
-                <!-- 3. وضعنا type="button" و onclick="unlockApp()" على الزر -->
-                <div class="uiverse-btn-group">
-                    <button type="button" class="uiverse-button1" onclick="unlockApp()">
-                        <i class="fas fa-unlock"></i> فتح النظام
-                    </button>
+                    <div class="uiverse-btn-group">
+                        <button type="button" class="uiverse-button1" onclick="unlockApp()">
+                            <i class="fas fa-unlock"></i> فتح النظام
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-</div>
     <div class="container">
         <!-- شريط الرأس -->
         <div class="header">
@@ -517,28 +476,26 @@ tr.row-other:hover { background-color: #f8f9fc; }
                 <i class="fas fa-info-circle"></i> <strong>ملاحظة:</strong> هذا السجل مخصص لتوثيق ومتابعة الديون فقط؛ تسجيل أو تسديد أي دفعة هنا لا يؤثر إطلاقاً على أسهم المساهمين ولا يضاف للمصروفات.
             </div>
             <div class="controls">
-    <h3 style="margin:0">سجل الديون والالتزامات</h3>
-    
-    <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-        <!-- 1. خيار إظهار الديون المسددة -->
-        <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px; font-weight:bold; background:#f8f9fc; padding:6px 12px; border-radius:6px; border:1px solid var(--border);">
-            <input type="checkbox" id="show-paid-debts" onchange="renderUI()">
-            <span>إظهار الديون المسددة</span>
-        </label>
+                <h3 style="margin:0">سجل الديون والالتزامات</h3>
+                
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                    <label style="display:flex; align-items:center; gap:6px; cursor:pointer; font-size:13px; font-weight:bold; background:#f8f9fc; padding:6px 12px; border-radius:6px; border:1px solid var(--border);">
+                        <input type="checkbox" id="show-paid-debts" onchange="renderUI()">
+                        <span>إظهار الديون المسددة</span>
+                    </label>
 
-        <!-- 2. حقل وزر إرسال إشعارات الديون عبر الإيميل -->
-        <div style="display:flex; gap:5px; align-items:center;">
-            <input type="email" id="debt-notify-email" placeholder="البريد الإلكتروني للإشعارات..." 
-                   style="padding:6px 10px; border:1px solid var(--border); border-radius:5px; font-size:13px; width:210px;"
-                   onchange="saveNotificationEmail(this.value)">
-            <button class="btn btn-info btn-sm" onclick="sendDebtCycleEmail()" title="إرسال تذكير بالديون المستحقة في هذه الدورة">
-                <i class="fas fa-envelope"></i> إرسال إشعار الدورة
-            </button>
-        </div>
+                    <div style="display:flex; gap:5px; align-items:center;">
+                        <input type="email" id="debt-notify-email" placeholder="البريد الإلكتروني للإشعارات..." 
+                               style="padding:6px 10px; border:1px solid var(--border); border-radius:5px; font-size:13px; width:210px;"
+                               onchange="saveNotificationEmail(this.value)">
+                        <button class="btn btn-info btn-sm" onclick="sendDebtCycleEmail()" title="إرسال تذكير بالديون المستحقة في هذه الدورة">
+                            <i class="fas fa-envelope"></i> إرسال إشعار الدورة
+                        </button>
+                    </div>
 
-        <button class="btn btn-purple" onclick="openModal('modal-debt')"><i class="fas fa-plus"></i> تسجيل دين جديد</button>
-    </div>
-</div>
+                    <button class="btn btn-purple" onclick="openModal('modal-debt')"><i class="fas fa-plus"></i> تسجيل دين جديد</button>
+                </div>
+            </div>
             <div class="table-responsive">
                 <table>
                     <thead>
@@ -619,40 +576,34 @@ tr.row-other:hover { background-color: #f8f9fc; }
                 <input type="hidden" id="ex-edit-index" value="-1">
                 <div class="form-group"><label>التاريخ</label><input type="date" id="ex-date" required></div>
                 <div class="form-group">
-                    <label>التصنيف</label>
+                    <label>التصنيف الرئيسي</label>
                     <select id="ex-category" onchange="handleCategoryChange()">
-    <option value="طعام ومقاضي">🍖 طعام ومقاضي</option>
-    <option value="فواتير وخدمات">⚡ فواتير وخدمات</option>
-    <option value="صيانة">🛠️ صيانة</option>
-    <option value="مستلزمات">📦 مستلزمات</option>
-    <option value="أخرى">🏷️ أخرى (بيان مخصص)</option>
-</select>
+                        <option value="طعام ومقاضي">🍖 طعام ومقاضي</option>
+                        <option value="فواتير وخدمات">⚡ فواتير وخدمات</option>
+                        <option value="صيانة">🛠️ صيانة</option>
+                        <option value="مستلزمات">📦 مستلزمات</option>
+                        <option value="أخرى">🏷️ أخرى (بيان مخصص)</option>
+                    </select>
                 </div>
 
-               <!-- قسم الأصناف المتعددة داخل المصروف الواحد -->
-<div class="form-group" style="background: #f1f5ff; padding: 12px; border-radius: 8px; border: 1px solid #d0dfff;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-        <label style="margin: 0; color: var(--primary);"><i class="fas fa-list-ul"></i> أصناف المصروف (يمكنك إضافة أكثر من صنف ونوع):</label>
-        <button type="button" class="btn btn-sm" onclick="addExpenseItemRow()">
-            <i class="fas fa-plus"></i> إضافة صنف آخر
-        </button>
-    </div>
-    <div id="ex-items-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto;"></div>
-</div>
+                <!-- قسم الأصناف المتعددة داخل المصروف الواحد -->
+                <div class="form-group" style="background: #f1f5ff; padding: 12px; border-radius: 8px; border: 1px solid #d0dfff;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                        <label style="margin: 0; color: var(--primary);"><i class="fas fa-list-ul"></i> أصناف المصروف (يمكنك إضافة أكثر من صنف ونوع):</label>
+                        <button type="button" class="btn btn-sm" onclick="addExpenseItemRow()">
+                            <i class="fas fa-plus"></i> إضافة صنف آخر
+                        </button>
+                    </div>
+                    <div id="ex-items-container" style="display: flex; flex-direction: column; gap: 8px; max-height: 200px; overflow-y: auto;"></div>
+                </div>
 
-<!-- المبلغ الإجمالي (يُحسب تلقائياً من مجموع الأصناف أو يُكتب يدوياً) -->
-<div class="form-group">
-    <label>المبلغ الإجمالي للمصروف</label>
-    <input type="number" id="ex-amount" step="0.01" required oninput="if(document.getElementById('ex-multi-payer').checked) splitExpenseEqually()">
-</div>
+                <!-- المبلغ الإجمالي -->
+                <div class="form-group">
+                    <label>المبلغ الإجمالي للمصروف</label>
+                    <input type="number" id="ex-amount" step="0.01" required oninput="if(document.getElementById('ex-multi-payer').checked) splitExpenseEqually()">
+                </div>
 
-<!-- قسم المرفقات المتعددة (فواتير / إيصالات) -->
-<div class="form-group" style="background: #f8f9fc; padding: 10px 12px; border-radius: 8px; border: 1px dashed var(--primary);">
-    <label style="margin-bottom: 6px;"><i class="fas fa-paperclip"></i> إرفاق صور الفواتير / الإيصالات (متعدد):</label>
-    <input type="file" id="ex-attachments" multiple accept="image/*,.pdf" onchange="handleAttachmentsUpload(event)">
-    <div id="ex-attachments-preview" style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;"></div>
-</div>
-                
+                <!-- من قام بالدفع -->
                 <div class="form-group" style="background: #f8f9fc; padding: 12px; border-radius: 8px; border: 1px solid var(--border);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
                         <label style="margin: 0;">من قام بالدفع؟</label>
@@ -680,42 +631,12 @@ tr.row-other:hover { background-color: #f8f9fc; }
                     <select id="ex-method"><option>تحويل بنكي</option><option>نقدي</option><option>بطاقة ائتمان</option></select>
                 </div>
 
-                <!-- قسم المرفقات للمصروفات (بادئة ex) -->
-                <div class="attachment-section" style="margin-bottom: 14px; padding: 12px; border: 1px dashed #ccc; border-radius: 8px; background: #fafafa;">
-                    <label for="ex-attachmentType" style="display:block; margin-bottom: 6px; font-weight: bold;">
-                        📎 نوع المرفق والتوثيق (اختياري):
+                <!-- قسم المرفقات الموحد والمتسلسل للمصروفات -->
+                <div class="attachment-section" style="margin-bottom: 14px; padding: 12px; border: 1px dashed var(--primary); border-radius: 8px; background: #f8f9fc;">
+                    <label style="display:block; margin-bottom: 8px; font-weight: bold; color: var(--primary);">
+                        📎 المرفقات والتوثيق (اختر نوع المرفق، وسيظهر خيار إضافة مرفق آخر أسفله تلقائياً):
                     </label>
-                    <select id="ex-attachmentType" onchange="handleAttachmentTypeChange('ex')" style="width: 100%; padding: 8px; margin-bottom: 10px; border-radius: 6px; border: 1px solid #bbb;">
-                        <option value="">-- بدون مرفق (None) --</option>
-                        <option value="receipt">🧾 صورة إيصال (Receipt Image)</option>
-                        <option value="invoice">📄 صورة فاتورة (Invoice Image)</option>
-                        <option value="transfer">🏦 إشعار تحويل بنكي (Bank Transfer Image)</option>
-                        <option value="live_signature">✍️ توقيع حي مباشر على الشاشة (Live Signature)</option>
-                        <option value="link">🔗 رابط خارجي / مستند سحابي (External Link / URL)</option>
-                    </select>
-
-                    <div id="ex-imageUploadBox" style="display: none;">
-                        <label style="display:block; margin-bottom: 5px; font-size: 0.9em;">التقط صورة أو اختر من المعرض:</label>
-                        <input type="file" id="ex-attachmentFile" accept="image/*" onchange="handleAttachmentFile('ex', event)" style="width: 100%;" />
-                        <div id="ex-attachmentPreviewContainer" style="display:none; margin-top: 10px; text-align: center;">
-                            <img id="ex-attachmentPreview" src="" alt="Preview" style="max-height: 120px; border-radius: 6px; border: 1px solid #ddd;" />
-                        </div>
-                    </div>
-
-                    <div id="ex-liveSignatureBox" style="display: none; text-align: center;">
-                        <label style="display:block; margin-bottom: 5px; font-size: 0.9em; color: #555;">وقّع بإصبعك أو القلم داخل المربع:</label>
-                        <canvas id="ex-signaturePad" width="320" height="150" style="border: 2px solid #333; border-radius: 6px; background: #fff; touch-action: none; cursor: crosshair; max-width: 100%;"></canvas>
-                        <div style="margin-top: 6px;">
-                            <button type="button" onclick="clearSignaturePad('ex')" style="background: #ffc107; color: #000; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 0.85em;">
-                                🧹 مسح وإعادة التوقيع
-                            </button>
-                        </div>
-                    </div>
-
-                    <div id="ex-linkAttachmentBox" style="display: none;">
-                        <label style="display:block; margin-bottom: 5px; font-size: 0.9em;">أدخل الرابط (Google Drive, PDF, رسالة، إلخ):</label>
-                        <input type="url" id="ex-attachmentUrl" placeholder="https://example.com/invoice..." style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ccc; direction: ltr; text-align: left;" />
-                    </div>
+                    <div id="ex-attachments-list"></div>
                 </div>
 
                 <button type="submit" class="btn" style="width: 100%; justify-content: center;">حفظ المصروف</button>
@@ -852,18 +773,355 @@ tr.row-other:hover { background-color: #f8f9fc; }
             lastUpdated: Date.now()
         };
 
-        // --- نظام المرفقات والتوقيع الحي والروابط (يدعم المصروفات ex والديون db) ---
-        const attState = {
-            ex: { compressedImage: null, hasDrawnSignature: false, isDrawing: false },
-            db: { compressedImage: null, hasDrawnSignature: false, isDrawing: false }
-        };
-
         const badgeNames = {
             receipt: '🧾 إيصال',
             invoice: '📄 فاتورة',
             transfer: '🏦 تحويل',
             live_signature: '✍️ توقيع معتمد',
             link: '🔗 فتح الرابط'
+        };
+
+        // --- 1. نظام المرفقات المتسلسل للمصروفات (Cascading Attachment Rows) ---
+        let exAttachmentRows = [];
+        let exAttRowCounter = 0;
+
+        function resetExAttachmentRows(existingAttachments = []) {
+            exAttachmentRows = [];
+            exAttRowCounter = 0;
+            const listEl = document.getElementById('ex-attachments-list');
+            if (!listEl) return;
+            listEl.innerHTML = '';
+
+            if (Array.isArray(existingAttachments) && existingAttachments.length > 0) {
+                existingAttachments.forEach(att => {
+                    if (att && att.type && att.data) {
+                        createExAttachmentRow({
+                            type: att.type,
+                            category: att.category || (att.type === 'link' ? 'link' : (att.type === 'live_signature' ? 'signature' : 'image')),
+                            data: att.data,
+                            hasDrawnSignature: att.type === 'live_signature'
+                        });
+                    }
+                });
+            }
+            // دائماً نضيف سطراً فارغاً في الأسفل لإتاحة إضافة مرفق جديد
+            createExAttachmentRow();
+            updateExAttachmentLabels();
+        }
+
+        function createExAttachmentRow(prefill = null) {
+            const listEl = document.getElementById('ex-attachments-list');
+            if (!listEl) return;
+
+            const rowId = 'ex_att_' + (++exAttRowCounter) + '_' + Date.now();
+            const rowState = {
+                id: rowId,
+                type: prefill ? prefill.type : '',
+                category: prefill ? prefill.category : '',
+                data: prefill ? prefill.data : null,
+                hasDrawnSignature: prefill ? !!prefill.hasDrawnSignature : false,
+                isDrawing: false
+            };
+            exAttachmentRows.push(rowState);
+
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'ex-att-row';
+            rowDiv.id = rowId;
+
+            const isImgType = ['receipt', 'invoice', 'transfer'].includes(rowState.type);
+            const isSigType = rowState.type === 'live_signature';
+            const isLinkType = rowState.type === 'link';
+
+            rowDiv.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:6px;">
+                    <label class="ex-att-title" style="margin:0; font-size:12.5px; font-weight:bold; color:#4a4b53;">مرفق #1:</label>
+                    <button type="button" class="btn btn-danger btn-sm ex-att-remove-btn" style="display:none; padding:2px 8px; font-size:11px;" onclick="removeExAttachmentRow('${rowId}')">
+                        <i class="fas fa-trash"></i> حذف المرفق
+                    </button>
+                </div>
+                <select class="ex-att-select" onchange="onExAttachmentTypeChange('${rowId}', this.value)" style="width:100%; padding:8px; border-radius:6px; border:1px solid #bbb;">
+                    <option value="">-- بدون مرفق / اختر نوع المرفق لإضافته --</option>
+                    <option value="receipt" ${rowState.type === 'receipt' ? 'selected' : ''}>🧾 صورة إيصال (Receipt Image)</option>
+                    <option value="invoice" ${rowState.type === 'invoice' ? 'selected' : ''}>📄 صورة فاتورة (Invoice Image)</option>
+                    <option value="transfer" ${rowState.type === 'transfer' ? 'selected' : ''}>🏦 إشعار تحويل بنكي (Bank Transfer Image)</option>
+                    <option value="live_signature" ${rowState.type === 'live_signature' ? 'selected' : ''}>✍️ توقيع حي مباشر على الشاشة (Live Signature)</option>
+                    <option value="link" ${rowState.type === 'link' ? 'selected' : ''}>🔗 رابط خارجي / مستند سحابي (External Link / URL)</option>
+                </select>
+
+                <div class="ex-att-img-box" style="display:${isImgType ? 'block' : 'none'}; margin-top:10px;">
+                    <label style="display:block; margin-bottom:5px; font-size:12px;">التقط صورة أو اختر من المعرض:</label>
+                    <input type="file" accept="image/*" onchange="onExAttachmentFileChange('${rowId}', event)" style="width:100%;">
+                    <div class="ex-att-preview-wrap" style="display:${isImgType && rowState.data ? 'block' : 'none'}; margin-top:8px; text-align:center;">
+                        <img class="ex-att-preview-img" src="${isImgType && rowState.data ? rowState.data : ''}" style="max-height:110px; border-radius:6px; border:1px solid #ddd;">
+                    </div>
+                </div>
+
+                <div class="ex-att-sig-box" style="display:${isSigType ? 'block' : 'none'}; margin-top:10px; text-align:center;">
+                    <label style="display:block; margin-bottom:5px; font-size:12px; color:#555;">وقّع بإصبعك أو القلم داخل المربع:</label>
+                    <canvas class="ex-att-sig-canvas" width="320" height="140" style="border:2px solid #333; border-radius:6px; background:#fff; touch-action:none; cursor:crosshair; max-width:100%;"></canvas>
+                    <div style="margin-top:6px;">
+                        <button type="button" onclick="clearExRowSignature('${rowId}')" style="background:#ffc107; color:#000; border:none; padding:4px 10px; border-radius:4px; cursor:pointer; font-size:12px;">
+                            🧹 مسح وإعادة التوقيع
+                        </button>
+                    </div>
+                </div>
+
+                <div class="ex-att-link-box" style="display:${isLinkType ? 'block' : 'none'}; margin-top:10px;">
+                    <label style="display:block; margin-bottom:5px; font-size:12px;">أدخل الرابط (Google Drive, PDF, رسالة، إلخ):</label>
+                    <input type="url" class="ex-att-url-input" value="${isLinkType && rowState.data ? rowState.data : ''}" oninput="onExAttachmentUrlInput('${rowId}', this.value)" placeholder="https://example.com/invoice..." style="width:100%; padding:7px; border-radius:4px; border:1px solid #ccc; direction:ltr; text-align:left;">
+                </div>
+            `;
+
+            listEl.appendChild(rowDiv);
+
+            const canvas = rowDiv.querySelector('.ex-att-sig-canvas');
+            setupDynamicSignatureCanvas(canvas, rowState);
+        }
+
+        function setupDynamicSignatureCanvas(canvas, rowState) {
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            if (rowState.type === 'live_signature' && rowState.data) {
+                const img = new Image();
+                img.onload = function() {
+                    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                };
+                img.src = rowState.data;
+            }
+
+            function getPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return {
+                    x: (clientX - rect.left) * (canvas.width / rect.width),
+                    y: (clientY - rect.top) * (canvas.height / rect.height)
+                };
+            }
+
+            function startDraw(e) {
+                e.preventDefault();
+                rowState.isDrawing = true;
+                rowState.hasDrawnSignature = true;
+                const pos = getPos(e);
+                ctx.beginPath();
+                ctx.moveTo(pos.x, pos.y);
+            }
+
+            function moveDraw(e) {
+                if (!rowState.isDrawing) return;
+                e.preventDefault();
+                const pos = getPos(e);
+                ctx.lineWidth = 2.5;
+                ctx.lineCap = 'round';
+                ctx.strokeStyle = '#000080';
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+            }
+
+            function endDraw() {
+                if (!rowState.isDrawing) return;
+                rowState.isDrawing = false;
+                ctx.beginPath();
+                rowState.data = canvas.toDataURL('image/jpeg', 0.8);
+            }
+
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', moveDraw);
+            window.addEventListener('mouseup', endDraw);
+            canvas.addEventListener('touchstart', startDraw, { passive: false });
+            canvas.addEventListener('touchmove', moveDraw, { passive: false });
+            canvas.addEventListener('touchend', endDraw);
+        }
+
+        window.clearExRowSignature = function(rowId) {
+            const rowState = exAttachmentRows.find(r => r.id === rowId);
+            const rowDiv = document.getElementById(rowId);
+            if (!rowState || !rowDiv) return;
+            const canvas = rowDiv.querySelector('.ex-att-sig-canvas');
+            if (canvas) {
+                const ctx = canvas.getContext('2d');
+                ctx.fillStyle = '#ffffff';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+            rowState.hasDrawnSignature = false;
+            rowState.data = null;
+        };
+
+        window.onExAttachmentTypeChange = function(rowId, newType) {
+            const rowState = exAttachmentRows.find(r => r.id === rowId);
+            const rowDiv = document.getElementById(rowId);
+            if (!rowState || !rowDiv) return;
+
+            rowState.type = newType;
+
+            const imgBox = rowDiv.querySelector('.ex-att-img-box');
+            const sigBox = rowDiv.querySelector('.ex-att-sig-box');
+            const linkBox = rowDiv.querySelector('.ex-att-link-box');
+
+            imgBox.style.display = 'none';
+            sigBox.style.display = 'none';
+            linkBox.style.display = 'none';
+
+            if (['receipt', 'invoice', 'transfer'].includes(newType)) {
+                rowState.category = 'image';
+                imgBox.style.display = 'block';
+            } else if (newType === 'live_signature') {
+                rowState.category = 'signature';
+                sigBox.style.display = 'block';
+            } else if (newType === 'link') {
+                rowState.category = 'link';
+                linkBox.style.display = 'block';
+            } else {
+                rowState.category = '';
+                rowState.data = null;
+                rowState.hasDrawnSignature = false;
+            }
+
+            // إذا تم اختيار نوع في السطر الأخير، نفتح سطراً جديداً تحته تلقائياً لإضافة مرفق آخر
+            const lastRow = exAttachmentRows[exAttachmentRows.length - 1];
+            if (lastRow && lastRow.type !== '') {
+                createExAttachmentRow();
+            }
+
+            // إذا قام المستخدم بإفراغ سطر وكان هناك أكثر من سطر فارغ في النهاية، نحذف السطر الفارغ الزائد
+            if (newType === '' && exAttachmentRows.length > 1) {
+                const emptyRows = exAttachmentRows.filter(r => r.type === '');
+                if (emptyRows.length > 1) {
+                    removeExAttachmentRow(rowId);
+                    return;
+                }
+            }
+
+            updateExAttachmentLabels();
+        };
+
+        window.onExAttachmentFileChange = function(rowId, e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const rowState = exAttachmentRows.find(r => r.id === rowId);
+            const rowDiv = document.getElementById(rowId);
+            if (!rowState || !rowDiv) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const MAX_WIDTH = 800;
+                    const scale = img.width > MAX_WIDTH ? MAX_WIDTH / img.width : 1;
+                    canvas.width = img.width * scale;
+                    canvas.height = img.height * scale;
+                    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                    rowState.data = canvas.toDataURL('image/jpeg', 0.65);
+
+                    const prevWrap = rowDiv.querySelector('.ex-att-preview-wrap');
+                    const prevImg = rowDiv.querySelector('.ex-att-preview-img');
+                    if (prevImg) prevImg.src = rowState.data;
+                    if (prevWrap) prevWrap.style.display = 'block';
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+        };
+
+        window.onExAttachmentUrlInput = function(rowId, val) {
+            const rowState = exAttachmentRows.find(r => r.id === rowId);
+            if (!rowState) return;
+            rowState.data = val.trim();
+        };
+
+        window.removeExAttachmentRow = function(rowId) {
+            const idx = exAttachmentRows.findIndex(r => r.id === rowId);
+            if (idx === -1) return;
+            exAttachmentRows.splice(idx, 1);
+            const rowDiv = document.getElementById(rowId);
+            if (rowDiv) rowDiv.remove();
+
+            if (exAttachmentRows.length === 0 || exAttachmentRows[exAttachmentRows.length - 1].type !== '') {
+                createExAttachmentRow();
+            }
+            updateExAttachmentLabels();
+        };
+
+        function updateExAttachmentLabels() {
+            exAttachmentRows.forEach((r, idx) => {
+                const rowDiv = document.getElementById(r.id);
+                if (!rowDiv) return;
+                const titleEl = rowDiv.querySelector('.ex-att-title');
+                const removeBtn = rowDiv.querySelector('.ex-att-remove-btn');
+                const selectEl = rowDiv.querySelector('.ex-att-select');
+
+                if (idx === 0) {
+                    if (titleEl) titleEl.innerText = '📎 المرفق الأول:';
+                    if (selectEl && selectEl.options[0]) {
+                        selectEl.options[0].text = '-- بدون مرفق (اختر نوع المرفق لإضافته) --';
+                    }
+                } else {
+                    if (titleEl) titleEl.innerText = `➕ مرفق إضافي #${idx + 1} (اختياري):`;
+                    if (selectEl && selectEl.options[0]) {
+                        selectEl.options[0].text = '-- اختر نوع المرفق لإضافة مرفق آخر لهذا المصروف --';
+                    }
+                }
+
+                if (removeBtn) {
+                    removeBtn.style.display = (r.type !== '' || exAttachmentRows.length > 1 && idx < exAttachmentRows.length - 1) ? 'inline-flex' : 'none';
+                }
+            });
+        }
+
+        function collectExpenseAttachments() {
+            const validList = [];
+            for (let i = 0; i < exAttachmentRows.length; i++) {
+                const r = exAttachmentRows[i];
+                if (!r.type) continue;
+
+                if (r.type === 'live_signature') {
+                    if (!r.hasDrawnSignature || !r.data) {
+                        alert(`الرجاء التوقيع داخل مربع التوقيع في المرفق رقم (${i + 1}) أو إلغاء اختياره.`);
+                        return false;
+                    }
+                    validList.push({
+                        category: 'signature',
+                        type: 'live_signature',
+                        data: r.data,
+                        createdAt: new Date().toISOString()
+                    });
+                } else if (r.type === 'link') {
+                    let url = (r.data || '').trim();
+                    if (!url) {
+                        alert(`الرجاء إدخال الرابط في المرفق رقم (${i + 1}) أو إلغاء اختياره.`);
+                        return false;
+                    }
+                    if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+                    validList.push({
+                        category: 'link',
+                        type: 'link',
+                        data: url,
+                        createdAt: new Date().toISOString()
+                    });
+                } else if (['receipt', 'invoice', 'transfer'].includes(r.type)) {
+                    if (!r.data) {
+                        alert(`الرجاء اختيار صورة للمرفق رقم (${i + 1}) أو إلغاء اختياره.`);
+                        return false;
+                    }
+                    validList.push({
+                        category: 'image',
+                        type: r.type,
+                        data: r.data,
+                        createdAt: new Date().toISOString()
+                    });
+                }
+            }
+            return validList;
+        }
+
+        // --- نظام المرفقات للديون (بادئة db) ---
+        const attState = {
+            db: { compressedImage: null, hasDrawnSignature: false, isDrawing: false }
         };
 
         window.handleAttachmentTypeChange = function(prefix) {
@@ -980,7 +1238,6 @@ tr.row-other:hover { background-color: #f8f9fc; }
             canvas.addEventListener('touchend', endDraw);
         }
 
-        setupSignaturePadEvents('ex');
         setupSignaturePadEvents('db');
 
         function getAttachmentData(prefix, existingAttachment = null) {
@@ -1048,45 +1305,97 @@ tr.row-other:hover { background-color: #f8f9fc; }
             clearSignaturePad(prefix);
         }
 
+        function getNormalizedAttachments(record) {
+            const list = [];
+            if (Array.isArray(record.attachments) && record.attachments.length > 0) {
+                record.attachments.forEach(a => {
+                    if (a && a.data) {
+                        list.push({
+                            type: a.type || 'receipt',
+                            category: a.category || (a.type === 'link' ? 'link' : 'image'),
+                            data: a.data
+                        });
+                    }
+                });
+            } else if (record.attachment && record.attachment.data) {
+                list.push(record.attachment);
+            }
+            return list;
+        }
+
         function renderAttachmentAction(record, collection, index) {
-            const att = record.attachment;
-            if (!att || !att.data) {
+            const list = getNormalizedAttachments(record);
+            if (list.length === 0) {
                 return '<span style="color:#aaa; font-size:12px;">بدون مرفق</span>';
             }
-            const label = badgeNames[att.type] || '📎 مرفق';
-            if (att.category === 'link' || att.type === 'link') {
-                return `<a href="${att.data}" target="_blank" rel="noopener noreferrer"
-                           style="background:#e8f5e9; color:#1b5e20; border:1px solid #a5d6a7; padding:4px 10px; border-radius:12px; text-decoration:none; font-size:12px; font-weight:bold; display:inline-block;">
-                           ${label} ↗️
-                        </a>`;
+
+            if (list.length === 1) {
+                const att = list[0];
+                const label = badgeNames[att.type] || '📎 مرفق';
+                if (att.category === 'link' || att.type === 'link') {
+                    return `<a href="${att.data}" target="_blank" rel="noopener noreferrer"
+                               style="background:#e8f5e9; color:#1b5e20; border:1px solid #a5d6a7; padding:4px 10px; border-radius:12px; text-decoration:none; font-size:12px; font-weight:bold; display:inline-block;">
+                               ${label} ↗️
+                            </a>`;
+                }
+                return `<button type="button" onclick="openAttachmentModal('${collection}', ${index})"
+                                style="background:#eef6ff; color:#0056b3; border:1px solid #b3d7ff; padding:4px 10px; border-radius:12px; cursor:pointer; font-size:12px; font-weight:bold;">
+                            ${label} 👁️
+                        </button>`;
             }
+
             return `<button type="button" onclick="openAttachmentModal('${collection}', ${index})"
-                            style="background:#eef6ff; color:#0056b3; border:1px solid #b3d7ff; padding:4px 10px; border-radius:12px; cursor:pointer; font-size:12px; font-weight:bold;">
-                        ${label} 👁️
+                            style="background:#f3ebff; color:#5a32a3; border:1px solid #d8c2ff; padding:4px 10px; border-radius:12px; cursor:pointer; font-size:12px; font-weight:bold;">
+                        📎 عرض المرفقات (${list.length}) 👁️
                     </button>`;
         }
 
         window.openAttachmentModal = function(collection, index) {
             const sess = getCurrentSession();
             const record = sess[collection] ? sess[collection][index] : null;
-            if (!record || !record.attachment) return;
+            if (!record) return;
 
-            const title = badgeNames[record.attachment.type] || 'مرفق';
+            const list = getNormalizedAttachments(record);
+            if (list.length === 0) return;
+
             const desc = record.statement || record.creditor || '';
+            const itemsHtml = list.map((att, i) => {
+                const title = badgeNames[att.type] || `مرفق #${i + 1}`;
+                if (att.category === 'link' || att.type === 'link') {
+                    return `
+                        <div style="border:1px solid #e3e6f0; border-radius:8px; padding:12px; margin-bottom:12px; background:#f8f9fc;">
+                            <div style="font-weight:bold; margin-bottom:8px; color:#333;">#${i + 1} - ${title}</div>
+                            <a href="${att.data}" target="_blank" rel="noopener noreferrer"
+                               style="background:#1cc88a; color:#fff; padding:7px 15px; border-radius:5px; text-decoration:none; font-weight:bold; font-size:13px; display:inline-block;">
+                               🔗 فتح الرابط في نافذة جديدة ↗️
+                            </a>
+                        </div>
+                    `;
+                }
+                return `
+                    <div style="border:1px solid #e3e6f0; border-radius:8px; padding:12px; margin-bottom:12px; background:#f8f9fc;">
+                        <div style="font-weight:bold; margin-bottom:8px; color:#333;">#${i + 1} - ${title}</div>
+                        <img src="${att.data}" style="max-width:100%; max-height:55vh; border:1px solid #ccc; border-radius:6px;" />
+                        <div style="margin-top:8px;">
+                            <a href="${att.data}" download="masroofat-${record.id || Date.now()}-${i + 1}.jpg"
+                               style="background:#1cc88a; color:#fff; padding:5px 12px; border-radius:5px; text-decoration:none; font-weight:bold; font-size:12px; display:inline-block;">
+                               ⬇️ تحميل الصورة
+                            </a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
             const modalHTML = `
                 <div id="attModal" onclick="this.remove()" 
                      style="position:fixed; inset:0; background:rgba(0,0,0,0.8); display:flex; align-items:center; justify-content:center; z-index:9999; padding:15px;">
                     <div onclick="event.stopPropagation()" 
-                         style="background:#fff; padding:18px; border-radius:10px; max-width:92%; max-height:85vh; overflow:auto; text-align:center;">
-                        <h4 style="margin:0 0 12px 0; color:#333;">${title} - ${desc}</h4>
-                        <img src="${record.attachment.data}" style="max-width:100%; max-height:65vh; border:1px solid #ccc; border-radius:6px;" />
-                        <div style="margin-top:14px; display:flex; gap:10px; justify-content:center;">
-                            <a href="${record.attachment.data}" download="masroofat-${record.id || Date.now()}.jpg"
-                               style="background:#1cc88a; color:#fff; padding:7px 15px; border-radius:5px; text-decoration:none; font-weight:bold; font-size:13px;">
-                                ⬇️ تحميل الصورة
-                            </a>
+                         style="background:#fff; padding:18px; border-radius:10px; width:100%; max-width:560px; max-height:85vh; overflow:auto; text-align:center;">
+                        <h4 style="margin:0 0 12px 0; color:#333;">المرفقات والتوثيق - ${desc}</h4>
+                        ${itemsHtml}
+                        <div style="margin-top:10px;">
                             <button type="button" onclick="document.getElementById('attModal').remove()"
-                                    style="background:#e74a3b; color:#fff; border:none; padding:7px 15px; border-radius:5px; cursor:pointer; font-weight:bold; font-size:13px;">
+                                    style="background:#e74a3b; color:#fff; border:none; padding:7px 20px; border-radius:5px; cursor:pointer; font-weight:bold; font-size:13px;">
                                 إغلاق
                             </button>
                         </div>
@@ -1158,16 +1467,16 @@ tr.row-other:hover { background-color: #f8f9fc; }
             return Math.round(totalSpent * 100) / 100;
         }
 
+        // حساب الرصيد المتبقي للمساهم: يعتمد فقط على ما دفعه المساهم فعلياً (sh.paid) + المرحّل
+        // فإذا لم يدفع حصته بعد (paid = 0)، يكون رصيده المتاح 0 وأي مصروف يُسجل عليه ينزل بالسالب (Minus)
         function getShareholderRemainingShare(sess, shareholderName, excludeExpenseIndex = -1) {
-    if (!sess || !Array.isArray(sess.shareholders)) return 0;
-    const sh = sess.shareholders.find(s => s.name === shareholderName);
-    if (!sh) return 0;
-    // الحصة الأساسية للدورة الحالية + الرصيد المرحّل من الدورة السابقة (إن وجد)
-    const currentBase = (Number(sh.paid) > 0 ? Number(sh.paid) : Number(sh.quota)) || 0;
-    const carriedFromPrev = Number(sh.carriedShare) || 0;
-    const spent = getShareholderSpent(sess, shareholderName, excludeExpenseIndex);
-    return Math.round((currentBase + carriedFromPrev - spent) * 100) / 100;
-}
+            if (!sess) return 0;
+            const sh = Array.isArray(sess.shareholders) ? sess.shareholders.find(s => s.name === shareholderName) : null;
+            const currentPaid = sh ? (Number(sh.paid) || 0) : 0;
+            const carriedFromPrev = sh ? (Number(sh.carriedShare) || 0) : 0;
+            const spent = getShareholderSpent(sess, shareholderName, excludeExpenseIndex);
+            return Math.round((currentPaid + carriedFromPrev - spent) * 100) / 100;
+        }
 
         // --- المزامنة والحفظ ---
         async function fetchFromDrive() {
@@ -1269,43 +1578,42 @@ tr.row-other:hover { background-color: #f8f9fc; }
                 });
             }
 
-            // فحص ما إذا كان هناك مساهمون لديهم رصيد متبقٍ من حصصهم في الدورة السابقة
-const remainingSharesMap = {};
-const remainingListText = [];
+            const remainingSharesMap = {};
+            const remainingListText = [];
 
-if (activeSess && Array.isArray(activeSess.shareholders)) {
-    activeSess.shareholders.forEach(s => {
-        const remShare = getShareholderRemainingShare(activeSess, s.name);
-        if (remShare > 0) {
-            remainingSharesMap[s.name] = remShare;
-            remainingListText.push(`• ${s.name}: ${formatCurrency(remShare)}`);
-        }
-    });
-}
+            if (activeSess && Array.isArray(activeSess.shareholders)) {
+                activeSess.shareholders.forEach(s => {
+                    const remShare = getShareholderRemainingShare(activeSess, s.name);
+                    if (remShare > 0) {
+                        remainingSharesMap[s.name] = remShare;
+                        remainingListText.push(`• ${s.name}: ${formatCurrency(remShare)}`);
+                    }
+                });
+            }
 
-let shouldTransferShares = false;
-if (remainingListText.length > 0) {
-    shouldTransferShares = confirm(
-        `💰 يوجد مساهمون لديهم رصيد متبقٍ من حصصهم في الدورة السابقة (${activeSess.name}):\n\n` +
-        remainingListText.join('\n') +
-        `\n\nهل تريد ترحيل هذه الأرصدة المتبقية وإضافتها إلى حصصهم في الدورة الجديدة؟`
-    );
-}
+            let shouldTransferShares = false;
+            if (remainingListText.length > 0) {
+                shouldTransferShares = confirm(
+                    `💰 يوجد مساهمون لديهم رصيد متبقٍ من حصصهم في الدورة السابقة (${activeSess.name}):\n\n` +
+                    remainingListText.join('\n') +
+                    `\n\nهل تريد ترحيل هذه الأرصدة المتبقية وإضافتها إلى حصصهم في الدورة الجديدة؟`
+                );
+            }
 
-const newShareholders = [];
-if (importContributors && appData.permanentContributors.length > 0) {
-    appData.permanentContributors.forEach((c, idx) => {
-        const carriedAmount = (shouldTransferShares && remainingSharesMap[c.name]) ? remainingSharesMap[c.name] : 0;
-        newShareholders.push({
-            id: 'SH-' + (idx + 1).toString().padStart(3, '0'),
-            name: c.name,
-            quota: c.quota,
-            paid: 0,
-            carriedShare: carriedAmount, // الرصيد المرحّل من الدورة السابقة
-            carriedFromSession: carriedAmount > 0 ? activeSess.name : ''
-        });
-    });
-}
+            const newShareholders = [];
+            if (importContributors && appData.permanentContributors.length > 0) {
+                appData.permanentContributors.forEach((c, idx) => {
+                    const carriedAmount = (shouldTransferShares && remainingSharesMap[c.name]) ? remainingSharesMap[c.name] : 0;
+                    newShareholders.push({
+                        id: 'SH-' + (idx + 1).toString().padStart(3, '0'),
+                        name: c.name,
+                        quota: c.quota,
+                        paid: 0,
+                        carriedShare: carriedAmount,
+                        carriedFromSession: carriedAmount > 0 ? activeSess.name : ''
+                    });
+                });
+            }
 
             const newSessionObj = {
                 id: 'sess_' + Date.now(),
@@ -1412,36 +1720,7 @@ if (importContributors && appData.permanentContributors.length > 0) {
             pushToDrive();
             alert('تم نقل السجل بنجاح إلى ' + toSess.name);
         };
-function getExpenseCategoryStyle(category) {
-    const styles = {
-        'طعام ومقاضي': {
-            badgeClass: 'cat-food',
-            rowClass: 'row-food',
-            icon: 'fa-utensils' // أيقونة طعام
-        },
-        'فواتير وخدمات': {
-            badgeClass: 'cat-bills',
-            rowClass: 'row-bills',
-            icon: 'fa-bolt' // أيقونة كهرباء/فواتير
-        },
-        'صيانة': {
-            badgeClass: 'cat-maint',
-            rowClass: 'row-maint',
-            icon: 'fa-tools' // أيقونة عدة صيانة
-        },
-        'مستلزمات': {
-            badgeClass: 'cat-supplies',
-            rowClass: 'row-supplies',
-            icon: 'fa-box-open' // أيقونة صندوق مستلزمات
-        },
-        'أخرى': {
-            badgeClass: 'cat-other',
-            rowClass: 'row-other',
-            icon: 'fa-tag' // أيقونة عامة
-        }
-    };
-    return styles[category] || styles['أخرى'];
-}
+
         function renderUI() {
             ensureDataStructure();
             const sess = getCurrentSession();
@@ -1468,10 +1747,13 @@ function getExpenseCategoryStyle(category) {
 
             // 1. جدول المساهمين
             document.getElementById('shareholders-body').innerHTML = sess.shareholders.map((s, index) => {
-                const remaining = (Number(s.quota) || 0) - (Number(s.paid) || 0);
+                const quotaVal = Number(s.quota) || 0;
+                const paidVal = Number(s.paid) || 0;
+                const remaining = quotaVal - paidVal;
                 const spentFromShare = getShareholderSpent(sess, s.name);
                 const remainingShare = getShareholderRemainingShare(sess, s.name);
-                totalSubs += Number(s.paid) || 0;
+                totalSubs += paidVal;
+
                 const carriedShare = Number(s.carriedShare) || 0;
                 const carriedBadge = carriedShare > 0
                     ? `<div style="margin-top:4px;"><span class="badge info"><i class="fas fa-level-up-alt"></i> متبقي من الدورة السابقة: ${formatCurrency(carriedShare)}</span></div>`
@@ -1479,25 +1761,27 @@ function getExpenseCategoryStyle(category) {
 
                 let shareColor = 'var(--success)';
                 let shareBadge = '';
-                if (remainingShare === 0) {
-                    shareColor = '#b18817';
-                    shareBadge = '<span class="badge warning">صفر</span>';
-                } else if (remainingShare < 0) {
+                if (remainingShare < 0) {
                     shareColor = 'var(--danger)';
-                    shareBadge = '<span class="badge danger">خصم بالسالب</span>';
+                    shareBadge = '<span class="badge danger">خصم بالسالب (Minus)</span>';
+                } else if (remainingShare === 0) {
+                    shareColor = '#b18817';
+                    shareBadge = paidVal === 0
+                        ? '<span class="badge warning">لم يدفع الحصة بعد</span>'
+                        : '<span class="badge warning">صفر</span>';
                 }
 
                 return `<tr>
                     <td>${s.id || '-'}</td>
                     <td><strong>${s.name}</strong></td>
-                    <td>${formatCurrency(s.quota)} ${carriedBadge}</td>
-                    <td>${formatCurrency(s.paid)}</td>
+                    <td>${formatCurrency(quotaVal)} ${carriedBadge}</td>
+                    <td>${formatCurrency(paidVal)}</td>
                     <td dir="ltr">${formatCurrency(remaining)}</td>
                     <td dir="ltr" style="font-weight:bold; color:${shareColor};">
                         ${formatCurrency(remainingShare)} ${shareBadge}
                         <div style="font-size:11px; color:#858796; font-weight:normal;" dir="rtl">صُرف من حصته: ${formatCurrency(spentFromShare)}</div>
                     </td>
-                    <td>${getStatusBadge(remaining, s.quota)}</td>
+                    <td>${getStatusBadge(remaining, quotaVal)}</td>
                     <td>
                         <button class="btn btn-sm" style="background:var(--warning)" onclick="editShareholder(${index})" title="تعديل"><i class="fas fa-edit"></i></button>
                         <button class="btn btn-sm btn-info" onclick="openTransferModal('shareholders', ${index})" title="نقل لدورة أخرى"><i class="fas fa-exchange-alt"></i></button>
@@ -1520,11 +1804,6 @@ function getExpenseCategoryStyle(category) {
                       `</div>`
                     : '';
 
-                const attCount = Array.isArray(e.attachments) ? e.attachments.length : 0;
-                const attBtn = attCount > 0
-                    ? `<button class="btn btn-sm btn-purple" onclick="viewExpenseAttachments(${e._origIndex})" title="عرض المرفقات"><i class="fas fa-paperclip"></i> (${attCount})</button>`
-                    : '';
-
                 return `<tr>
                     <td>${e.date}</td>
                     <td><strong>${e.statement}</strong>${itemsHtml}</td>
@@ -1532,7 +1811,7 @@ function getExpenseCategoryStyle(category) {
                     <td><strong>${formatCurrency(e.amount)}</strong></td>
                     <td>${e.payer}</td>
                     <td>${e.method}</td>
-                    <td>${attBtn || renderAttachmentAction(e, 'expenses', e._origIndex)}</td>
+                    <td>${renderAttachmentAction(e, 'expenses', e._origIndex)}</td>
                     <td>
                         <button class="btn btn-sm" style="background:var(--warning)" onclick="editExpense(${e._origIndex})" title="تعديل"><i class="fas fa-edit"></i></button>
                         <button class="btn btn-sm btn-info" onclick="openTransferModal('expenses', ${e._origIndex})" title="نقل لدورة أخرى"><i class="fas fa-exchange-alt"></i></button>
@@ -1587,6 +1866,7 @@ function getExpenseCategoryStyle(category) {
 
             updateDropdowns();
         }
+
         function updateDropdowns() {
             ensureDataStructure();
             const sess = getCurrentSession();
@@ -1608,7 +1888,9 @@ function getExpenseCategoryStyle(category) {
                 payerSelect.innerHTML = allNames.length > 0
                     ? allNames.map(name => {
                         const rem = getShareholderRemainingShare(sess, name, editExpIndex);
-                        return `<option value="${name}">${name} (المتبقي من الحصة: ${formatCurrency(rem)})</option>`;
+                        const sh = sess.shareholders.find(s => s.name === name);
+                        const unpaidNote = (!sh || (Number(sh.paid) || 0) === 0) ? ' - لم يدفع الحصة بعد' : '';
+                        return `<option value="${name}">${name} (المتبقي من الحصة: ${formatCurrency(rem)}${unpaidNote})</option>`;
                     }).join('')
                     : '<option value="عام">عام</option>';
             }
@@ -1629,22 +1911,7 @@ function getExpenseCategoryStyle(category) {
                     </div>`;
                 }).join('');
             }
-
-            const serviceSelect = document.getElementById('ex-service-type');
-            if (serviceSelect) {
-                serviceSelect.innerHTML = appData.serviceTypes.map(srv => `<option value="${srv}">${srv}</option>`).join('');
-            }
         }
-
-        window.addNewServiceType = function() {
-            const newSrv = prompt("أدخل نوع الخدمة الجديد:");
-            if (newSrv && newSrv.trim()) {
-                appData.serviceTypes.push(newSrv.trim());
-                updateDropdowns();
-                document.getElementById('ex-service-type').value = newSrv.trim();
-                pushToDrive();
-            }
-        };
 
         window.fillSavedContributor = function() {
             const idx = document.getElementById('sh-saved-list').value;
@@ -1709,6 +1976,8 @@ function getExpenseCategoryStyle(category) {
             if (!payerName || payerName === 'عام') return true;
 
             const remShare = getShareholderRemainingShare(sess, payerName, editIndex);
+            const sh = sess.shareholders.find(s => s.name === payerName);
+            const notPaidYet = !sh || (Number(sh.paid) || 0) === 0;
 
             if (remShare <= 0 || (amount > 0 && remShare < amount)) {
                 const alternatives = sess.shareholders
@@ -1718,13 +1987,19 @@ function getExpenseCategoryStyle(category) {
 
                 const altText = alternatives.length > 0
                     ? `المساهم المتاح بدلاً منه: (${alternatives[0].name}) برصيد متبقٍ (${formatCurrency(alternatives[0].rem)}).`
-                    : `لا يوجد مساهم آخر لديه رصيد متبقٍ موجب حالياً.`;
+                    : `لا يوجد مساهم آخر لديه رصيد مدفوع متبقٍ حالياً.`;
+
+                const reasonText = notPaidYet
+                    ? `لم يدفع حصته المقررة في هذه الدورة بعد (المدفوع: 0.00 ر.ع)`
+                    : `المتبقي من حصته المدفوعة هو (${formatCurrency(remShare)})`;
+
+                const newBalanceAfter = remShare - amount;
 
                 const msg = `⚠️ تنبيه رصيد الحصة:\n` +
-                            `المساهم (${payerName}) المتبقي من حصته هو (${formatCurrency(remShare)})` +
-                            (amount > 0 ? ` ومبلغ المصروف (${formatCurrency(amount)})` : ``) + `.\n\n` +
-                            `• اضغط [موافق / OK] للاستمرار بالخصم بالسالب (Minus) على (${payerName}).\n` +
-                            `• اضغط [إلغاء / Cancel] لتغيير الدافع إلى مساهم لديه رصيد متبقٍ.\n` +
+                            `المساهم (${payerName}) ${reasonText}` +
+                            (amount > 0 ? `، وعند تسجيل هذا المصروف (${formatCurrency(amount)}) سيصبح رصيده بالسالب (${formatCurrency(newBalanceAfter)})` : ``) + `.\n\n` +
+                            `• اضغط [موافق / OK] للاستمرار وتسجيل المصروف عليه بالسالب (Minus).\n` +
+                            `• اضغط [إلغاء / Cancel] لاختيار مساهم آخر.\n` +
                             `${altText}`;
 
                 const continueWithMinus = confirm(msg);
@@ -1739,302 +2014,277 @@ function getExpenseCategoryStyle(category) {
             return true;
         };
 
-        // --- 1. إدارة الأصناف المتعددة والمرفقات داخل المصروف ---
-let tempAttachments = [];
+        window.addExpenseItemRow = function(cat = null, name = '', price = '') {
+            const container = document.getElementById('ex-items-container');
+            if (!container) return;
+            const defaultCat = cat || document.getElementById('ex-category')?.value || 'طعام ومقاضي';
+            const row = document.createElement('div');
+            row.className = 'ex-item-row';
+            row.style.cssText = 'display:flex; gap:6px; align-items:center; background:#fff; padding:6px; border-radius:6px; border:1px solid var(--border);';
+            row.innerHTML = `
+                <select class="item-cat" style="width:32%; padding:5px; font-size:12.5px;">
+                    <option value="طعام ومقاضي" ${defaultCat==='طعام ومقاضي'?'selected':''}>طعام ومقاضي</option>
+                    <option value="فواتير وخدمات" ${defaultCat==='فواتير وخدمات'?'selected':''}>فواتير وخدمات</option>
+                    <option value="صيانة" ${defaultCat==='صيانة'?'selected':''}>صيانة</option>
+                    <option value="مستلزمات" ${defaultCat==='مستلزمات'?'selected':''}>مستلزمات</option>
+                    <option value="أخرى" ${defaultCat==='أخرى'?'selected':''}>أخرى</option>
+                </select>
+                <input type="text" class="item-name" placeholder="اسم الصنف / البيان..." value="${name}" required style="flex:1; padding:5px; font-size:13px;">
+                <input type="number" class="item-price" placeholder="السعر" step="0.01" value="${price}" required oninput="recalcItemsTotal()" style="width:95px; padding:5px; font-size:13px; text-align:center;">
+                <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove(); recalcItemsTotal();"><i class="fas fa-times"></i></button>
+            `;
+            container.appendChild(row);
+        };
 
-window.addExpenseItemRow = function(cat = 'طعام ومقاضي', name = '', price = '') {
-    const container = document.getElementById('ex-items-container');
-    if (!container) return;
-    const row = document.createElement('div');
-    row.className = 'ex-item-row';
-    row.style.cssText = 'display:flex; gap:6px; align-items:center; background:#fff; padding:6px; border-radius:6px; border:1px solid var(--border);';
-    row.innerHTML = `
-        <select class="item-cat" style="width:32%; padding:5px; font-size:12.5px;">
-            <option value="طعام ومقاضي" ${cat==='طعام ومقاضي'?'selected':''}>طعام ومقاضي</option>
-            <option value="فواتير وخدمات" ${cat==='فواتير وخدمات'?'selected':''}>فواتير وخدمات</option>
-            <option value="صيانة" ${cat==='صيانة'?'selected':''}>صيانة</option>
-            <option value="مستلزمات" ${cat==='مستلزمات'?'selected':''}>مستلزمات</option>
-            <option value="أخرى" ${cat==='أخرى'?'selected':''}>أخرى</option>
-        </select>
-        <input type="text" class="item-name" placeholder="اسم الصنف / البيان..." value="${name}" required style="flex:1; padding:5px; font-size:13px;">
-        <input type="number" class="item-price" placeholder="السعر" step="0.01" value="${price}" required oninput="recalcItemsTotal()" style="width:95px; padding:5px; font-size:13px; text-align:center;">
-        <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove(); recalcItemsTotal();"><i class="fas fa-times"></i></button>
-    `;
-    container.appendChild(row);
-};
+        window.recalcItemsTotal = function() {
+            let sum = 0;
+            document.querySelectorAll('.ex-item-row .item-price').forEach(inp => {
+                sum += parseFloat(inp.value) || 0;
+            });
+            document.getElementById('ex-amount').value = sum > 0 ? sum.toFixed(2) : '';
+            if (document.getElementById('ex-multi-payer').checked) splitExpenseEqually();
+        };
 
-window.recalcItemsTotal = function() {
-    let sum = 0;
-    document.querySelectorAll('.ex-item-row .item-price').forEach(inp => {
-        sum += parseFloat(inp.value) || 0;
-    });
-    document.getElementById('ex-amount').value = sum > 0 ? sum.toFixed(2) : '';
-    if (document.getElementById('ex-multi-payer').checked) splitExpenseEqually();
-};
+        window.openModal = function(id) {
+            const m = document.getElementById(id);
+            if (!m) return;
+            m.classList.add('active');
 
-// رفع وضغط المرفقات المتعددة
-window.handleAttachmentsUpload = function(e) {
-    const files = Array.from(e.target.files);
-    files.forEach(file => {
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-            if (file.type.startsWith('image/')) {
-                // ضغط الصورة لتوفير المساحة في السحابة
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const maxW = 800;
-                    const scale = img.width > maxW ? maxW / img.width : 1;
-                    canvas.width = img.width * scale;
-                    canvas.height = img.height * scale;
-                    canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-                    tempAttachments.push({ name: file.name, data: canvas.toDataURL('image/jpeg', 0.7) });
-                    renderAttachmentsPreview();
-                };
-                img.src = evt.target.result;
-            } else {
-                tempAttachments.push({ name: file.name, data: evt.target.result });
-                renderAttachmentsPreview();
+            if (id === 'modal-expense' && document.getElementById('ex-edit-index').value === "-1") {
+                document.getElementById('ex-date').value = new Date().toISOString().split('T')[0];
+                const container = document.getElementById('ex-items-container');
+                if (container) {
+                    container.innerHTML = '';
+                    addExpenseItemRow();
+                }
+                resetExAttachmentRows([]);
+                updateDropdowns();
+            }
+            if (id === 'modal-debt' && document.getElementById('db-edit-index').value === "-1") {
+                document.getElementById('db-date').value = new Date().toISOString().split('T')[0];
             }
         };
-        reader.readAsDataURL(file);
-    });
-    e.target.value = '';
-};
 
-function renderAttachmentsPreview() {
-    const box = document.getElementById('ex-attachments-preview');
-    if (!box) return;
-    box.innerHTML = tempAttachments.map((att, idx) => `
-        <div style="position:relative; border:1px solid var(--border); padding:4px 8px; border-radius:6px; background:#fff; font-size:12px; display:flex; align-items:center; gap:6px;">
-            <i class="fas fa-file-image" style="color:var(--primary)"></i>
-            <span style="max-width:110px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">${att.name}</span>
-            <span style="cursor:pointer; color:var(--danger); font-weight:bold;" onclick="tempAttachments.splice(${idx},1); renderAttachmentsPreview();">&times;</span>
-        </div>
-    `).join('');
-}
+        window.addDebt = function(e) {
+            e.preventDefault();
+            const sess = getCurrentSession();
+            const editIndex = parseInt(document.getElementById('db-edit-index').value);
+            const existingAtt = (editIndex > -1 && sess.debts[editIndex]) ? sess.debts[editIndex].attachment : null;
+            const attachmentData = getAttachmentData('db', existingAtt);
+            if (attachmentData === false) return;
 
-window.viewExpenseAttachments = function(expIndex) {
-    const exp = getCurrentSession().expenses[expIndex];
-    if (!exp || !Array.isArray(exp.attachments) || exp.attachments.length === 0) return;
-    const win = window.open('', '_blank');
-    win.document.write(`
-        <html dir="rtl"><head><title>مرفقات: ${exp.statement}</title></head>
-        <body style="font-family:sans-serif; text-align:center; background:#f4f6f9; padding:20px;">
-            <h3>مرفقات المصروف: ${exp.statement} (${formatCurrency(exp.amount)})</h3>
-            ${exp.attachments.map(a => `
-                <div style="background:#fff; padding:15px; margin:15px auto; max-width:650px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
-                    <p><strong>${a.name}</strong></p>
-                    ${a.data.startsWith('data:image') 
-                        ? `<img src="${a.data}" style="max-width:100%; border-radius:6px;">` 
-                        : `<a href="${a.data}" download="${a.name}">تحميل الملف (${a.name})</a>`}
-                </div>
-            `).join('')}
-        </body></html>
-    `);
-};
+            const debtObj = {
+                id: (editIndex > -1 && sess.debts[editIndex]) ? sess.debts[editIndex].id : 'DBT-' + Date.now().toString().slice(-4),
+                creditor: document.getElementById('db-creditor').value.trim(),
+                date: document.getElementById('db-date').value,
+                deadline: document.getElementById('db-deadline').value,
+                total: parseFloat(document.getElementById('db-total').value) || 0,
+                sessionAmount: parseFloat(document.getElementById('db-session-amount').value) || 0,
+                paid: parseFloat(document.getElementById('db-paid').value) || 0,
+                paymentHistory: (editIndex > -1 && sess.debts[editIndex]) ? (sess.debts[editIndex].paymentHistory || []) : [],
+                attachment: attachmentData
+            };
 
-// تحديث openModal لتهيئة صف صنف افتراضي عند فتح نافذة المصروف
-const origOpenModal = window.openModal;
-window.openModal = function(id) {
-    const m = document.getElementById(id);
-    if (!m) return;
-    m.classList.add('active');
+            if (editIndex > -1 && sess.debts[editIndex]) sess.debts[editIndex] = debtObj;
+            else sess.debts.push(debtObj);
 
-    if (id === 'modal-expense' && document.getElementById('ex-edit-index').value === "-1") {
-        document.getElementById('ex-date').value = new Date().toISOString().split('T')[0];
-        tempAttachments = [];
-        renderAttachmentsPreview();
-        const container = document.getElementById('ex-items-container');
-        if (container) {
-            container.innerHTML = '';
-            addExpenseItemRow();
-        }
-    }
-    if (id === 'modal-debt' && document.getElementById('db-edit-index').value === "-1") {
-        document.getElementById('db-date').value = new Date().toISOString().split('T')[0];
-    }
-};
+            closeModal('modal-debt');
+            renderUI();
+            pushToDrive();
+        };
 
-window.addDebt = function(e) {
-    e.preventDefault();
-    const sess = getCurrentSession();
-    const editIndex = parseInt(document.getElementById('db-edit-index').value);
-    const existingAtt = (editIndex > -1 && sess.debts[editIndex]) ? sess.debts[editIndex].attachment : null;
-    const attachmentData = getAttachmentData('db', existingAtt);
-    if (attachmentData === false) return;
+        window.editDebt = function(index) {
+            const d = getCurrentSession().debts[index];
+            if (!d) return;
+            document.getElementById('db-edit-index').value = index;
+            document.getElementById('db-creditor').value = d.creditor;
+            document.getElementById('db-date').value = d.date;
+            document.getElementById('db-deadline').value = d.deadline;
+            document.getElementById('db-total').value = d.total;
+            document.getElementById('db-session-amount').value = d.sessionAmount || 0;
+            document.getElementById('db-paid').value = d.paid;
 
-    const debtObj = {
-        id: (editIndex > -1 && sess.debts[editIndex]) ? sess.debts[editIndex].id : 'DBT-' + Date.now().toString().slice(-4),
-        creditor: document.getElementById('db-creditor').value.trim(),
-        date: document.getElementById('db-date').value,
-        deadline: document.getElementById('db-deadline').value,
-        total: parseFloat(document.getElementById('db-total').value) || 0,
-        sessionAmount: parseFloat(document.getElementById('db-session-amount').value) || 0,
-        paid: parseFloat(document.getElementById('db-paid').value) || 0,
-        paymentHistory: (editIndex > -1 && sess.debts[editIndex]) ? (sess.debts[editIndex].paymentHistory || []) : [],
-        attachment: attachmentData
-    };
-
-    if (editIndex > -1 && sess.debts[editIndex]) sess.debts[editIndex] = debtObj;
-    else sess.debts.push(debtObj);
-
-    closeModal('modal-debt');
-    renderUI();
-    pushToDrive();
-};
-
-window.editDebt = function(index) {
-    const d = getCurrentSession().debts[index];
-    if (!d) return;
-    document.getElementById('db-edit-index').value = index;
-    document.getElementById('db-creditor').value = d.creditor;
-    document.getElementById('db-date').value = d.date;
-    document.getElementById('db-deadline').value = d.deadline;
-    document.getElementById('db-total').value = d.total;
-    document.getElementById('db-session-amount').value = d.sessionAmount || 0;
-    document.getElementById('db-paid').value = d.paid;
-    openModal('modal-debt');
-};
-
-window.deleteRecord = function(collection, index) {
-    if (confirm('هل أنت متأكد من حذف هذا السجل نهائياً؟')) {
-        getCurrentSession()[collection].splice(index, 1);
-        renderUI();
-        pushToDrive();
-    }
-};
-
-// حفظ المصروف مع الأصناف المتعددة والمرفقات
-window.addExpense = function(e) {
-    e.preventDefault();
-    const sess = getCurrentSession();
-    const editIndex = parseInt(document.getElementById('ex-edit-index').value);
-    const totalAmount = parseFloat(document.getElementById('ex-amount').value) || 0;
-
-    // جمع الأصناف المتعددة
-    const items = [];
-    document.querySelectorAll('.ex-item-row').forEach(row => {
-        const cat = row.querySelector('.item-cat').value;
-        const name = row.querySelector('.item-name').value.trim();
-        const price = parseFloat(row.querySelector('.item-price').value) || 0;
-        if (name || price > 0) items.push({ category: cat, name: name || cat, price });
-    });
-
-    if (items.length === 0) return alert('الرجاء إضافة صنف واحد على الأقل.');
-
-    const uniqueCats = [...new Set(items.map(i => i.category))];
-    const mainCategory = uniqueCats.length === 1 ? uniqueCats[0] : 'متعدد (' + uniqueCats.length + ' أنواع)';
-    const statement = items.map(i => i.name).join(' + ');
-
-    const isMulti = document.getElementById('ex-multi-payer').checked;
-    let payerDisplay = '';
-    let payersSplit = [];
-
-    if (isMulti) {
-        let sumSplits = 0;
-        let minusPayers = [];
-        document.querySelectorAll('.mp-row').forEach(row => {
-            const chk = row.querySelector('.mp-check');
-            const name = chk.getAttribute('data-name');
-            const amt = parseFloat(row.querySelector('.mp-amount').value) || 0;
-            if (chk.checked && amt > 0) {
-                payersSplit.push({ name, amount: amt });
-                sumSplits += amt;
-                const rem = getShareholderRemainingShare(sess, name, editIndex);
-                if (amt > rem) minusPayers.push(`${name} (المتبقي: ${formatCurrency(rem)}، المطلوب: ${formatCurrency(amt)})`);
+            if (d.attachment && d.attachment.type) {
+                document.getElementById('db-attachmentType').value = d.attachment.type;
+                handleAttachmentTypeChange('db');
+                if (d.attachment.type === 'link') {
+                    document.getElementById('db-attachmentUrl').value = d.attachment.data || '';
+                } else if (['receipt', 'invoice', 'transfer'].includes(d.attachment.type) && d.attachment.data) {
+                    document.getElementById('db-attachmentPreview').src = d.attachment.data;
+                    document.getElementById('db-attachmentPreviewContainer').style.display = 'block';
+                }
+            } else {
+                resetAttachmentFields('db');
             }
-        });
-        if (payersSplit.length === 0) return alert('حدد المساهمين المشاركين بالدفع.');
-        if (Math.abs(sumSplits - totalAmount) > 0.05) return alert('مجموع التوزيع لا يطابق إجمالي المصروف!');
-        if (minusPayers.length > 0 && !confirm(`⚠️ المساهمون التالية أسماؤهم ستنزل حصتهم بالسالب:\n- ${minusPayers.join('\n- ')}\nهل تريد الاستمرار؟`)) return;
-        payerDisplay = payersSplit.map(p => `${p.name} (${p.amount})`).join(' ، ');
-    } else {
-        payerDisplay = document.getElementById('ex-payer').value || 'عام';
-        if (typeof checkSinglePayerShare === 'function' && !checkSinglePayerShare()) return;
-    }
 
-    const expenseObj = {
-        id: (editIndex > -1 && sess.expenses[editIndex]) ? sess.expenses[editIndex].id : 'EXP-' + Date.now().toString().slice(-4),
-        date: document.getElementById('ex-date').value,
-        statement: statement,
-        category: mainCategory,
-        items: items,
-        attachments: [...tempAttachments],
-        amount: totalAmount,
-        payer: payerDisplay,
-        isMultiPayer: isMulti,
-        payersSplit: payersSplit,
-        method: document.getElementById('ex-method').value
-    };
+            openModal('modal-debt');
+        };
 
-    if (editIndex > -1 && sess.expenses[editIndex]) sess.expenses[editIndex] = expenseObj;
-    else sess.expenses.push(expenseObj);
+        window.deleteRecord = function(collection, index) {
+            if (confirm('هل أنت متأكد من حذف هذا السجل نهائياً؟')) {
+                getCurrentSession()[collection].splice(index, 1);
+                renderUI();
+                pushToDrive();
+            }
+        };
 
-    closeModal('modal-expense');
-    renderUI();
-    pushToDrive();
-};
+        window.addExpense = function(e) {
+            e.preventDefault();
+            const sess = getCurrentSession();
+            const editIndex = parseInt(document.getElementById('ex-edit-index').value);
+            const totalAmount = parseFloat(document.getElementById('ex-amount').value) || 0;
 
-window.editExpense = function(index) {
-    const e = getCurrentSession().expenses[index];
-    if (!e) return;
-    document.getElementById('ex-edit-index').value = index;
-    document.getElementById('ex-date').value = e.date;
-    document.getElementById('ex-amount').value = e.amount;
-    document.getElementById('ex-method').value = e.method;
+            const items = [];
+            document.querySelectorAll('.ex-item-row').forEach(row => {
+                const cat = row.querySelector('.item-cat').value;
+                const name = row.querySelector('.item-name').value.trim();
+                const price = parseFloat(row.querySelector('.item-price').value) || 0;
+                if (name || price > 0) items.push({ category: cat, name: name || cat, price });
+            });
 
-    const container = document.getElementById('ex-items-container');
-    container.innerHTML = '';
-    if (Array.isArray(e.items) && e.items.length > 0) {
-        e.items.forEach(it => addExpenseItemRow(it.category, it.name, it.price));
-    } else {
-        addExpenseItemRow(e.category, e.statement, e.amount);
-    }
+            if (items.length === 0) return alert('الرجاء إضافة صنف واحد على الأقل.');
 
-    tempAttachments = Array.isArray(e.attachments) ? [...e.attachments] : [];
-    renderAttachmentsPreview();
-    openModal('modal-expense');
-};
+            const collectedAttachments = collectExpenseAttachments();
+            if (collectedAttachments === false) return;
 
-// --- 2. نظام إشعارات البريد الإلكتروني للديون في كل دورة ---
-window.saveNotificationEmail = function(val) {
-    appData.notificationEmail = val.trim();
-    pushToDrive();
-};
+            const uniqueCats = [...new Set(items.map(i => i.category))];
+            const mainCategory = uniqueCats.length === 1 ? uniqueCats[0] : 'متعدد (' + uniqueCats.length + ' أنواع)';
+            const statement = items.map(i => i.name).join(' + ');
 
-window.sendDebtCycleEmail = async function() {
-    const sess = getCurrentSession();
-    const email = (document.getElementById('debt-notify-email')?.value || appData.notificationEmail || '').trim();
-    if (!email) return alert('الرجاء إدخال البريد الإلكتروني أولاً في حقل الإشعارات.');
+            const isMulti = document.getElementById('ex-multi-payer').checked;
+            let payerDisplay = '';
+            let payersSplit = [];
 
-    const unpaidDebts = sess.debts.filter(d => ((Number(d.total) || 0) - (Number(d.paid) || 0)) > 0);
-    if (unpaidDebts.length === 0) return alert('لا توجد ديون غير مسددة في هذه الدورة لإرسال إشعار بها!');
+            if (isMulti) {
+                let sumSplits = 0;
+                let minusPayers = [];
+                document.querySelectorAll('.mp-row').forEach(row => {
+                    const chk = row.querySelector('.mp-check');
+                    const name = chk.getAttribute('data-name');
+                    const amt = parseFloat(row.querySelector('.mp-amount').value) || 0;
+                    if (chk.checked && amt > 0) {
+                        payersSplit.push({ name, amount: amt });
+                        sumSplits += amt;
+                        const rem = getShareholderRemainingShare(sess, name, editIndex);
+                        if (amt > rem) {
+                            minusPayers.push(`${name} (الرصيد المدفوع المتبقي: ${formatCurrency(rem)}، المصروف المطلوب: ${formatCurrency(amt)} ⬅️ سيصبح: ${formatCurrency(rem - amt)})`);
+                        }
+                    }
+                });
+                if (payersSplit.length === 0) return alert('حدد المساهمين المشاركين بالدفع.');
+                if (Math.abs(sumSplits - totalAmount) > 0.05) return alert('مجموع التوزيع لا يطابق إجمالي المصروف!');
+                if (minusPayers.length > 0 && !confirm(`⚠️ المساهمون التالية أسماؤهم ستنزل حصتهم بالسالب (Minus):\n- ${minusPayers.join('\n- ')}\n\nهل تريد الاستمرار؟`)) return;
+                payerDisplay = payersSplit.map(p => `${p.name} (${p.amount})`).join(' ، ');
+            } else {
+                payerDisplay = document.getElementById('ex-payer').value || 'عام';
+                if (typeof checkSinglePayerShare === 'function' && !checkSinglePayerShare()) return;
+            }
 
-    const subject = `إشعار ديون والتزامات: ${sess.name} - تطبيق مصروفاتي`;
-    const bodyLines = [
-        `مرحباً،`,
-        `إليك ملخص الديون والالتزامات المستحقة في (${sess.name}):`,
-        `----------------------------------------`,
-        ...unpaidDebts.map((d, i) => {
-            const rem = (Number(d.total) || 0) - (Number(d.paid) || 0);
-            return `${i+1}. الدائن: ${d.creditor} | قسط الدورة: ${formatCurrency(d.sessionAmount || rem)} | المتبقي الكلي: ${formatCurrency(rem)} | الاستحقاق: ${d.deadline || 'غير محدد'}`;
-        }),
-        `----------------------------------------`,
-        `تم الإرسال من نظام مصروفاتي.`
-    ].join('\n');
+            const expenseObj = {
+                id: (editIndex > -1 && sess.expenses[editIndex]) ? sess.expenses[editIndex].id : 'EXP-' + Date.now().toString().slice(-4),
+                date: document.getElementById('ex-date').value,
+                statement: statement,
+                category: mainCategory,
+                items: items,
+                attachments: collectedAttachments,
+                attachment: collectedAttachments[0] || null,
+                amount: totalAmount,
+                payer: payerDisplay,
+                isMultiPayer: isMulti,
+                payersSplit: payersSplit,
+                method: document.getElementById('ex-method').value
+            };
 
-    // محاولة الإرسال التلقائي عبر Google Apps Script إن كان مفعلاً، أو فتح البريد الجاهز
-    try {
-        await fetch(GOOGLE_SCRIPT_URL, {
-            method: 'POST',
-            headers: { "Content-Type": "text/plain;charset=utf-8" },
-            body: JSON.stringify({ ...appData, emailAction: { to: email, subject, body: bodyLines } })
-        });
-    } catch (err) {}
+            if (editIndex > -1 && sess.expenses[editIndex]) sess.expenses[editIndex] = expenseObj;
+            else sess.expenses.push(expenseObj);
 
-    window.location.href = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines)}`;
-};
+            closeModal('modal-expense');
+            renderUI();
+            pushToDrive();
+        };
+
+        window.editExpense = function(index) {
+            const e = getCurrentSession().expenses[index];
+            if (!e) return;
+            document.getElementById('ex-edit-index').value = index;
+            document.getElementById('ex-date').value = e.date;
+            document.getElementById('ex-amount').value = e.amount;
+            document.getElementById('ex-method').value = e.method;
+
+            updateDropdowns();
+
+            const container = document.getElementById('ex-items-container');
+            container.innerHTML = '';
+            if (Array.isArray(e.items) && e.items.length > 0) {
+                e.items.forEach(it => addExpenseItemRow(it.category, it.name, it.price));
+            } else {
+                addExpenseItemRow(e.category, e.statement, e.amount);
+            }
+
+            document.getElementById('ex-multi-payer').checked = !!e.isMultiPayer;
+            toggleMultiPayer();
+
+            if (e.isMultiPayer && Array.isArray(e.payersSplit)) {
+                document.querySelectorAll('.mp-row').forEach(row => {
+                    const chk = row.querySelector('.mp-check');
+                    const inp = row.querySelector('.mp-amount');
+                    const name = chk.getAttribute('data-name');
+                    const found = e.payersSplit.find(p => p.name === name);
+                    if (found) {
+                        chk.checked = true;
+                        inp.value = found.amount;
+                    } else {
+                        chk.checked = false;
+                        inp.value = '';
+                    }
+                });
+            } else if (e.payer) {
+                document.getElementById('ex-payer').value = e.payer;
+            }
+
+            const existingAtts = getNormalizedAttachments(e);
+            resetExAttachmentRows(existingAtts);
+
+            openModal('modal-expense');
+        };
+
+        window.saveNotificationEmail = function(val) {
+            appData.notificationEmail = val.trim();
+            pushToDrive();
+        };
+
+        window.sendDebtCycleEmail = async function() {
+            const sess = getCurrentSession();
+            const email = (document.getElementById('debt-notify-email')?.value || appData.notificationEmail || '').trim();
+            if (!email) return alert('الرجاء إدخال البريد الإلكتروني أولاً في حقل الإشعارات.');
+
+            const unpaidDebts = sess.debts.filter(d => ((Number(d.total) || 0) - (Number(d.paid) || 0)) > 0);
+            if (unpaidDebts.length === 0) return alert('لا توجد ديون غير مسددة في هذه الدورة لإرسال إشعار بها!');
+
+            const subject = `إشعار ديون والتزامات: ${sess.name} - تطبيق مصروفاتي`;
+            const bodyLines = [
+                `مرحباً،`,
+                `إليك ملخص الديون والالتزامات المستحقة في (${sess.name}):`,
+                `----------------------------------------`,
+                ...unpaidDebts.map((d, i) => {
+                    const rem = (Number(d.total) || 0) - (Number(d.paid) || 0);
+                    return `${i+1}. الدائن: ${d.creditor} | قسط الدورة: ${formatCurrency(d.sessionAmount || rem)} | المتبقي الكلي: ${formatCurrency(rem)} | الاستحقاق: ${d.deadline || 'غير محدد'}`;
+                }),
+                `----------------------------------------`,
+                `تم الإرسال من نظام مصروفاتي.`
+            ].join('\n');
+
+            try {
+                await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify({ ...appData, emailAction: { to: email, subject, body: bodyLines } })
+                });
+            } catch (err) {}
+
+            window.location.href = `mailto:${encodeURIComponent(email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(bodyLines)}`;
+        };
+
         window.closeModal = function(id) {
             const m = document.getElementById(id);
             if (!m) return;
@@ -2044,7 +2294,11 @@ window.sendDebtCycleEmail = async function() {
             if (document.getElementById('sh-edit-index')) document.getElementById('sh-edit-index').value = "-1";
             if (document.getElementById('ex-edit-index')) document.getElementById('ex-edit-index').value = "-1";
             if (document.getElementById('db-edit-index')) document.getElementById('db-edit-index').value = "-1";
-            if (id === 'modal-expense') resetAttachmentFields('ex');
+            if (id === 'modal-expense') {
+                resetExAttachmentRows([]);
+                document.getElementById('single-payer-group').style.display = 'block';
+                document.getElementById('multi-payer-group').style.display = 'none';
+            }
             if (id === 'modal-debt') resetAttachmentFields('db');
         };
 
@@ -2055,7 +2309,11 @@ window.sendDebtCycleEmail = async function() {
             if (ev && ev.currentTarget) ev.currentTarget.classList.add('active');
         };
 
-        window.handleCategoryChange = function() {};
+        window.handleCategoryChange = function() {
+            const mainCat = document.getElementById('ex-category').value;
+            const firstItemCat = document.querySelector('#ex-items-container .ex-item-row .item-cat');
+            if (firstItemCat) firstItemCat.value = mainCat;
+        };
 
         window.toggleMultiPayer = function() {
             const isMulti = document.getElementById('ex-multi-payer').checked;
