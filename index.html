@@ -1496,18 +1496,31 @@
             });
             return Math.round(totalSpent * 100) / 100;
         }
+// جلب الرصيد المتبقي للمساهم من الدورة السابقة تلقائياً ليُحتسب كرصيد متاح (Available Budget)
+        function getCarriedShareFromPrevSession(sess, shareholderName) {
+            if (!sess || !Array.isArray(appData.sessions)) return 0;
+            const sh = Array.isArray(sess.shareholders) ? sess.shareholders.find(s => s.name === shareholderName) : null;
+            if (sh && Number(sh.carriedShare) > 0) {
+                return Number(sh.carriedShare);
+            }
+            const idx = appData.sessions.findIndex(s => s.id === sess.id);
+            if (idx > 0) {
+                const prevSess = appData.sessions[idx - 1];
+                const prevRem = getShareholderRemainingShare(prevSess, shareholderName);
+                return prevRem > 0 ? Math.round(prevRem * 100) / 100 : 0;
+            }
+            return 0;
+        }
 
-        // حساب الرصيد المتبقي للمساهم: يعتمد فقط على ما دفعه المساهم فعلياً (sh.paid) + المرحّل
-        // فإذا لم يدفع حصته بعد (paid = 0)، يكون رصيده المتاح 0 وأي مصروف يُسجل عليه ينزل بالسالب (Minus)
+        // الرصيد المتاح في الدورة الحالية = (المدفوع في الدورة الحالية + المتبقي المرحّل من الدورة السابقة) - المصروفات
         function getShareholderRemainingShare(sess, shareholderName, excludeExpenseIndex = -1) {
             if (!sess) return 0;
             const sh = Array.isArray(sess.shareholders) ? sess.shareholders.find(s => s.name === shareholderName) : null;
             const currentPaid = sh ? (Number(sh.paid) || 0) : 0;
-            const carriedFromPrev = sh ? (Number(sh.carriedShare) || 0) : 0;
+            const carriedFromPrev = getCarriedShareFromPrevSession(sess, shareholderName);
             const spent = getShareholderSpent(sess, shareholderName, excludeExpenseIndex);
             return Math.round((currentPaid + carriedFromPrev - spent) * 100) / 100;
         }
-
         // --- المزامنة والحفظ ---
         async function fetchFromDrive() {
             const indicator = document.getElementById('sync-indicator');
@@ -1581,7 +1594,7 @@
             openModal('modal-new-session');
         }
 
-        function confirmStartNewSession() {
+       function confirmStartNewSession() {
             const name = document.getElementById('new-session-name').value.trim() || 'دورة جديدة';
             const startDate = document.getElementById('new-session-date').value || new Date().toISOString().split('T')[0];
             const importContributors = document.getElementById('import-contributors-check').checked;
@@ -1608,32 +1621,21 @@
                 });
             }
 
+            // ترحيل الأرصدة المتبقية من الدورة السابقة تلقائياً كميزانية متاحة في الدورة الجديدة
             const remainingSharesMap = {};
-            const remainingListText = [];
-
             if (activeSess && Array.isArray(activeSess.shareholders)) {
                 activeSess.shareholders.forEach(s => {
                     const remShare = getShareholderRemainingShare(activeSess, s.name);
                     if (remShare > 0) {
                         remainingSharesMap[s.name] = remShare;
-                        remainingListText.push(`• ${s.name}: ${formatCurrency(remShare)}`);
                     }
                 });
-            }
-
-            let shouldTransferShares = false;
-            if (remainingListText.length > 0) {
-                shouldTransferShares = confirm(
-                    `💰 يوجد مساهمون لديهم رصيد متبقٍ من حصصهم في الدورة السابقة (${activeSess.name}):\n\n` +
-                    remainingListText.join('\n') +
-                    `\n\nهل تريد ترحيل هذه الأرصدة المتبقية وإضافتها إلى حصصهم في الدورة الجديدة؟`
-                );
             }
 
             const newShareholders = [];
             if (importContributors && appData.permanentContributors.length > 0) {
                 appData.permanentContributors.forEach((c, idx) => {
-                    const carriedAmount = (shouldTransferShares && remainingSharesMap[c.name]) ? remainingSharesMap[c.name] : 0;
+                    const carriedAmount = remainingSharesMap[c.name] || 0;
                     newShareholders.push({
                         id: 'SH-' + (idx + 1).toString().padStart(3, '0'),
                         name: c.name,
@@ -1650,7 +1652,7 @@
                 id: 'sess_' + Date.now(),
                 name: name,
                 startDate: startDate,
-                carriedFromDate: shouldTransferShares ? (activeSess.startDate || '') : '',
+                carriedFromDate: activeSess ? (activeSess.startDate || '') : '',
                 shareholders: newShareholders,
                 expenses: [],
                 debts: carriedDebts
@@ -1663,7 +1665,7 @@
             closeModal('modal-new-session');
             renderUI();
             pushToDrive();
-            alert('تم بدء الدورة بنجاح، وترحيل الديون المتبقية (' + carriedDebts.length + ' دين) كأرصدة مستقلة.');
+            alert('تم بدء الدورة الجديدة بنجاح، وإضافة المتبقي من الدورة السابقة كرصيد متاح في هذه الدورة.');
         }
 
         window.quickPayInstallment = function(debtIndex) {
@@ -1785,26 +1787,29 @@
             document.getElementById('shareholders-body').innerHTML = sess.shareholders.map((s, index) => {
                 const quotaVal = Number(s.quota) || 0;
                 const paidVal = Number(s.paid) || 0;
+                const carriedShare = getCarriedShareFromPrevSession(sess, s.name);
+                s.carriedShare = carriedShare; // مزامنة القيمة المرحّلة
+
                 const remaining = quotaVal - paidVal;
                 const spentFromShare = getShareholderSpent(sess, s.name);
                 const remainingShare = getShareholderRemainingShare(sess, s.name);
-                totalSubs += paidVal;
 
-                const carriedShare = Number(s.carriedShare) || 0;
+                totalSubs += paidVal;
                 totalCarried += carriedShare;
+
                 const shCarriedDate = s.carriedFromDate || prevSessDate || '';
                 const carriedBadge = carriedShare > 0
-                    ? `<div style="margin-top:4px;"><span class="badge info"><i class="fas fa-level-up-alt"></i> متبقي من دورة بتاريخ (${shCarriedDate}): ${formatCurrency(carriedShare)}</span></div>`
+                    ? `<div style="margin-top:4px;"><span class="badge success"><i class="fas fa-wallet"></i> رصيد متاح مرحّل من دورة (${shCarriedDate}): ${formatCurrency(carriedShare)}</span></div>`
                     : '';
 
                 let shareColor = 'var(--success)';
-                let shareBadge = '';
+                let shareBadge = '<span class="badge success">متاح للصرف</span>';
                 if (remainingShare < 0) {
                     shareColor = 'var(--danger)';
                     shareBadge = '<span class="badge danger">خصم بالسالب (Minus)</span>';
                 } else if (remainingShare === 0) {
                     shareColor = '#b18817';
-                    shareBadge = paidVal === 0
+                    shareBadge = (paidVal === 0 && carriedShare === 0)
                         ? '<span class="badge warning">لم يدفع الحصة بعد</span>'
                         : '<span class="badge warning">صفر</span>';
                 }
@@ -1817,7 +1822,9 @@
                     <td dir="ltr">${formatCurrency(remaining)}</td>
                     <td dir="ltr" style="font-weight:bold; color:${shareColor};">
                         ${formatCurrency(remainingShare)} ${shareBadge}
-                        <div style="font-size:11px; color:#858796; font-weight:normal;" dir="rtl">صُرف من حصته: ${formatCurrency(spentFromShare)}</div>
+                        <div style="font-size:11px; color:#858796; font-weight:normal;" dir="rtl">
+                            إجمالي المتاح له بالدورة: ${formatCurrency(paidVal + carriedShare)} | صُرف منه: ${formatCurrency(spentFromShare)}
+                        </div>
                     </td>
                     <td>${getStatusBadge(remaining, quotaVal)}</td>
                     <td>
@@ -1827,6 +1834,14 @@
                     </td>
                 </tr>`;
             }).join('');
+
+            // إذا لم يتم إضافة المساهمين بعد في الدورة الجديدة، نحسب إجمالي المتبقي من الدورة السابقة ليظهر في اللوحة الرئيسية
+            if (totalCarried === 0 && prevSess && Array.isArray(prevSess.shareholders)) {
+                prevSess.shareholders.forEach(ps => {
+                    const rem = getShareholderRemainingShare(prevSess, ps.name);
+                    if (rem > 0) totalCarried += rem;
+                });
+            }
 
             // 2. جدول المصروفات
             let filteredExpenses = sess.expenses.map((e, idx) => ({ ...e, _origIndex: idx }));
@@ -1897,11 +1912,13 @@
                 </tr>`;
             }).join('');
 
+            const netAvailableBudget = totalSubs + totalCarried - totalExp;
+
             document.getElementById('total-subscriptions').innerText = formatCurrency(totalSubs);
             const carriedTitleEl = document.getElementById('carried-card-title');
             const carriedValEl = document.getElementById('total-carried-share');
             if (carriedTitleEl) {
-                carriedTitleEl.innerText = prevSessDate && totalCarried > 0
+                carriedTitleEl.innerText = prevSessDate
                     ? `المتبقي من دورة بتاريخ: ${prevSessDate}`
                     : `المتبقي المرحّل من الدورة السابقة`;
             }
@@ -1909,11 +1926,12 @@
                 carriedValEl.innerText = formatCurrency(totalCarried);
             }
             document.getElementById('total-expenses').innerText = formatCurrency(totalExp);
-            document.getElementById('net-balance').innerText = formatCurrency(totalSubs + totalCarried - totalExp);
+            document.getElementById('net-balance').innerText = formatCurrency(netAvailableBudget);
             document.getElementById('total-debts').innerText = formatCurrency(totalRemainingDebts);
 
             updateDropdowns();
         }
+
         function updateDropdowns() {
             ensureDataStructure();
             const sess = getCurrentSession();
@@ -1935,9 +1953,8 @@
                 payerSelect.innerHTML = allNames.length > 0
                     ? allNames.map(name => {
                         const rem = getShareholderRemainingShare(sess, name, editExpIndex);
-                        const sh = sess.shareholders.find(s => s.name === name);
-                        const unpaidNote = (!sh || (Number(sh.paid) || 0) === 0) ? ' - لم يدفع الحصة بعد' : '';
-                        return `<option value="${name}">${name} (المتبقي من الحصة: ${formatCurrency(rem)}${unpaidNote})</option>`;
+                        const statusNote = rem > 0 ? 'متاح' : (rem === 0 ? 'رصيده صفر' : 'بالسالب');
+                        return `<option value="${name}">${name} (المتاح من الحصة: ${formatCurrency(rem)} - ${statusNote})</option>`;
                     }).join('')
                     : '<option value="عام">عام</option>';
             }
@@ -1952,68 +1969,13 @@
                         <label>
                             <input type="checkbox" class="mp-check" data-name="${name}" onchange="splitExpenseEqually()">
                             <span>${name}</span>
-                            <span class="badge ${badgeClass}" dir="ltr">المتبقي: ${formatCurrency(rem)}</span>
+                            <span class="badge ${badgeClass}" dir="ltr">المتاح: ${formatCurrency(rem)}</span>
                         </label>
                         <input type="number" class="mp-amount" data-name="${name}" step="0.01" placeholder="0.00">
                     </div>`;
                 }).join('');
             }
         }
-
-        window.fillSavedContributor = function() {
-            const idx = document.getElementById('sh-saved-list').value;
-            if (idx !== "") {
-                const c = appData.permanentContributors[idx];
-                document.getElementById('sh-name').value = c.name;
-                document.getElementById('sh-quota').value = c.quota;
-                document.getElementById('sh-paid').value = 0;
-            }
-        };
-
-        window.deletePermanentContributor = function() {
-            const idx = document.getElementById('sh-saved-list').value;
-            if (idx === "") return alert("اختر اسماً من القائمة أولاً لحذفه.");
-            if (confirm("هل تريد مسحه من القائمة العامة؟")) {
-                appData.permanentContributors.splice(idx, 1);
-                updateDropdowns();
-                pushToDrive();
-            }
-        };
-
-        window.addShareholder = function(e) {
-            e.preventDefault();
-            const sess = getCurrentSession();
-            const name = document.getElementById('sh-name').value.trim();
-            const quota = parseFloat(document.getElementById('sh-quota').value) || 0;
-            const paid = parseFloat(document.getElementById('sh-paid').value) || 0;
-            const editIndex = parseInt(document.getElementById('sh-edit-index').value);
-
-            const existingPerm = appData.permanentContributors.find(c => c.name === name);
-            if (existingPerm) existingPerm.quota = quota;
-            else appData.permanentContributors.push({ name, quota });
-
-            if (editIndex > -1 && sess.shareholders[editIndex]) {
-                sess.shareholders[editIndex].name = name;
-                sess.shareholders[editIndex].quota = quota;
-                sess.shareholders[editIndex].paid = paid;
-            } else {
-                sess.shareholders.push({ id: 'SH-' + Date.now().toString().slice(-4), name, quota, paid });
-            }
-
-            closeModal('modal-shareholder');
-            renderUI();
-            pushToDrive();
-        };
-
-        window.editShareholder = function(index) {
-            const s = getCurrentSession().shareholders[index];
-            if (!s) return;
-            document.getElementById('sh-edit-index').value = index;
-            document.getElementById('sh-name').value = s.name;
-            document.getElementById('sh-quota').value = s.quota;
-            document.getElementById('sh-paid').value = s.paid;
-            openModal('modal-shareholder');
-        };
 
         window.checkSinglePayerShare = function() {
             const sess = getCurrentSession();
@@ -2022,41 +1984,39 @@
             const amount = parseFloat(document.getElementById('ex-amount').value) || 0;
             if (!payerName || payerName === 'عام') return true;
 
+            // remShare يشمل المدفوع حالياً + المتبقي المرحّل من الدورة السابقة
             const remShare = getShareholderRemainingShare(sess, payerName, editIndex);
-            const sh = sess.shareholders.find(s => s.name === payerName);
-            const notPaidYet = !sh || (Number(sh.paid) || 0) === 0;
 
-            if (remShare <= 0 || (amount > 0 && remShare < amount)) {
-                const alternatives = sess.shareholders
-                    .map(s => ({ name: s.name, rem: getShareholderRemainingShare(sess, s.name, editIndex) }))
-                    .filter(s => s.name !== payerName && s.rem > 0)
-                    .sort((a, b) => b.rem - a.rem);
+            // إذا كان الرصيد المتاح (شاملاً المرحّل من الدورة السابقة) يغطي المصروف، لا يظهر أي تحذير ولا يُحسب بالسالب
+            if (remShare > 0 && remShare >= amount) {
+                return true;
+            }
 
-                const altText = alternatives.length > 0
-                    ? `المساهم المتاح بدلاً منه: (${alternatives[0].name}) برصيد متبقٍ (${formatCurrency(alternatives[0].rem)}).`
-                    : `لا يوجد مساهم آخر لديه رصيد مدفوع متبقٍ حالياً.`;
+            const alternatives = sess.shareholders
+                .map(s => ({ name: s.name, rem: getShareholderRemainingShare(sess, s.name, editIndex) }))
+                .filter(s => s.name !== payerName && s.rem > 0)
+                .sort((a, b) => b.rem - a.rem);
 
-                const reasonText = notPaidYet
-                    ? `لم يدفع حصته المقررة في هذه الدورة بعد (المدفوع: 0.00 ر.ع)`
-                    : `المتبقي من حصته المدفوعة هو (${formatCurrency(remShare)})`;
+            const altText = alternatives.length > 0
+                ? `المساهم المتاح بدلاً منه: (${alternatives[0].name}) برصيد متاح (${formatCurrency(alternatives[0].rem)}).`
+                : `لا يوجد مساهم آخر لديه رصيد متاح حالياً.`;
 
-                const newBalanceAfter = remShare - amount;
+            const newBalanceAfter = remShare - amount;
 
-                const msg = `⚠️ تنبيه رصيد الحصة:\n` +
-                            `المساهم (${payerName}) ${reasonText}` +
-                            (amount > 0 ? `، وعند تسجيل هذا المصروف (${formatCurrency(amount)}) سيصبح رصيده بالسالب (${formatCurrency(newBalanceAfter)})` : ``) + `.\n\n` +
-                            `• اضغط [موافق / OK] للاستمرار وتسجيل المصروف عليه بالسالب (Minus).\n` +
-                            `• اضغط [إلغاء / Cancel] لاختيار مساهم آخر.\n` +
-                            `${altText}`;
+            const msg = `⚠️ تنبيه رصيد الحصة:\n` +
+                        `المساهم (${payerName}) رصيده المتاح حالياً (شاملاً المرحّل من الدورة السابقة) هو (${formatCurrency(remShare)})` +
+                        (amount > 0 ? `، وعند تسجيل هذا المصروف (${formatCurrency(amount)}) سيصبح رصيده بالسالب (${formatCurrency(newBalanceAfter)})` : ``) + `.\n\n` +
+                        `• اضغط [موافق / OK] للاستمرار وتسجيل الفرق بالسالب (Minus).\n` +
+                        `• اضغط [إلغاء / Cancel] لاختيار مساهم آخر.\n` +
+                        `${altText}`;
 
-                const continueWithMinus = confirm(msg);
-                if (!continueWithMinus) {
-                    if (alternatives.length > 0) {
-                        document.getElementById('ex-payer').value = alternatives[0].name;
-                        alert(`تم تغيير الدافع تلقائياً إلى: ${alternatives[0].name}`);
-                    }
-                    return false;
+            const continueWithMinus = confirm(msg);
+            if (!continueWithMinus) {
+                if (alternatives.length > 0) {
+                    document.getElementById('ex-payer').value = alternatives[0].name;
+                    alert(`تم تغيير الدافع تلقائياً إلى: ${alternatives[0].name}`);
                 }
+                return false;
             }
             return true;
         };
