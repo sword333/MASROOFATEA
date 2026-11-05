@@ -398,10 +398,14 @@
                 </button>
             </div>
         </div>
-
+        
         <!-- لوحة الإحصائيات -->
         <div class="dashboard">
             <div class="card"><h3>إجمالي الاشتراكات المحصلة (الحصص)</h3><p id="total-subscriptions">0.00 ر.ع</p></div>
+            <div class="card" style="border-right-color: var(--info);">
+                <h3 id="carried-card-title">المتبقي من دورة بتاريخ: --</h3>
+                <p id="total-carried-share" style="color: var(--info);">0.00 ر.ع</p>
+            </div>
             <div class="card expenses"><h3>إجمالي المصروفات الفعلية</h3><p id="total-expenses">0.00 ر.ع</p></div>
             <div class="card balance"><h3>صافي الرصيد المتاح للصندوق</h3><p id="net-balance">0.00 ر.ع</p></div>
             <div class="card debts"><h3>سجل الديون المتبقية (توثيقي فقط)</h3><p id="total-debts">0.00 ر.ع</p></div>
@@ -1600,7 +1604,7 @@
                 );
             }
 
-            const newShareholders = [];
+           const newShareholders = [];
             if (importContributors && appData.permanentContributors.length > 0) {
                 appData.permanentContributors.forEach((c, idx) => {
                     const carriedAmount = (shouldTransferShares && remainingSharesMap[c.name]) ? remainingSharesMap[c.name] : 0;
@@ -1610,7 +1614,8 @@
                         quota: c.quota,
                         paid: 0,
                         carriedShare: carriedAmount,
-                        carriedFromSession: carriedAmount > 0 ? activeSess.name : ''
+                        carriedFromSession: carriedAmount > 0 ? activeSess.name : '',
+                        carriedFromDate: carriedAmount > 0 ? (activeSess.startDate || '') : ''
                     });
                 });
             }
@@ -1619,6 +1624,7 @@
                 id: 'sess_' + Date.now(),
                 name: name,
                 startDate: startDate,
+                carriedFromDate: shouldTransferShares ? (activeSess.startDate || '') : '',
                 shareholders: newShareholders,
                 expenses: [],
                 debts: carriedDebts
@@ -1743,7 +1749,12 @@
             const fromDate = document.getElementById('filter-from').value;
             const toDate = document.getElementById('filter-to').value;
 
-            let totalSubs = 0, totalExp = 0, totalRemainingDebts = 0;
+            let totalSubs = 0, totalCarried = 0, totalExp = 0, totalRemainingDebts = 0;
+
+            // جلب تاريخ الدورة السابقة تلقائياً
+            const currentSessIdx = appData.sessions.findIndex(s => s.id === sess.id);
+            const prevSess = currentSessIdx > 0 ? appData.sessions[currentSessIdx - 1] : null;
+            const prevSessDate = sess.carriedFromDate || (prevSess ? prevSess.startDate : '');
 
             // 1. جدول المساهمين
             document.getElementById('shareholders-body').innerHTML = sess.shareholders.map((s, index) => {
@@ -1755,6 +1766,11 @@
                 totalSubs += paidVal;
 
                 const carriedShare = Number(s.carriedShare) || 0;
+                totalCarried += carriedShare;
+                const shCarriedDate = s.carriedFromDate || prevSessDate || '';
+                const carriedBadge = carriedShare > 0
+                    ? `<div style="margin-top:4px;"><span class="badge info"><i class="fas fa-level-up-alt"></i> متبقي من دورة بتاريخ (${shCarriedDate}): ${formatCurrency(carriedShare)}</span></div>`
+                    : '';
                 const carriedBadge = carriedShare > 0
                     ? `<div style="margin-top:4px;"><span class="badge info"><i class="fas fa-level-up-alt"></i> متبقي من الدورة السابقة: ${formatCurrency(carriedShare)}</span></div>`
                     : '';
@@ -1860,8 +1876,12 @@
             }).join('');
 
             document.getElementById('total-subscriptions').innerText = formatCurrency(totalSubs);
+            document.getElementById('carried-card-title').innerText = prevSessDate && totalCarried > 0
+                ? `المتبقي من دورة بتاريخ: ${prevSessDate}`
+                : `المتبقي المرحّل من الدورة السابقة`;
+            document.getElementById('total-carried-share').innerText = formatCurrency(totalCarried);
             document.getElementById('total-expenses').innerText = formatCurrency(totalExp);
-            document.getElementById('net-balance').innerText = formatCurrency(totalSubs - totalExp);
+            document.getElementById('net-balance').innerText = formatCurrency(totalSubs + totalCarried - totalExp);
             document.getElementById('total-debts').innerText = formatCurrency(totalRemainingDebts);
 
             updateDropdowns();
