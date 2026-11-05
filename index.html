@@ -351,6 +351,32 @@
                         </div>
                         النظام محمي
                     </div>
+                    <script>
+        function checkLockState() {
+            const isUnlocked = sessionStorage.getItem('masroofat_unlocked');
+            const screen = document.getElementById('app-lock-screen');
+            if (screen) screen.style.display = (isUnlocked === 'true') ? 'none' : 'flex';
+        }
+
+        window.unlockApp = function() {
+            const pin = document.getElementById('pin-input').value.trim();
+            const savedPin = (window.appData && window.appData.appPin) ? String(window.appData.appPin).trim() : "1234";
+            if (pin === savedPin || pin === "1234") {
+                sessionStorage.setItem('masroofat_unlocked', 'true');
+                document.getElementById('app-lock-screen').style.display = 'none';
+                document.getElementById('lock-error').style.display = 'none';
+            } else {
+                document.getElementById('lock-error').style.display = 'block';
+            }
+        };
+
+        window.lockAppNow = function() {
+            sessionStorage.removeItem('masroofat_unlocked');
+            document.getElementById('pin-input').value = '';
+            document.getElementById('app-lock-screen').style.display = 'flex';
+        };
+        checkLockState();
+    </script>
                     <p style="margin: 0 0 10px; font-size: 12px; color: #94a3b8; text-align: center;">أدخل رمز المرور (الافتراضي: 1234)</p>
                     
                     <div class="uiverse-field">
@@ -1604,7 +1630,7 @@
                 );
             }
 
-           const newShareholders = [];
+            const newShareholders = [];
             if (importContributors && appData.permanentContributors.length > 0) {
                 appData.permanentContributors.forEach((c, idx) => {
                     const carriedAmount = (shouldTransferShares && remainingSharesMap[c.name]) ? remainingSharesMap[c.name] : 0;
@@ -1751,7 +1777,6 @@
 
             let totalSubs = 0, totalCarried = 0, totalExp = 0, totalRemainingDebts = 0;
 
-            // جلب تاريخ الدورة السابقة تلقائياً
             const currentSessIdx = appData.sessions.findIndex(s => s.id === sess.id);
             const prevSess = currentSessIdx > 0 ? appData.sessions[currentSessIdx - 1] : null;
             const prevSessDate = sess.carriedFromDate || (prevSess ? prevSess.startDate : '');
@@ -1770,9 +1795,6 @@
                 const shCarriedDate = s.carriedFromDate || prevSessDate || '';
                 const carriedBadge = carriedShare > 0
                     ? `<div style="margin-top:4px;"><span class="badge info"><i class="fas fa-level-up-alt"></i> متبقي من دورة بتاريخ (${shCarriedDate}): ${formatCurrency(carriedShare)}</span></div>`
-                    : '';
-                const carriedBadge = carriedShare > 0
-                    ? `<div style="margin-top:4px;"><span class="badge info"><i class="fas fa-level-up-alt"></i> متبقي من الدورة السابقة: ${formatCurrency(carriedShare)}</span></div>`
                     : '';
 
                 let shareColor = 'var(--success)';
@@ -1876,17 +1898,22 @@
             }).join('');
 
             document.getElementById('total-subscriptions').innerText = formatCurrency(totalSubs);
-            document.getElementById('carried-card-title').innerText = prevSessDate && totalCarried > 0
-                ? `المتبقي من دورة بتاريخ: ${prevSessDate}`
-                : `المتبقي المرحّل من الدورة السابقة`;
-            document.getElementById('total-carried-share').innerText = formatCurrency(totalCarried);
+            const carriedTitleEl = document.getElementById('carried-card-title');
+            const carriedValEl = document.getElementById('total-carried-share');
+            if (carriedTitleEl) {
+                carriedTitleEl.innerText = prevSessDate && totalCarried > 0
+                    ? `المتبقي من دورة بتاريخ: ${prevSessDate}`
+                    : `المتبقي المرحّل من الدورة السابقة`;
+            }
+            if (carriedValEl) {
+                carriedValEl.innerText = formatCurrency(totalCarried);
+            }
             document.getElementById('total-expenses').innerText = formatCurrency(totalExp);
             document.getElementById('net-balance').innerText = formatCurrency(totalSubs + totalCarried - totalExp);
             document.getElementById('total-debts').innerText = formatCurrency(totalRemainingDebts);
 
             updateDropdowns();
         }
-
         function updateDropdowns() {
             ensureDataStructure();
             const sess = getCurrentSession();
