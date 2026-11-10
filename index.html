@@ -1912,9 +1912,20 @@
                 </tr>`;
             }).join('');
 
-            const netAvailableBudget = totalSubs + totalCarried - totalExp;
+            // إجمالي الحصص المتاحة في اللوحة الرئيسية = المدفوع بالدورة الحالية + المتبقي المرحّل من الدورات السابقة
+            const totalPaidAndCarried = totalSubs + totalCarried;
+            const netAvailableBudget = totalPaidAndCarried - totalExp;
 
-            document.getElementById('total-subscriptions').innerText = formatCurrency(totalSubs);
+            const totalSubsEl = document.getElementById('total-subscriptions');
+            if (totalSubsEl) {
+                totalSubsEl.innerHTML = formatCurrency(totalPaidAndCarried) +
+                    (totalCarried > 0
+                        ? `<div style="font-size:12px; color:var(--info); margin-top:5px; font-weight:600;">
+                               <i class="fas fa-history"></i> شامل متبقي من دورة (${prevSessDate || 'سابقة'}): ${formatCurrency(totalCarried)}
+                           </div>`
+                        : '');
+            }
+
             const carriedTitleEl = document.getElementById('carried-card-title');
             const carriedValEl = document.getElementById('total-carried-share');
             if (carriedTitleEl) {
@@ -1925,6 +1936,7 @@
             if (carriedValEl) {
                 carriedValEl.innerText = formatCurrency(totalCarried);
             }
+
             document.getElementById('total-expenses').innerText = formatCurrency(totalExp);
             document.getElementById('net-balance').innerText = formatCurrency(netAvailableBudget);
             document.getElementById('total-debts').innerText = formatCurrency(totalRemainingDebts);
@@ -2024,12 +2036,23 @@
         window.addExpenseItemRow = function(cat = null, name = '', price = '') {
             const container = document.getElementById('ex-items-container');
             if (!container) return;
+
+            const currentRows = container.querySelectorAll('.ex-item-row');
+            if (currentRows.length >= 5) {
+                alert('⚠️ لقد وصلت إلى الحد الأقصى للأصناف في المصروف الواحد (5 أصناف كحد أقصى).\n\n💡 نصيحة: يرجى حفظ هذا المصروف أولاً، ثم إضافة مصروف جديد لتسجيل بقية الأصناف.');
+                return;
+            }
+
+            // توسيع الحاوية لتظهر جميع الأصناف الـ 5 بوضوح دون اختفاء الصنف الخامس
+            container.style.maxHeight = '320px';
+
             const defaultCat = cat || document.getElementById('ex-category')?.value || 'طعام ومقاضي';
             const row = document.createElement('div');
             row.className = 'ex-item-row';
             row.style.cssText = 'display:flex; gap:6px; align-items:center; background:#fff; padding:6px; border-radius:6px; border:1px solid var(--border);';
             row.innerHTML = `
-                <select class="item-cat" style="width:32%; padding:5px; font-size:12.5px;">
+                <span class="item-num-badge" style="font-size:11px; font-weight:bold; color:var(--primary); min-width:20px; text-align:center;">#${currentRows.length + 1}</span>
+                <select class="item-cat" style="width:30%; padding:5px; font-size:12.5px;">
                     <option value="طعام ومقاضي" ${defaultCat==='طعام ومقاضي'?'selected':''}>طعام ومقاضي</option>
                     <option value="فواتير وخدمات" ${defaultCat==='فواتير وخدمات'?'selected':''}>فواتير وخدمات</option>
                     <option value="صيانة" ${defaultCat==='صيانة'?'selected':''}>صيانة</option>
@@ -2037,11 +2060,26 @@
                     <option value="أخرى" ${defaultCat==='أخرى'?'selected':''}>أخرى</option>
                 </select>
                 <input type="text" class="item-name" placeholder="اسم الصنف / البيان..." value="${name}" required style="flex:1; padding:5px; font-size:13px;">
-                <input type="number" class="item-price" placeholder="السعر" step="0.01" value="${price}" required oninput="recalcItemsTotal()" style="width:95px; padding:5px; font-size:13px; text-align:center;">
-                <button type="button" class="btn btn-danger btn-sm" onclick="this.parentElement.remove(); recalcItemsTotal();"><i class="fas fa-times"></i></button>
+                <input type="number" class="item-price" placeholder="السعر" step="0.01" value="${price}" required oninput="recalcItemsTotal()" style="width:90px; padding:5px; font-size:13px; text-align:center;">
+                <button type="button" class="btn btn-danger btn-sm" onclick="removeExpenseItemRow(this)"><i class="fas fa-times"></i></button>
             `;
             container.appendChild(row);
+            updateExpenseItemNumbers();
         };
+
+        window.removeExpenseItemRow = function(btn) {
+            const row = btn.closest('.ex-item-row');
+            if (row) row.remove();
+            recalcItemsTotal();
+            updateExpenseItemNumbers();
+        };
+
+        function updateExpenseItemNumbers() {
+            document.querySelectorAll('#ex-items-container .ex-item-row').forEach((row, idx) => {
+                const badge = row.querySelector('.item-num-badge');
+                if (badge) badge.innerText = '#' + (idx + 1);
+            });
+        }
 
         window.recalcItemsTotal = function() {
             let sum = 0;
