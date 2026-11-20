@@ -1995,35 +1995,47 @@
 
             const editExpIndex = parseInt(document.getElementById('ex-edit-index')?.value ?? "-1");
 
+            // حساب الرصيد المتاح لكل مساهم وترتيبهم تنازلياً من الأعلى رصيداً إلى الأقل
+            const rankedPayers = allNames.map(name => ({
+                name: name,
+                rem: getShareholderRemainingShare(sess, name, editExpIndex)
+            })).sort((a, b) => b.rem - a.rem);
+
             const payerSelect = document.getElementById('ex-payer');
             if (payerSelect) {
-                payerSelect.innerHTML = allNames.length > 0
-                    ? allNames.map(name => {
-                        const rem = getShareholderRemainingShare(sess, name, editExpIndex);
-                        const statusNote = rem > 0 ? 'متاح' : (rem === 0 ? 'رصيده صفر' : 'بالسالب');
-                        return `<option value="${name}">${name} (المتاح من الحصة: ${formatCurrency(rem)} - ${statusNote})</option>`;
-                    }).join('')
-                    : '<option value="عام">عام</option>';
+                if (rankedPayers.length > 0) {
+                    const maxRem = rankedPayers[0].rem;
+                    payerSelect.innerHTML = rankedPayers.map((p, idx) => {
+                        const statusNote = p.rem > 0 ? 'متاح' : (p.rem === 0 ? 'رصيده صفر' : 'بالسالب');
+                        const highestTag = (idx === 0 && maxRem > 0) ? ' ⭐ [الأعلى رصيداً]' : '';
+                        return `<option value="${p.name}">${p.name} (المتاح من الحصة: ${formatCurrency(p.rem)} - ${statusNote})${highestTag}</option>`;
+                    }).join('');
+
+                    // اختيار المساهم الأعلى رصيداً تلقائياً عند إضافة مصروف جديد
+                    if (editExpIndex === -1) {
+                        payerSelect.value = rankedPayers[0].name;
+                    }
+                } else {
+                    payerSelect.innerHTML = '<option value="عام">عام</option>';
+                }
             }
 
             const multiList = document.getElementById('multi-payer-list');
             if (multiList) {
-                multiList.innerHTML = allNames.map(name => {
-                    const rem = getShareholderRemainingShare(sess, name, editExpIndex);
-                    const badgeClass = rem > 0 ? 'success' : (rem === 0 ? 'warning' : 'danger');
+                multiList.innerHTML = rankedPayers.map(p => {
+                    const badgeClass = p.rem > 0 ? 'success' : (p.rem === 0 ? 'warning' : 'danger');
                     return `
                     <div class="mp-row">
                         <label>
-                            <input type="checkbox" class="mp-check" data-name="${name}" onchange="splitExpenseEqually()">
-                            <span>${name}</span>
-                            <span class="badge ${badgeClass}" dir="ltr">المتاح: ${formatCurrency(rem)}</span>
+                            <input type="checkbox" class="mp-check" data-name="${p.name}" onchange="splitExpenseEqually()">
+                            <span>${p.name}</span>
+                            <span class="badge ${badgeClass}" dir="ltr">المتاح: ${formatCurrency(p.rem)}</span>
                         </label>
-                        <input type="number" class="mp-amount" data-name="${name}" step="0.01" placeholder="0.00">
+                        <input type="number" class="mp-amount" data-name="${p.name}" step="0.01" placeholder="0.00">
                     </div>`;
                 }).join('');
             }
         }
-
         window.checkSinglePayerShare = function() {
             const sess = getCurrentSession();
             const editIndex = parseInt(document.getElementById('ex-edit-index').value);
