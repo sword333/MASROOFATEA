@@ -683,10 +683,46 @@
                 <input type="hidden" id="db-edit-index" value="-1">
                 <div class="form-group"><label>اسم الدائن / الجهة</label><input type="text" id="db-creditor" required></div>
                 <div class="form-group"><label>تاريخ التسجيل</label><input type="date" id="db-date" required></div>
-                <div class="form-group"><label>موعد السداد النهائي (الاستحقاق)</label><input type="date" id="db-deadline" required></div>
-                <div class="form-group"><label>إجمالي مبلغ الدين</label><input type="number" id="db-total" step="0.01" required></div>
-                <div class="form-group"><label>قسط الدورة المطلوب سداده (اختياري)</label><input type="number" id="db-session-amount" step="0.01" value="0"></div>
-                <div class="form-group"><label>المبلغ المسدد حتى الآن (توثيقياً)</label><input type="number" id="db-paid" step="0.01" value="0"></div>
+                <div class="form-group"><label>إجمالي مبلغ الدين</label><input type="number" id="db-total" step="0.01" required oninput="calculatePredictedDebtEndDate()"></div>
+                <div class="form-group"><label>قسط الدورة المطلوب سداده (مبلغ القسط)</label><input type="number" id="db-session-amount" step="0.01" value="0" oninput="calculatePredictedDebtEndDate()"></div>
+                <div class="form-group"><label>المبلغ المسدد حتى الآن (توثيقياً)</label><input type="number" id="db-paid" step="0.01" value="0" oninput="calculatePredictedDebtEndDate()"></div>
+
+                <!-- خيار تحديد موعد السداد النهائي (يدوي أو توقع تلقائي) -->
+                <div class="form-group" style="background: #f7f3fc; padding: 12px; border-radius: 8px; border: 1px solid #dcd1f3;">
+                    <label style="color: var(--purple); margin-bottom: 8px;"><i class="fas fa-calendar-check"></i> طريقة تحديد موعد آخر دفعة (الاستحقاق النهائي):</label>
+                    <div style="display: flex; gap: 15px; margin-bottom: 10px; flex-wrap: wrap;">
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: normal; margin: 0;">
+                            <input type="radio" name="db-deadline-mode" value="manual" checked onchange="toggleDebtDeadlineMode()" style="width: auto;">
+                            <span>✍️ إدخال التاريخ يدوياً</span>
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; font-weight: normal; margin: 0;">
+                            <input type="radio" name="db-deadline-mode" value="auto" onchange="toggleDebtDeadlineMode()" style="width: auto;">
+                            <span>🤖 حساب وتوقع تلقائي (حسب أول قسط)</span>
+                        </label>
+                    </div>
+
+                    <!-- صندوق الحساب التلقائي -->
+                    <div id="db-auto-predict-box" style="display: none; background: #fff; padding: 10px; border-radius: 6px; border: 1px dashed var(--purple); margin-bottom: 10px;">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            <div>
+                                <label style="font-size: 12px;">تاريخ أول قسط:</label>
+                                <input type="date" id="db-first-installment-date" onchange="calculatePredictedDebtEndDate()">
+                            </div>
+                            <div>
+                                <label style="font-size: 12px;">دورية السداد:</label>
+                                <select id="db-installment-period" onchange="calculatePredictedDebtEndDate()">
+                                    <option value="monthly">شهري (كل شهر)</option>
+                                    <option value="biweekly">كل أسبوعين (14 يوم)</option>
+                                    <option value="weekly">أسبوعي (كل 7 أيام)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div id="db-prediction-summary" style="margin-top: 8px; font-size: 12px; color: #4b2382; background: #f3ebff; padding: 8px; border-radius: 5px; display: none;"></div>
+                    </div>
+
+                    <label id="db-deadline-label">موعد السداد النهائي (آخر دفعة):</label>
+                    <input type="date" id="db-deadline" required>
+                </div>
 
                 <!-- قسم المرفقات للديون (بادئة db) -->
                 <div class="attachment-section" style="margin-bottom: 14px; padding: 12px; border: 1px dashed #ccc; border-radius: 8px; background: #fafafa;">
@@ -730,7 +766,6 @@
             </form>
         </div>
     </div>
-
     <!-- نافذة نقل سجل إلى دورة أخرى -->
     <div id="modal-transfer" class="modal">
         <div class="modal-content" style="max-width: 400px;">
@@ -2090,6 +2125,86 @@
             if (document.getElementById('ex-multi-payer').checked) splitExpenseEqually();
         };
 
+        window.toggleDebtDeadlineMode = function() {
+            const mode = document.querySelector('input[name="db-deadline-mode"]:checked')?.value || 'manual';
+            const autoBox = document.getElementById('db-auto-predict-box');
+            const deadlineInput = document.getElementById('db-deadline');
+            const firstDateInput = document.getElementById('db-first-installment-date');
+
+            if (mode === 'auto') {
+                if (autoBox) autoBox.style.display = 'block';
+                if (deadlineInput) {
+                    deadlineInput.readOnly = true;
+                    deadlineInput.style.backgroundColor = '#eef2f7';
+                }
+                if (firstDateInput && !firstDateInput.value) {
+                    firstDateInput.value = document.getElementById('db-date')?.value || new Date().toISOString().split('T')[0];
+                }
+                calculatePredictedDebtEndDate();
+            } else {
+                if (autoBox) autoBox.style.display = 'none';
+                if (deadlineInput) {
+                    deadlineInput.readOnly = false;
+                    deadlineInput.style.backgroundColor = '#fff';
+                }
+            }
+        };
+
+        window.calculatePredictedDebtEndDate = function() {
+            const mode = document.querySelector('input[name="db-deadline-mode"]:checked')?.value || 'manual';
+            if (mode !== 'auto') return;
+
+            const total = parseFloat(document.getElementById('db-total')?.value) || 0;
+            const paid = parseFloat(document.getElementById('db-paid')?.value) || 0;
+            const installment = parseFloat(document.getElementById('db-session-amount')?.value) || 0;
+            const firstDateStr = document.getElementById('db-first-installment-date')?.value;
+            const period = document.getElementById('db-installment-period')?.value || 'monthly';
+            const summaryEl = document.getElementById('db-prediction-summary');
+            const deadlineInput = document.getElementById('db-deadline');
+
+            if (!summaryEl) return;
+
+            const remainingToPay = Math.max(0, total - paid);
+
+            if (remainingToPay <= 0 || installment <= 0 || !firstDateStr) {
+                summaryEl.style.display = 'block';
+                summaryEl.innerHTML = `<i class="fas fa-info-circle"></i> الرجاء إدخال <strong>إجمالي الدين</strong> و<strong>قيمة قسط الدورة (أكبر من 0)</strong> و<strong>تاريخ أول قسط</strong> لحساب موعد آخر دفعة تلقائياً.`;
+                return;
+            }
+
+            const totalInstallments = Math.ceil(remainingToPay / installment);
+            const [year, month, day] = firstDateStr.split('-').map(Number);
+            const lastDate = new Date(year, month - 1, day);
+
+            // القسط الأول يكون في تاريخ أول قسط، والأقساط المتبقية هي (totalInstallments - 1)
+            const stepsToAdd = Math.max(0, totalInstallments - 1);
+            if (period === 'monthly') {
+                lastDate.setMonth(lastDate.getMonth() + stepsToAdd);
+            } else if (period === 'biweekly') {
+                lastDate.setDate(lastDate.getDate() + (stepsToAdd * 14));
+            } else if (period === 'weekly') {
+                lastDate.setDate(lastDate.getDate() + (stepsToAdd * 7));
+            }
+
+            const yyyy = lastDate.getFullYear();
+            const mm = String(lastDate.getMonth() + 1).padStart(2, '0');
+            const dd = String(lastDate.getDate()).padStart(2, '0');
+            const formattedLastDate = `${yyyy}-${mm}-${dd}`;
+
+            if (deadlineInput) deadlineInput.value = formattedLastDate;
+
+            const lastInstallmentAmount = remainingToPay - (installment * (totalInstallments - 1));
+            const isUnevenLast = Math.abs(lastInstallmentAmount - installment) > 0.01;
+
+            summaryEl.style.display = 'block';
+            summaryEl.innerHTML = `
+                <div><strong>📊 نتيجة التوقع التلقائي:</strong></div>
+                <div>• المبلغ المتبقي للجدولة: <strong>${formatCurrency(remainingToPay)}</strong></div>
+                <div>• عدد الأقساط اللازمة: <strong>${totalInstallments} قسط</strong> ${isUnevenLast ? `(منها آخر قسط بقيمة ${formatCurrency(lastInstallmentAmount)})` : `(${formatCurrency(installment)} لكل قسط)`}</div>
+                <div>• تاريخ آخر دفعة المتوقع: <strong style="color:var(--success);">${formattedLastDate}</strong></div>
+            `;
+        };
+
         window.openModal = function(id) {
             const m = document.getElementById(id);
             if (!m) return;
@@ -2106,7 +2221,14 @@
                 updateDropdowns();
             }
             if (id === 'modal-debt' && document.getElementById('db-edit-index').value === "-1") {
-                document.getElementById('db-date').value = new Date().toISOString().split('T')[0];
+                const today = new Date().toISOString().split('T')[0];
+                document.getElementById('db-date').value = today;
+                if (document.getElementById('db-first-installment-date')) {
+                    document.getElementById('db-first-installment-date').value = today;
+                }
+                const manualRadio = document.querySelector('input[name="db-deadline-mode"][value="manual"]');
+                if (manualRadio) manualRadio.checked = true;
+                toggleDebtDeadlineMode();
             }
         };
 
@@ -2118,11 +2240,17 @@
             const attachmentData = getAttachmentData('db', existingAtt);
             if (attachmentData === false) return;
 
+            const deadlineMode = document.querySelector('input[name="db-deadline-mode"]:checked')?.value || 'manual';
+            if (deadlineMode === 'auto') calculatePredictedDebtEndDate();
+
             const debtObj = {
                 id: (editIndex > -1 && sess.debts[editIndex]) ? sess.debts[editIndex].id : 'DBT-' + Date.now().toString().slice(-4),
                 creditor: document.getElementById('db-creditor').value.trim(),
                 date: document.getElementById('db-date').value,
                 deadline: document.getElementById('db-deadline').value,
+                deadlineMode: deadlineMode,
+                firstInstallmentDate: document.getElementById('db-first-installment-date')?.value || '',
+                installmentPeriod: document.getElementById('db-installment-period')?.value || 'monthly',
                 total: parseFloat(document.getElementById('db-total').value) || 0,
                 sessionAmount: parseFloat(document.getElementById('db-session-amount').value) || 0,
                 paid: parseFloat(document.getElementById('db-paid').value) || 0,
@@ -2148,6 +2276,17 @@
             document.getElementById('db-total').value = d.total;
             document.getElementById('db-session-amount').value = d.sessionAmount || 0;
             document.getElementById('db-paid').value = d.paid;
+
+            const savedMode = d.deadlineMode || 'manual';
+            const modeRadio = document.querySelector(`input[name="db-deadline-mode"][value="${savedMode}"]`);
+            if (modeRadio) modeRadio.checked = true;
+            if (document.getElementById('db-first-installment-date')) {
+                document.getElementById('db-first-installment-date').value = d.firstInstallmentDate || d.date || '';
+            }
+            if (document.getElementById('db-installment-period')) {
+                document.getElementById('db-installment-period').value = d.installmentPeriod || 'monthly';
+            }
+            toggleDebtDeadlineMode();
 
             if (d.attachment && d.attachment.type) {
                 document.getElementById('db-attachmentType').value = d.attachment.type;
