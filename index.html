@@ -2036,6 +2036,72 @@
                 }).join('');
             }
         }
+        window.fillSavedContributor = function() {
+            const idx = document.getElementById('sh-saved-list').value;
+            if (idx !== "") {
+                const c = appData.permanentContributors[idx];
+                if (c) {
+                    document.getElementById('sh-name').value = c.name;
+                    document.getElementById('sh-quota').value = c.quota;
+                    document.getElementById('sh-paid').value = 0;
+                }
+            }
+        };
+
+        window.deletePermanentContributor = function() {
+            const idx = document.getElementById('sh-saved-list').value;
+            if (idx === "") return alert("اختر اسماً من القائمة أولاً لحذفه.");
+            if (confirm("هل تريد مسحه من القائمة العامة؟")) {
+                appData.permanentContributors.splice(idx, 1);
+                updateDropdowns();
+                pushToDrive();
+            }
+        };
+
+        window.addShareholder = function(e) {
+            e.preventDefault();
+            const sess = getCurrentSession();
+            const name = document.getElementById('sh-name').value.trim();
+            const quota = parseFloat(document.getElementById('sh-quota').value) || 0;
+            const paid = parseFloat(document.getElementById('sh-paid').value) || 0;
+            const editIndex = parseInt(document.getElementById('sh-edit-index').value);
+
+            const existingPerm = appData.permanentContributors.find(c => c.name === name);
+            if (existingPerm) existingPerm.quota = quota;
+            else appData.permanentContributors.push({ name, quota });
+
+            if (editIndex > -1 && sess.shareholders[editIndex]) {
+                sess.shareholders[editIndex].name = name;
+                sess.shareholders[editIndex].quota = quota;
+                sess.shareholders[editIndex].paid = paid;
+            } else {
+                sess.shareholders.push({
+                    id: 'SH-' + Date.now().toString().slice(-4),
+                    name: name,
+                    quota: quota,
+                    paid: paid
+                });
+            }
+
+            closeModal('modal-shareholder');
+            renderUI();
+            pushToDrive();
+        };
+
+        window.editShareholder = function(index) {
+            const sess = getCurrentSession();
+            const s = sess.shareholders[index];
+            if (!s) return;
+
+            openModal('modal-shareholder');
+            document.getElementById('sh-edit-index').value = index;
+            document.getElementById('sh-name').value = s.name;
+            document.getElementById('sh-quota').value = s.quota;
+            document.getElementById('sh-paid').value = s.paid;
+            if (document.getElementById('sh-saved-list')) {
+                document.getElementById('sh-saved-list').value = "";
+            }
+        };
         window.checkSinglePayerShare = function() {
             const sess = getCurrentSession();
             const editIndex = parseInt(document.getElementById('ex-edit-index').value);
